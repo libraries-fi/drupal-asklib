@@ -8,3 +8,5 @@ This is the core functionality of what is being used at
 
 # Installation
 This module has dependencies to a lot of our other modules that are also published on this Github account. For an up-to-date list, see [asklib.info.yml](asklib.info.yml).
+
+Language used in code is English but all or most View definitions have the labels in Finnish.
