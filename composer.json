@@ -5,6 +5,6 @@
   "license": "GPL-2.0+",
   "require": {
     "html2text/html2text": "^4.1",
-    "elasticsearch/elasticsearch": "^5.4"
+    "elasticsearch/elasticsearch": "^5.3"
   }
 }
