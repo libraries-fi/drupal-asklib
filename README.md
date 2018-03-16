@@ -2,7 +2,7 @@
 Public platform for people to ask questions and receive answers by a group of moderators.
 
 This is the core functionality of what is being used at
-  - www.kirjastotfi/kysy
+  - www.kirjastot.fi/kysy
   - www.libraries.fi/ask
   - www.biblioteken.fi/fraga
 
