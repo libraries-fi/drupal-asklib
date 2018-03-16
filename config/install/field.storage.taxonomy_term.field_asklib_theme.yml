@@ -1,0 +1,19 @@
+uuid: f01b56cd-0e62-4c09-93a5-4251725aeab7
+langcode: fi
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_asklib_theme
+field_name: field_asklib_theme
+entity_type: taxonomy_term
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: 5
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

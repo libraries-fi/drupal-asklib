@@ -1,0 +1,28 @@
+.asklib-question-edit-form #edit-question-group {
+  padding: 0.5rem 1rem;
+  margin: 0 -1rem;
+  background-color: rgba(150, 150, 150, 0.1); }
+.asklib-question-edit-form #edit-attachments-wrapper .tabledrag-toggle-weight-wrapper {
+  display: none; }
+.asklib-question-edit-form .form-item-attachments-0,
+.asklib-question-edit-form .form-item-attachments-2 {
+  display: none; }
+.asklib-question-edit-form #link-open-finto {
+  position: absolute;
+  top: 0.5em;
+  right: 1.5em; }
+.asklib-question-edit-form #edit-tags-group {
+  position: relative; }
+.asklib-question-edit-form #edit-tags-legend {
+  padding: 30px 0.75em 0.45em;
+  background: transparent; }
+.asklib-question-edit-form #edit-finto-legend,
+.asklib-question-edit-form #edit-freeform-legend {
+  display: inline-block;
+  margin-right: 1rem; }
+.asklib-question-edit-form #edit-library-wrap.highlight-help {
+  background-color: rgba(255, 0, 255, 0.2);
+  margin: 0 -0.75em;
+  padding: 0 0.75em; }
+
+/*# sourceMappingURL=question-edit-form.css.map */

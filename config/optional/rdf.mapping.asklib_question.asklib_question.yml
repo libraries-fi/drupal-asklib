@@ -1,0 +1,42 @@
+uuid: fd87d86e-de3e-4578-9fbb-8a3dd7742cc1
+langcode: fi
+status: true
+dependencies:
+  module:
+    - asklib
+    - rdf
+id: asklib_question.asklib_question
+targetEntityType: asklib_question
+bundle: asklib_question
+types:
+  - 'schema:Question'
+fieldMappings:
+  body:
+    properties:
+      - 'schema:text'
+  created:
+    properties:
+      - 'schema:datePublished'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  target_library:
+    properties:
+      - 'schema:author'
+  answer:
+    properties:
+      - 'schema:suggestedAnswer'
+      - 'schema:acceptedAnswer'
+  tags:
+    properties:
+      - 'schema:about'
+  comments:
+    properties:
+      - 'schema:comment'
+    mapping_type: rel
+  comment_count:
+    properties:
+      - 'schema:interactionCount'
+    datatype_callback:
+      callable: 'Drupal\rdf\SchemaOrgDataConverter::interactionCount'
+      arguments:
+        interaction_type: UserComments

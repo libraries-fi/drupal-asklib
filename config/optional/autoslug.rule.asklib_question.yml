@@ -1,0 +1,9 @@
+uuid: 51f1fb21-9752-4420-9cf8-29dd14bc922a
+langcode: fi
+status: true
+dependencies: {  }
+id: asklib_question
+type: asklib_question
+bundle: ''
+word_limit: '5'
+url: '/kysy-kirjastonhoitajalta/{title}'

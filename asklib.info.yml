@@ -1,0 +1,16 @@
+name: Ask a Librarian
+type: module
+core: 8.x
+package: Kirjastot.fi
+description: "Kysy kirjastonhoitajalta"
+configure: asklib.admin
+dependencies:
+  - autoslug
+  - finto_taxonomy
+  - forum
+  - kifiform
+  - kifimail
+  - kifistats
+  - language
+  - node
+  - rdf

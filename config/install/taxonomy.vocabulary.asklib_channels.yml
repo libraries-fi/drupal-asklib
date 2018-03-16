@@ -1,0 +1,9 @@
+uuid: fb7c1e63-86e4-486a-8fd2-fc682f1742ab
+langcode: fi
+status: true
+dependencies: {  }
+name: Kysymyskanavat
+vid: asklib_channels
+description: ''
+hierarchy: 0
+weight: 0

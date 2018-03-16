@@ -1,0 +1,740 @@
+<?php
+
+use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Breadcrumb\Breadcrumb;
+use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\asklib\Entity\Answer;
+use Drupal\asklib\QuestionInterface;
+use Drupal\asklib\Form\QuestionAdminForm;
+use Drupal\comment\CommentInterface;
+use Drupal\user\UserInterface;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+function asklib_theme() {
+  return [
+    'asklib_question_form' => [
+      'render element' => 'form',
+    ],
+    'asklib_question' => [
+      'render element' => 'elements',
+    ],
+    'asklib_answer' => [
+      'render element' => 'elements',
+    ],
+    'field__asklib_answer' => [
+      'base hook' => 'field',
+    ],
+    'asklib_remote_form' => [
+      'template' => 'remote-question-form',
+      'variables' => [
+        'cities' => [],
+        'form' => [],
+      ]
+    ],
+    'asklib_ref_question' => [
+      'template' => 'ref_question',
+      'variables' => [
+        'url' => null,
+      ]
+    ],
+    'asklib_email' => [
+      'template' => 'email',
+      'mail theme' => TRUE,
+      'variables' => [
+        'message' => [],
+        'style' => '',
+        'body' => '',
+        'subject' => '',
+      ]
+    ],
+    'page__admin__asklib__index' => [
+      'template' => 'page--admin--asklib--index',
+    ],
+    'asklib_keyword_index' => [
+      'variables' => [
+        'items' => [],
+        'langcode' => null,
+      ]
+    ],
+    'asklib_keyword_subpage' => [
+      'variables' => [
+        'terms' => [],
+        'letter' => null,
+        'misc' => false,
+        'langcode' => null,
+      ]
+    ]
+  ];
+}
+
+function asklib_entity_type_build(array &$entity_types) {
+  if (isset($entity_types['taxonomy_term'])) {
+    $term = $entity_types['taxonomy_term'];
+    $term->setFormClass('asklib_admin', \Drupal\asklib\Form\MailGroupTermForm::class);
+    $term->setLinkTemplate('asklib-mail-group-form', '/admin/config/asklib/emails/{taxonomy_term}');
+  }
+
+  if (isset($entity_types['user'])) {
+    $user = $entity_types['user'];
+    $user->setFormClass('asklib_admin', \Drupal\asklib\Form\MailGroupUserForm::class);
+    $user->setLinkTemplate('asklib-mail-group-form', '/admin/config/asklib/emails/users/{user}');
+  }
+}
+
+function asklib_mail($key, &$message, $params) {
+  if (!empty($params['files'])) {
+    $message['params']['files'] = $params['files'];
+  }
+
+  $message['params']['is_admin'] = Drupal::currentUser()->hasPermission('administer asklib');
+  $message['params']['has_question_details'] = !empty($params['asklib_question']->getDetails());
+
+  if ($answer = $params['asklib_question']->getAnswer()) {
+    $message['params']['has_answer_details'] = !empty($answer->getDetails());
+  }
+}
+
+function asklib_cron() {
+  $day_limit = Drupal::config('asklib.settings')->get('reserved_window');
+  $date_limit = date('Y-m-d', strtotime(sprintf('-%d days', $day_limit)));
+  $storage = Drupal::entityManager()->getStorage('asklib_question');
+  $qids = $storage->getQuery()
+    ->condition('state', QuestionInterface::STATE_RESERVED)
+    ->execute();
+  $questions = $storage->loadMultiple($qids);
+
+  foreach ($questions as $question) {
+    if (date('Y-m-d', $question->getReservedTime()) < $date_limit) {
+      $question->release();
+      $question->save();
+    }
+  }
+}
+
+function template_preprocess_asklib_email(&$variables) {
+  if ($variables['message']['body']) {
+    $variables['body'] = $variables['message']['body'];
+    $variables['subject'] = $variables['message']['subject'];
+  }
+}
+
+function asklib_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() != 'asklib_index') {
+    return;
+  }
+
+  $unset_owner_filter = TRUE;
+  $unset_answerer_filter = TRUE;
+
+  foreach ($query->where as $x => &$group) {
+    $conditions = &$group['conditions'];
+    foreach ($conditions as $i => &$condition) {
+      /*
+       * The view is configured to filter questions who have been reserved by a user.
+       * Here we want to alter the query so that if the view is filtered to display only
+       * 'free to answer' questions, we'll alter the owner ID to be that of the current user.
+       *
+       * Otherwise we'll just remove the filter completely.
+       */
+       if ($condition['field'] == 'asklib_questions.state' && $condition['value'] == '::ownAnswered') {
+         /*
+          * Implement 'show own answers' filter.
+          */
+         $group['type'] = 'AND';
+         $conditions[$i]['value'] = QuestionInterface::STATE_ANSWERED;
+         $conditions[$i+2]['value'] = Drupal::currentUser()->id();
+         $unset_answerer_filter = FALSE;
+       } elseif ($condition['field'] == 'asklib_questions.state' && $condition['value'] == '::open') {
+        /*
+         * Here we set the owner filter to use the ID of current user. This is not possible
+         * in the Views GUI.
+         *
+         * NOTE: The next elseif block depends on this code.
+         *
+         * NOTE: The intent is to allow the user to filter questions by state 'Unreserved or answered by me'.
+         */
+        $conditions[$i]['value'] = QuestionInterface::STATE_OPEN;
+        $conditions[$i + 1]['value'] = Drupal::currentUser()->id();
+        $unset_owner_filter = FALSE;
+      } elseif ($condition['field'] == 'asklib_locks_asklib_questions.user' && $unset_owner_filter) {
+        /*
+         * If the previous filter does not have a value, then we clear the following filter aswell.
+         * This is because these two filters are intended to be used either together or not at all.
+         */
+        unset($conditions[$i]);
+      } elseif ($condition['field'] == 'asklib_answers_asklib_questions.user' && $unset_answerer_filter) {
+        unset($conditions[$i]);
+      } elseif (strpos($condition['field'], 'taxonomy_term_field_data_asklib_questions_1.tid = :taxonomy_term_field_data_tid') === 0) {
+        /*
+         * NOTE: This block handles the two municipality filters.
+         * The first one is exposed and second is hidden. If first one has a value, it is copied
+         * to the second one in order to query both fields. If the first one is missing i.e. empty,
+         * then both will be cleared.
+         *
+         * FIXME: Query conjunction is explicitly set to 'OR' here to work around a Views bug.
+         * The bug is that these municipality filters are put in a new group whose conjunction is
+         * reset to 'AND' regardless of view settings.
+         */
+
+        $query->where[$x]['type'] = 'OR';
+
+        switch ($i) {
+          case 0:
+            /*
+             * If this filter is first in its group, it means the other half of the group does not
+             * have user input. Then we need to clear the filter group altogether.
+             */
+            $group['conditions'] = [];
+            break;
+
+          case 1:
+            foreach ($condition['value'] as $key => $value) {
+              $condition['value'][$key] = current($group['conditions'][0]['value']);
+            }
+            break;
+
+          default:
+            trigger_error('DEBUG: You have broken the required grouping of exposed view filters!', E_USER_WARNING);
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Fixes an open bug with a contextual filter to a field with cardinality > 1.
+ *
+ * - https://drupal.stackexchange.com/questions/213461/add-cardinality-unlimited-taxonomy-reference-to-custom-entity
+ * - https://www.drupal.org/node/2795455
+ * - https://www.drupal.org/project/drupal/issues/2706431
+ */
+function asklib_bug_fix_rss_query(array &$conditions) {
+  foreach ($conditions as &$rule) {
+    if (is_array($rule)) {
+      if ($rule['field'] instanceof \Drupal\Core\Database\Query\ConditionInterface) {
+        asklib_bug_fix_rss_query($rule['field']->conditions());
+      } elseif (is_string($rule['field'])) {
+        if (trim($rule['field']) == 'asklib_question__feeds.feeds = :asklib_question__feeds_feeds') {
+          $rule['field'] = 'asklib_question__feeds.feeds_target_id = :asklib_question__feeds_feeds';
+        }
+      }
+    }
+  }
+}
+
+function asklib_views_pre_execute(ViewExecutable $view) {
+  if ($view->storage->id() == 'asklib_rss') {
+    asklib_bug_fix_rss_query($view->build_info['query']->conditions());
+  }
+}
+
+function asklib_module_implements_alter(&$implementations, $hook) {
+  /*
+   * Move our hook last in the queue, because we will need to work around a bug introduced in
+   * language module's form_alter hook.
+   */
+  if ($hook == 'form_alter') {
+    $group = $implementations['asklib'];
+    unset($implementations['asklib']);
+    $implementations['asklib'] = $group;
+  }
+}
+
+function asklib_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /*
+   * Due to a bug in language module, element with name 'langcode' will be hidden unless entity type
+   * is set to translatable. We do not want to enable translations, so we work around the bug this way.
+   */
+  if ($form_state->getFormObject() instanceof QuestionAdminForm) {
+    $form['langcode']['#access'] = TRUE;
+  }
+}
+
+function asklib_preprocess_views_view_table(&$variables) {
+  if ($variables['view']->id() != 'asklib_index') {
+    return;
+  }
+
+  $variables['#attached']['library'][] = 'asklib/admin-index';
+  $config = Drupal::config('asklib.settings');
+  $expiry_limit = new DateTime(sprintf('midnight %d days ago', $config->get('highlight_pending_after')));
+  $expiry_limit = $expiry_limit->format('U');
+
+  foreach ($variables['result'] as $i => $result) {
+    $question = $result->_entity;
+    $attributes = $variables['rows'][$i]['attributes'];
+
+    if (!$question->isAnswered() && $question->getCreatedTime() < $expiry_limit) {
+      $attributes->addClass('pending-question-warning');
+    }
+
+    if ($question->isReservedTo(Drupal::currentUser()->id())) {
+      $attributes->addClass('self-reserved-question');
+    }
+  }
+}
+
+function asklib_entity_view_display_alter(EntityViewDisplayInterface $display, array $context) {
+  if ($context['entity_type'] == 'asklib_question' && $context['view_mode'] == 'full') {
+    /*
+     * Comments field is created in hook_install() so it does not have default view settings akin to
+     * other entity fields.
+     */
+    $display->setComponent('comments', [
+      'label' => 'above',
+      'type' => 'comment_default',
+      'weight' => 100,
+    ]);
+  }
+}
+
+function asklib_entity_form_display_alter(EntityFormDisplayInterface $form_display, array $context) {
+  if ($context['entity_type'] == 'asklib_question' && $context['form_mode'] == 'edit') {
+    $component = $form_display->getComponent('parent');
+    $component['type'] = 'asklib_parent_question';
+    $component['weight'] = -10;
+    $form_display->setComponent('parent', $component);
+  }
+}
+
+function asklib_preprocess_asklib_question(&$variables) {
+  $take = function($key, array &$array) {
+    if (isset($array[$key])) {
+      $value = $array[$key];
+      unset($array[$key]);
+      return $value;
+    }
+  };
+
+  $variables['ask_more'] = $take('ask_more', $variables['elements']);
+  $variables['answer'] = $take('answer', $variables['elements']);
+  $variables['comments'] = $take('comments', $variables['elements']);
+  $variables['views'] = $take('displays', $variables['elements']);
+  $variables['tags'] = $take('tags', $variables['elements']);
+  $variables['is_published'] = $variables['elements']['#asklib_question']->isPublished();
+
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['question'][$key] = $variables['elements'][$key];
+  }
+
+  $variables['question']['body']['#label_display'] = 'hidden';
+
+  /*
+   * NOTE: Inject RDFa properties.
+   */
+
+  $question = $variables['elements']['#asklib_question'];
+  $mapping = rdf_get_mapping('asklib_question', 'asklib_question');
+  $bundle_mapping = $mapping->getPreparedBundleMapping('asklib_question', 'asklib_question');
+
+  $variables['question']['#type'] = 'container';
+  $variables['question']['#attributes']['class'] = ['asklib-question'];
+  $variables['attributes'] += [
+    'typeof' => $bundle_mapping['types'],
+    'resource' => 'https://www.kirjastot.fi/kysy/' . $variables['elements']['#asklib_question']->id(),
+  ];
+
+  $variables['question']['title_meta'] = [
+    '#weight' => -1000,
+    '#theme' => 'rdf_metadata',
+    '#metadata' => [
+      [
+        'property' => 'schema:headline',
+        // 'content' => $question->label(),''
+      ]
+    ]
+  ];
+}
+
+function asklib_preprocess_asklib_answer(&$variables) {
+  $take = function($key, array &$array) {
+    $value = $array[$key];
+    unset($array[$key]);
+    return $value;
+  };
+
+  $variables['library'] = $take('library', $variables['elements']);
+  // $variables['rating'] = $take('rating', $variables['elements']);
+  $variables['answered'] = $take('answered', $variables['elements']);
+  $variables['updated'] = $take('changed', $variables['elements']);
+
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['content'][$key] = $variables['elements'][$key];
+  }
+
+  $view = Drupal::entityTypeManager()->getViewBuilder('asklib_question');
+  $displays = $variables['elements']['#asklib_answer']->getQuestion()->get('displays');
+  $rendered = $view->viewField($displays, $displays->getFieldDefinition()->getDisplayOptions('view'));
+  $variables['views'] = $rendered;
+
+
+  /*
+   * Inject RDFa properties.
+   */
+
+  $mapping = rdf_get_mapping('asklib_answer', 'asklib_answer');
+  $bundle_mapping = $mapping->getPreparedBundleMapping('asklib_answer', 'asklib_answer');
+
+  $variables['attributes'] += [
+    'typeof' => $bundle_mapping['types'],
+  ];
+
+  // This is here because the rdf module does not allow to define typeof on field level.
+  $variables['library'][0]['#attributes']['typeof'] = 'schema:Organization';
+}
+
+function asklib_form_comment_comment_asklib_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['author']['homepage']['#access'] = FALSE;
+  $form['actions']['submit']['#value'] = t('Send');
+  $form['comment_body']['widget'][0]['#format'] = 'basic_html_without_ckeditor';
+  $form['comment_body']['widget'][0]['#title'] = t('Your comment');
+}
+
+function asklib_user_login($account) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+
+  // Redirect only when request comes from the login form.
+  if ($route_name == 'user.login' && $account->hasPermission('answer questions')) {
+    $url = Url::fromRoute('asklib.admin_index')->toString();
+    RedirectResponse::create($url)->send();
+  }
+}
+
+function asklib_user_update(UserInterface $user) {
+  if ($user->hasPermission('answer questions') && !$user->get('field_asklib_mail')->value) {
+    $user->set('field_asklib_mail', $user->getEmail());
+  }
+}
+
+function asklib_system_info_alter(array &$info, \Drupal\Core\Extension\Extension $file, $type) {
+  if ($type != 'theme' || !in_array($file->getName(), ['seven', 'kifi_admin'])) {
+    return;
+  }
+
+  $info['regions']['asklib_sidebar'] = 'Ask a Librarian Sidebar';
+}
+
+function asklib_menu_local_tasks_alter(&$data, $route_name) {
+  $tabs = &$data['tabs'][0];
+
+  if (isset($tabs['comment.admin'], $tabs['asklib.comment_admin'])) {
+    $allowed_a = $tabs['comment.admin']['#access']->isAllowed();
+    $allowed_b = $tabs['asklib.comment_admin']['#access']->isAllowed();
+    $is_admin = Drupal::currentUser()->hasPermission('administer account settings');
+
+    if ($allowed_a && $allowed_b) {
+      if ($is_admin) {
+        $tabs['asklib.comment_admin']['#link']['title'] = t('Comments (Ask a Librarian)');
+      } else {
+        $tabs['comment.admin']['#access'] = FALSE;
+      }
+    }
+  }
+}
+
+function asklib_preprocess_status_messages(array &$variables) {
+  $variables['attributes']['tabindex'] = '0';
+}
+
+function asklib_views_pre_render(ViewExecutable $view) {
+  if ($view->storage->id() == 'asklib_keywords') {
+    // var_dump($view->result);
+  }
+
+  if ($view->storage->id() == 'asklib_keywords_frontpage' && $view->build_info['summary'] == true) {
+    $misc = (object)[
+      '_entity' => null,
+      'tid' => null,
+      'num_records' => 0,
+      'index' => 0,
+      'name_truncated' => '0-9',
+    ];
+
+    $letters = array_merge(range('a', 'z'), ['å', 'ä', 'ö']);
+
+    foreach ($view->result as $i => $row) {
+      if (!in_array(mb_strtolower($row->name_truncated), $letters)) {
+        $misc->num_records += $row->num_records;
+        $misc->_entity = $row->_entity;
+        $misc->tid = $row->_entity->tid;
+
+        unset($view->result[$i]);
+      }
+    }
+
+    array_push($view->result, $misc);
+  }
+}
+
+function asklib_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  $route_match = \Drupal::routeMatch();
+
+  if ($route_match->getRouteName() == 'asklib.admin_index') {
+    /*
+     * By default the page template name is too generic and hence the template will be used with
+     * subpages aswell. Add more granular a name so that the index can have a unique filename.
+     */
+    $suggestions[] = 'page__admin__asklib__index';
+  }
+}
+
+function asklib_tokens($type, array $tokens, array $data, array $options, BubbleableMetadata $metadata) {
+  $replacements = [];
+
+  if ($type == 'asklib_question' && isset($data['asklib_question'])) {
+    $question = $data['asklib_question'];
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'body':
+          $replacements[$original] = check_markup($question->getBody(), $question->getBodyFormat(), $question->language()->getId());
+          break;
+        case 'details':
+          $replacements[$original] = $question->getDetails();
+          break;
+        case 'email':
+          $replacements[$original] = $question->getEmail();
+          break;
+        case 'title':
+          $replacements[$original] = $question->getTitle();
+          break;
+      }
+    }
+  }
+
+  if ($type == 'asklib_answer') {
+    $answer = isset($data['asklib_answer']) ? $data['asklib_answer'] : $data['asklib_question']->getAnswer();
+
+    if ($answer) {
+      foreach ($tokens as $name => $original) {
+        switch ($name) {
+          case 'author':
+            $replacements[$original] = $answer->getUser()->get('field_real_name')->value;
+            break;
+          case 'author_email':
+            $replacements[$original] = $answer->getUser()->getEmail();
+            break;
+          case 'signature':
+            $replacements[$original] = $answer->getUser()->get('field_asklib_signature')->value;
+            break;
+          case 'body':
+            $replacements[$original] = check_markup($answer->getBody(), $answer->getBodyFormat(), $answer->language()->getId());
+            break;
+          case 'details':
+            $replacements[$original] = $answer->getDetails();
+            break;
+          case 'library':
+            if (!($library = $answer->getLibrary())) {
+              $helper = Drupal::service('asklib.user_mail_group_helper');
+              $library = $helper->getUserMainGroup(Drupal::currentUser()->id());
+            }
+
+            $replacements[$original] = $library ? $library->label() : NULL;
+            break;
+        }
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+function asklib_preprocess_html(array &$variables) {
+  /*
+   * Hide admin toolbar from embedded form.
+   */
+  if (strpos(Drupal::request()->getPathInfo(), '/asklib/embed/') === 0) {
+    unset($variables['page_top']['toolbar']);
+  }
+
+
+  /*
+   * Notify users to set their home library after a change in the system.
+   */
+  $account = Drupal::currentUser();
+
+  if (in_array('asklib_librarian', $account->getRoles())) {
+    $user = Drupal::entityTypeManager()->getStorage('user')->load($account->id());
+
+    if (!$user->get('field_asklib_library')->target_id) {
+      $url = Url::fromRoute('entity.user.asklib_mail_group_form', ['user' => $user->id()])->toString();
+      drupal_set_message(t('Changes to Ask a Librarian: Set your home library in <a href=":url">settings</a>.', [':url' => $url]), 'warning');
+    }
+  }
+}
+
+function asklib_toolbar() {
+  $items['asklib'] = [
+    '#type' => 'toolbar_item',
+    '#weight' => 200,
+    '#cache' => [
+      'contexts' => ['user']
+    ],
+    '#attached' => [
+      'library' => ['asklib/admin-toolbar'],
+    ],
+    'tab' => [
+      '#type' => 'link',
+      '#title' => t('Ask a Librarian'),
+      '#url' => Url::fromRoute('asklib.admin_index'),
+      '#attributes' => [
+        'title' => t('Ask a Librarian'),
+        'class' => ['toolbar-icon', 'toolbar-icon-asklib'],
+      ],
+    ],
+    'tray' => [
+      '#heading' => t('Ask a Librarian'),
+      'tabs' => [
+        '#theme' => 'links__toolbar_asklib',
+        '#attributes' => [
+          'class' => ['toolbar-menu'],
+        ],
+        '#links' => [
+          'frontpage' => [
+            'title' => t('Administration'),
+            'url' => Url::fromRoute('asklib.admin_index'),
+          ],
+          'answering' => [
+            'title' => t('Answering'),
+            'url' => Url::fromRoute('view.asklib_index.page_1'),
+          ],
+          'comments' => [
+            'title' => t('Comments'),
+            'url' => Url::fromRoute('view.asklib_admin_comments.page_1')
+          ],
+          'statistics' => [
+            'title' => t('Statistics'),
+            'url' => Url::fromRoute('asklib.statistics_overview'),
+          ],
+          'profile' => [
+            'title' => t('Answerer profile'),
+            'url' => Url::fromRoute('asklib.admin_user_email_groups', ['user' => Drupal::currentUser()->id()])
+          ],
+        ]
+      ]
+    ]
+  ];
+
+  return $items;
+}
+
+function asklib_toolbar_alter(&$items) {
+  // $items['administration']['tray']['#attached']['library'][] = 'asklib/admin-toolbar';
+
+  $account = Drupal::currentUser();
+  $roles = $account->getRoles();
+
+  if (in_array('asklib_librarian', $roles) && count($roles) == 2) {
+    // These items are visible to librarians although there's no content.
+    unset($items['administration']);
+    unset($items['tour']);
+
+    $items['asklib']['#weight'] = 0;
+  }
+
+  if (!Drupal::currentUser()->hasPermission('answer questions')) {
+    unset($items['asklib']);
+  }
+}
+
+/**
+ * By default subjects are too short, so we increase that limit.
+ *
+ * The method for generating subjects is copied from Drupal\comment\CommentForm.
+ */
+function asklib_comment_presave(CommentInterface $comment) {
+  if ($comment->getTypeId() == 'comment_asklib' && $comment->hasField('comment_body')) {
+    $comment_text = $comment->comment_body->processed;
+    $comment->setSubject(Unicode::truncate(trim(Html::decodeEntities(strip_tags($comment_text))), 60, TRUE, TRUE));
+  }
+}
+
+function asklib_asklib_question_insert(QuestionInterface $question) {
+  asklib_delete_question_index($question);
+  asklib_build_question_index($question);
+
+  if ($question->hasNotificationFlag(QuestionInterface::NOTIFY_AUTHOR)) {
+    $storage = Drupal::entityTypeManager()->getStorage('action');
+    $action = $storage->load('asklib_send_client_receipt_email');
+    $action->execute([$question]);
+  }
+
+  if ($question->hasNotificationFlag(QuestionInterface::NOTIFY_SUBSCRIBERS)) {
+    $storage = Drupal::entityTypeManager()->getStorage('action');
+    $action = $storage->load('asklib_send_question_notify_email');
+    $action->execute([$question]);
+  }
+}
+
+function asklib_asklib_question_update(QuestionInterface $question) {
+  asklib_delete_question_index($question);
+  asklib_build_question_index($question);
+
+  if ($question->hasNotificationFlag(QuestionInterface::NOTIFY_SUBSCRIBERS)) {
+    $storage = Drupal::entityTypeManager()->getStorage('action');
+    $action = $storage->load('asklib_send_question_notify_email');
+    $action->execute([$question]);
+  }
+}
+
+function asklib_asklib_question_predelete(QuestionInterface $question) {
+  asklib_delete_question_index($question);
+
+  if ($question->getAnswer()) {
+    $question->getAnswer()->delete();
+  }
+
+  if ($question->getLock()) {
+    $question->getLock()->delete();
+  }
+}
+
+function asklib_asklib_question_delete(QuestionInterface $question) {
+  /*
+   * NOTE: Makes deleting questions in hordes veeeery slow!
+   */
+  $url = Url::fromRoute('entity.asklib_question.canonical', ['asklib_question' => $question->id()]);
+  Drupal::service('path.alias_storage')->delete(['source' => $url]);
+
+  search_index_clear('asklib_search_elastic', $question->id());
+}
+
+function asklib_delete_question_index(QuestionInterface $question) {
+  Database::getConnection()->delete('asklib_question_index')
+    ->condition('qid', $question->id())
+    ->execute();
+}
+
+function asklib_build_question_index(QuestionInterface $question) {
+  if (!$question->isPublished() || !$question->isAnswered()) {
+    return;
+  }
+
+  if (!(Drupal::entityTypeManager()->getStorage('asklib_question') instanceof SqlContentEntityStorage)) {
+    return;
+  }
+
+  foreach ($question->get('tags') as $field) {
+    $tid = $field->target_id;
+
+    $query = Database::getConnection()->merge('asklib_question_index')
+    ->key(['qid' => $question->id(), 'tid' => $tid, 'status' => 1])
+    ->fields(['created' => $question->getCreatedTime(), 'answered' => $question->getAnsweredTime()])
+    ->execute();
+  }
+}

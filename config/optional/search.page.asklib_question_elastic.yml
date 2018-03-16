@@ -1,0 +1,12 @@
+uuid: a9ae4234-3efd-48fd-80b9-863a8f7455a0
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_question_elastic
+label: 'Ask a Librarian'
+path: asklib
+weight: -10
+plugin: asklib_search_elastic
+configuration: {  }

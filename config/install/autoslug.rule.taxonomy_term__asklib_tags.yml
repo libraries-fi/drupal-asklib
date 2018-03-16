@@ -1,0 +1,9 @@
+uuid: fb43a9e8-eab0-4d48-b2a6-28b50c02c0e8
+langcode: fi
+status: true
+dependencies: {  }
+id: taxonomy_term__asklib_tags
+type: taxonomy_term
+bundle: asklib_tags
+word_limit: '5'
+url: '/kysy-kirjastonhoitajalta/asiasanat/{name[0]}/{name}'

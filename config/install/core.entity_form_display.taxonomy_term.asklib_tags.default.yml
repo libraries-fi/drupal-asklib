@@ -1,0 +1,39 @@
+uuid: e109b20a-7fc5-433c-b38d-5220ae804f47
+langcode: fi
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.asklib_tags
+  module:
+    - path
+    - text
+id: taxonomy_term.asklib_tags.default
+targetEntityType: taxonomy_term
+bundle: asklib_tags
+mode: default
+content:
+  description:
+    type: text_textfield
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: -5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 30
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

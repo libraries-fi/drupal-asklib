@@ -1,0 +1,21 @@
+uuid: 18d06fa4-7236-435e-8117-405fb8996d87
+langcode: fi
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.asklib_tags
+  module:
+    - text
+id: taxonomy_term.asklib_tags.default
+targetEntityType: taxonomy_term
+bundle: asklib_tags
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  langcode: true

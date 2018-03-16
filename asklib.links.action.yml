@@ -1,0 +1,9 @@
+
+# NOTE: Cannot make this link actually appear!
+asklib.taxonomy_term.add_form:
+  route_name: entity.taxonomy_term.add_form
+  title: 'Add term'
+  appears_on:
+    - asklib.admin_themes
+    - asklib.admin_municipalities
+    - view.asklib_email_groups.page_1

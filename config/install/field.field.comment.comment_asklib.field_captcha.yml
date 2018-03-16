@@ -1,0 +1,21 @@
+uuid: 4c6614d3-35bc-4df0-bfea-1733115a9ed5
+langcode: fi
+status: true
+dependencies:
+  config:
+    - comment.type.comment_asklib
+    - field.storage.comment.field_captcha
+  module:
+    - kifiform
+id: comment.comment_asklib.field_captcha
+field_name: field_captcha
+entity_type: comment
+bundle: comment_asklib
+label: Varmenne
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: kifiform_captcha

@@ -1,0 +1,12 @@
+uuid: 989f0ead-f735-47c8-8000-c02090a50198
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: 33PMwxcHi5sy6ZCksoxMhnokkLZrIGirxVGAHDOnCWw
+id: asklib_new_question_admin
+label: '[Kysy kirjastonhoitajalta] Ilmoitus uudesta kysymyksestä (vastaajat)'
+theme: asklib_email
+subject: 'Uusi kysymys Kysy kirjastonhoitajalta -palvelussa'
+body: "<p>Kirjastonne alueelta on saapunut uusi kysymys vastattavaksi Kysy kirjastonhoitajalta -palveluun. Vastaa osoitteessa: http://www.kirjastot.fi/xxxx</p>\r\n<p><a href=\"{{ url('view.asklib_index.page_1') }}\">Odottavat kysymykset</a></p>\r\n<blockquote>\r\n  <cite>[asklib_question:author_email]</cite>\r\n  <p>[asklib_question:body]</p>\r\n</blockquote>\r\n"
+with_signature: 0

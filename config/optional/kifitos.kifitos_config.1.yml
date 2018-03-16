@@ -1,0 +1,14 @@
+uuid: fe8ab50b-4bde-4c0b-9b69-0c68b138b4f1
+langcode: fi
+status: true
+dependencies: {  }
+id: '1'
+label: 'Configuration for agreement #1'
+roles:
+  0: asklib_librarian
+  2: asklib_admin
+routes:
+  - view.asklib_index.page_1
+mode: '2'
+message: 'Saadaksesi käyttöoikeuden Kysy kirjastonhoitajalta -palvelun ylläpitoon, sinun tulee hyväksyä&nbsp;<a href="/admin/content/kifitos/1">käyttöehdot</a>.'
+format: basic_html

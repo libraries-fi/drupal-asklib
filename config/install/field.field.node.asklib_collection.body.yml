@@ -1,0 +1,22 @@
+uuid: 0e77caf0-9995-41e9-b64a-a630883268cd
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.asklib_collection
+  module:
+    - text
+id: node.asklib_collection.body
+field_name: body
+entity_type: node
+bundle: asklib_collection
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+field_type: text_with_summary

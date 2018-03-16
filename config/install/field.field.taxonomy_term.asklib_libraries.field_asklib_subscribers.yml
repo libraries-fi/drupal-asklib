@@ -1,0 +1,35 @@
+uuid: d8b96d2e-c0e5-45b4-b506-0620f1093a0c
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_asklib_subscribers
+    - taxonomy.vocabulary.asklib_libraries
+_core:
+  default_config_hash: GazPslvOfAeUfLVzSDJx_Avp6jg-Se8cJtTTXSQ1O98
+id: taxonomy_term.asklib_libraries.field_asklib_subscribers
+field_name: field_asklib_subscribers
+entity_type: taxonomy_term
+bundle: asklib_libraries
+label: Subscribers
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: false
+    filter:
+      type: role
+      role:
+        asklib_admin: asklib_admin
+        asklib_librarian: asklib_librarian
+        administrator: '0'
+    target_bundles: null
+    sort:
+      field: name
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

@@ -1,0 +1,80 @@
+services:
+  asklib.user_mail_group_helper:
+    class: Drupal\asklib\UserMailGroupHelper
+    arguments: ['@entity_type.manager', '@database']
+  asklib.question_mail_variables:
+    class: Drupal\asklib\EmailVariables\QuestionVariables
+    arguments: ['@entity_type.manager', '@current_user', '@asklib.user_mail_group_helper']
+    tags:
+      - { name: kifimail_variables, type: 'Drupal\asklib\QuestionInterface' }
+  asklib.event_listener.user_page_override:
+    class: Drupal\asklib\EventSubscriber\UserPageOverride
+    arguments: ['@current_route_match', '@current_user']
+    tags:
+      - { name: event_subscriber }
+  asklib.event_listener.allow_remote_question_frames:
+    class: 'Drupal\asklib\EventSubscriber\AllowRemoteQuestionFrames'
+    arguments: []
+    tags:
+      - { name: event_subscriber }
+  cache_context.route.asklib_question:
+    class: 'Drupal\asklib\Cache\QuestionCacheContext'
+    arguments: ['@current_route_match']
+    tags:
+      - { name: cache.context }
+  asklib.breadcrumb.default:
+    class: Drupal\system\PathBasedBreadcrumbBuilder
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current']
+    tags:
+      - { name: asklib_breadcrumb, priority: 0 }
+  asklib.breadcrumb.archive:
+    class: 'Drupal\asklib\Breadcrumb\QuestionArchiveCrumb'
+    arguments: ['@request_stack']
+    tags:
+      - { name: asklib_breadcrumb, priority: 100 }
+  asklib.breadcrumb.question_from_collection:
+    class: 'Drupal\asklib\Breadcrumb\QuestionFromCollectionCrumb'
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@request_stack', '@entity_type.manager']
+    tags:
+      - { name: asklib_breadcrumb, priority: 200 }
+  asklib.breadcrumb.collection_from_keyword_index:
+    class: 'Drupal\asklib\Breadcrumb\QuestionFromKeywordIndexCrumb'
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@request_stack', '@entity_type.manager']
+    tags:
+      - { name: asklib_breadcrumb, priority: 200 }
+  asklib.breadcrumb.taxonomy:
+    class: 'Drupal\asklib\Breadcrumb\TaxonomyCrumb'
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@request_stack']
+    tags:
+      - { name: asklib_breadcrumb, priority: 200 }
+  asklib.breadcrumb_proxy:
+    class: 'Drupal\asklib\Breadcrumb\BreadcrumbProxy'
+    arguments: ['@request_stack']
+    tags:
+      - { name: breadcrumb_builder, priority: 2100 }
+      - { name: service_collector, tag: asklib_breadcrumb, call: addBuilder }
+  asklib.slugger.keywords:
+    class: 'Drupal\asklib\Slugger\KeywordSlugger'
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: autoslug_slugger, priority: 100 }
+  asklib.stats.asklib_overview:
+    class: 'Drupal\asklib\Statistics\Overview'
+    arguments: ['@database', '@language_manager', '@date.formatter']
+    tags:
+      - { name: kifistats.engine }
+  asklib.stats.asklib_person_overview:
+    class: 'Drupal\asklib\Statistics\PersonOverview'
+    arguments: ['@database', '@language_manager', '@date.formatter']
+    tags:
+      - { name: kifistats.engine }
+  asklib.stats.asklib_library_overview:
+    class: 'Drupal\asklib\Statistics\LibraryOverview'
+    arguments: ['@database', '@language_manager', '@date.formatter']
+    tags:
+      - { name: kifistats.engine }
+  asklib.stats.asklib_municipality_overview:
+    class: 'Drupal\asklib\Statistics\MunicipalityOverview'
+    arguments: ['@database', '@language_manager', '@date.formatter']
+    tags:
+      - { name: kifistats.engine }

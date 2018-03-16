@@ -1,0 +1,23 @@
+display:
+  default:
+    display_options:
+      fields:
+        body__value:
+          label: Answer
+        question:
+          label: Question
+        displays:
+          label: Reads
+        created:
+          label: Answered
+        nothing:
+          label: Open
+          alter:
+            text: '<span class="toggle-answer" role="button" tabindex="0" aria-label="Show answer"></span>'
+        nothing_1:
+          label: Answer
+        rating__value:
+          label: Rating
+      header:
+        result:
+          content: '@total results. Showing @start&ndash;@end hits.'

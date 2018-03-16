@@ -1,0 +1,9 @@
+/* line 1, ../scss/admin-toolbar.scss */
+.toolbar-icon-asklib-answering:before {
+  background-image: url("../images/menu-icon.svg");
+}
+
+/* line 5, ../scss/admin-toolbar.scss */
+.toolbar-icon-asklib:before {
+  background-image: url("../images/menu-icon-lighter.svg");
+}

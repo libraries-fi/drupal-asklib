@@ -1,0 +1,11 @@
+uuid: 95b5842a-2bd4-4740-b400-f3f2649d6161
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: saWCJI_-n_3PGHg4hG_ZM1SHwgWTvbhm8p-z35aE2q8
+name: Kunnat
+vid: asklib_municipalities
+description: ''
+hierarchy: 0
+weight: 0

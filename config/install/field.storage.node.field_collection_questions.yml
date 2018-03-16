@@ -1,0 +1,20 @@
+uuid: 1307c06c-f361-4257-ad94-31b0dd9e4eea
+langcode: fi
+status: true
+dependencies:
+  module:
+    - asklib
+    - node
+id: node.field_collection_questions
+field_name: field_collection_questions
+entity_type: node
+type: entity_reference
+settings:
+  target_type: asklib_question
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

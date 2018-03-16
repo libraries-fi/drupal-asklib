@@ -1,0 +1,23 @@
+uuid: f54f155f-f399-4c3a-a700-f7248b74926e
+langcode: fi
+status: true
+dependencies:
+  config:
+    - comment.type.comment_asklib
+    - field.storage.comment.comment_body
+  module:
+    - text
+_core:
+  default_config_hash: 9Fm20jc_RfEYv56EG-X831EosknC3clo297Q7zlhvLo
+id: comment.comment_asklib.comment_body
+field_name: comment_body
+entity_type: comment
+bundle: comment_asklib
+label: Kommentti
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

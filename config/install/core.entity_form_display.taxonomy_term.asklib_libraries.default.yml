@@ -1,0 +1,83 @@
+uuid: db5b9332-f26d-4448-8107-7b5a3d2627cf
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.asklib_libraries.field_asklib_active
+    - field.field.taxonomy_term.asklib_libraries.field_asklib_email
+    - field.field.taxonomy_term.asklib_libraries.field_asklib_subscribers
+    - field.field.taxonomy_term.asklib_libraries.field_asklib_theme
+    - field.field.taxonomy_term.asklib_libraries.field_asklib_webpage
+    - field.field.taxonomy_term.asklib_libraries.field_theme
+    - taxonomy.vocabulary.asklib_libraries
+  module:
+    - link
+    - path
+    - text
+id: taxonomy_term.asklib_libraries.default
+targetEntityType: taxonomy_term
+bundle: asklib_libraries
+mode: default
+content:
+  description:
+    type: text_textarea
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_asklib_active:
+    weight: 2
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+  field_asklib_email:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+  field_asklib_theme:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete_tags
+  field_asklib_webpage:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+  field_theme:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+  langcode:
+    type: language_select
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_asklib_subscribers: true
+  translation: true

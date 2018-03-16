@@ -1,0 +1,78 @@
+display:
+  default:
+    display_options:
+      fields:
+        title:
+          label: Question
+        displays:
+          label: Reads
+        created_1:
+          label: Answered
+        nothing:
+          label: Open
+          alter:
+            text: '<span class="toggle-answer" role="button" aria-label="Show answer" tabindex="0"></span>'
+        rating__value:
+          label: Rating
+  block_1:
+    display_options:
+      title: 'Latest answers'
+      use_more_text: 'More answers'
+  block_2:
+    display_options:
+      title: 'Random question'
+  page_1:
+    display_options:
+      title: 'Latest answers'
+  page_2:
+    display_options:
+      title: 'Most read answers'
+      fields:
+        title:
+          label: Question
+        displays:
+          label: Reads
+        rating__value:
+          label: Rating
+        created_1:
+          label: Answered
+        nothing:
+          label: Open
+          alter:
+            text: '<span class="toggle-answer" role="button" aria-label="Show answer" tabindex="0"></span>'
+  page_3:
+    display_options:
+      title: 'Best rated answers'
+      fields:
+        title:
+          label: Question
+        displays:
+          label: Reads
+        rating__value:
+          label: Rating
+        created_1:
+          label: Answered
+        nothing:
+          label: Open
+          alter:
+            text: '<span class="toggle-answer" role="button" aria-label="Show answer" tabindex="0"></span>'
+  page_4:
+    display_options:
+      title: 'Most commented answers'
+      fields:
+        title:
+          label: Question
+        displays:
+          label: Reads
+        rating__value:
+          label: Rating
+        created_1:
+          label: Answered
+        nothing:
+          label: Open
+          alter:
+            text: '<span class="toggle-answer" role="button" aria-label="Show answer" tabindex="0"></span>'
+  recent:
+    display_options:
+      title: 'Latest answers'
+      use_more_text: 'More answers'

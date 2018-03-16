@@ -1,0 +1,28 @@
+uuid: 965b1c45-4e4d-44e8-b75b-8c3b1f7be8f2
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_asklib_theme
+    - taxonomy.vocabulary.asklib_libraries
+    - taxonomy.vocabulary.asklib_themes
+id: taxonomy_term.asklib_libraries.field_asklib_theme
+field_name: field_asklib_theme
+entity_type: taxonomy_term
+bundle: asklib_libraries
+label: Aihealue
+description: 'Aihealue näytetään asiakkaan kysymyslomakkeella.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      asklib_themes: asklib_themes
+    sort:
+      field: _none
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

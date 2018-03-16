@@ -1,0 +1,13 @@
+<article {{ attributes }}>
+  {% if not is_published %}
+    <p class="messages messages--warning">{% trans %}This is a preview. The question has not been published yet.{% endtrans %}</p>
+  {% endif %}
+  
+  {{ ask_more }}
+
+  {{ question }}
+  {{ answer }}
+
+  {{ tags }}
+  {{ comments }}
+</article>

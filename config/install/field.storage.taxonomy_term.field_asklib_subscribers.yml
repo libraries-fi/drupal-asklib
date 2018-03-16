@@ -1,0 +1,22 @@
+uuid: 149ee593-d776-40d0-9800-fb6b57a96b89
+langcode: fi
+status: true
+dependencies:
+  module:
+    - taxonomy
+    - user
+_core:
+  default_config_hash: FhMP1CoHxJUbJd07-Ao3obmVcR2YEXwBP9K-8diK13E
+id: taxonomy_term.field_asklib_subscribers
+field_name: field_asklib_subscribers
+entity_type: taxonomy_term
+type: entity_reference
+settings:
+  target_type: user
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

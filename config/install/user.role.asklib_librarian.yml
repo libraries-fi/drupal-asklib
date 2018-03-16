@@ -1,0 +1,13 @@
+langcode: fi
+status: true
+dependencies: {  }
+id: asklib_librarian
+label: 'Kysy kirjastonhoitajalta -vastaaja'
+weight: 3
+is_admin: null
+permissions:
+  - 'answer questions'
+  - 'view the administration theme'
+  - 'access toolbar'
+  - 'access user profiles'
+  - 'administer comments'

@@ -1,0 +1,48 @@
+.asklib-statistics {
+  th.fill-column,
+  td.fill-column {
+    width: 100%;
+  }
+
+  th:last-child {
+    width: 30%;
+  }
+
+  th.last-answer {
+    width: 25%;
+  }
+
+  caption {
+    font-size: medium;
+    font-weight: bold;
+    margin-bottom: .5rem;
+  }
+
+  table {
+    margin-bottom: 2rem;
+  }
+
+  tr.nested-data {
+    padding: 0;
+
+    td {
+      padding-top: 0;
+      padding-bottom: 0;
+      background-color: #f7fcff;
+    }
+
+    td:first-child {
+      text-indent: 0.5em;
+    }
+
+    td:first-child:before {
+      content: "↳ ";
+    }
+  }
+}
+
+.table-asklib-statistics-overview {
+  td:nth-child(2) {
+    // width: 300px;
+  }
+}

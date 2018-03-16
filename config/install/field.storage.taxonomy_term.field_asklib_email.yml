@@ -1,0 +1,18 @@
+uuid: 961f9b9d-037a-4b54-bccb-4868c17c1556
+langcode: fi
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_asklib_email
+field_name: field_asklib_email
+entity_type: taxonomy_term
+type: email
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

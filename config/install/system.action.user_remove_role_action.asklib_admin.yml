@@ -1,0 +1,13 @@
+langcode: fi
+status: true
+dependencies:
+  config:
+    - user.role.asklib_admin
+  module:
+    - user
+id: user_remove_role_action.asklib_admin
+label: 'Poista Kysy kirjastonhoitajalta -admin rooli valituilta käyttäjiltä'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: asklib_admin

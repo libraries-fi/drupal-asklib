@@ -1,0 +1,8 @@
+uuid: 7564e35e-3194-4688-8981-4e4ce61d1c90
+langcode: fi
+status: true
+dependencies: {  }
+id: comment_asklib
+label: 'Kysy kirjastonhoitajalta'
+target_entity_type_id: asklib_question
+description: 'Sallii sisällön kommentoinnin'

@@ -1,0 +1,69 @@
+uuid: 7b513f17-9fa7-4ddc-b4f7-22f0f0b2efb9
+langcode: fi
+status: true
+dependencies: {  }
+id: asklib_question.asklib_question.default
+targetEntityType: asklib_question
+bundle: asklib_question
+mode: default
+content:
+  attachments:
+    type: file_generic
+    weight: 50
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  body:
+    type: text_textarea
+    weight: 0
+    settings:
+      rows: 8
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  captcha:
+    type: kifiform_captcha
+    weight: 500
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  details:
+    weight: 40
+    region: content
+    settings:
+      rows: 4
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+  email:
+    type: email_default
+    weight: 10
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  municipality:
+    weight: 20
+    type: options_select
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  admin_notes: true
+  answer: true
+  channel: true
+  comments: true
+  created: true
+  displays: true
+  feeds: true
+  langcode: true
+  name: true
+  parent: true
+  published: true
+  reservation: true
+  state: true
+  tags: true
+  target_library: true
+  title: true
+  user: true

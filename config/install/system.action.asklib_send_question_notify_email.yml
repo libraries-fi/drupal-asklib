@@ -1,0 +1,11 @@
+uuid: 99196153-5499-4d83-b572-4e18d12c4ef0
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_send_question_notify_email
+label: 'Notify answerers of a new question by email'
+type: asklib_question
+plugin: asklib_send_question_notify_email
+configuration: {  }

@@ -1,0 +1,19 @@
+uuid: 3ca7c48e-cf2b-4229-9f7a-c7bc3971c00e
+langcode: fi
+status: true
+dependencies:
+  module:
+    - comment
+    - kifiform
+id: comment.field_captcha
+field_name: field_captcha
+entity_type: comment
+type: kifiform_captcha
+settings: {  }
+module: kifiform
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

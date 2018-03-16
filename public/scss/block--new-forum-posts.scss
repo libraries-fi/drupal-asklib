@@ -1,0 +1,19 @@
+.block-asklib-forum-new-block {
+  .post-summary {
+    border-top: 1px solid #bfbfbf;
+    padding: .5rem 0;
+
+    p {
+      display: inline;
+    }
+  }
+
+  .post-summary-header {
+    line-height: 1.5rem;
+
+    img {
+      height: 1em;
+      vertical-align: text-top;
+    }
+  }
+}

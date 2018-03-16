@@ -1,0 +1,13 @@
+langcode: fi
+status: true
+dependencies:
+  config:
+    - user.role.asklib_admin
+  module:
+    - user
+id: user_add_role_action.asklib_admin
+label: 'Lisää Kysy kirjastonhoitajalta -admin rooli valituille käyttäjille'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: asklib_admin

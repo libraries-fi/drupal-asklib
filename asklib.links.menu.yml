@@ -1,0 +1,11 @@
+# asklib.answering:
+#   title: 'Ask a Librarian'
+#   description: 'Administer questions and answers'
+#   route_name: view.asklib_index.page_1
+#   parent: system.admin
+#   weight: 210
+asklib.configure:
+  title: 'Ask a Librarian'
+  route_name: asklib.admin
+  description: 'Settings related to Ask a Librarian service.'
+  parent: system.admin_config_system

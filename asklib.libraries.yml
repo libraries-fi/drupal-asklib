@@ -1,0 +1,59 @@
+rating:
+  css:
+    component:
+      public/css/rating.css: {}
+  js:
+    public/js/rating.js: {}
+  dependencies:
+    - core/jquery
+question-form-header:
+  css:
+    component:
+      public/css/question-form-header.css: {}
+question-edit-form:
+  css:
+    component:
+      public/css/question-edit-form.css: {}
+  js:
+    public/js/toggle-answered.js: {}
+    public/js/kifiform-tags-custom.js: {}
+field-target-library:
+  css:
+    component:
+      public/css/field-target-library.css: {}
+details-button:
+  css:
+    component:
+      public/css/details-button.css: {}
+admin-index:
+  css:
+    component:
+      public/css/admin-index.css: {}
+admin-sidebar:
+  css:
+    component:
+      public/css/admin-sidebar: {}
+block-new-forum-posts:
+  css:
+    component:
+      public/css/block--new-forum-posts.css: {}
+hide-text-format-picker:
+  css:
+    component:
+      public/css/hide-text-format-picker.css: {}
+admin-toolbar:
+  css:
+    component:
+      public/css/admin-toolbar.css: {}
+statistics-form:
+  css:
+    component:
+      public/css/statistics-form.css: {}
+statistics-overview:
+  css:
+    component:
+      public/css/statistics-overview.css: {}
+email-preview-form:
+  css:
+    component:
+      public/css/email-preview-form.css: {}

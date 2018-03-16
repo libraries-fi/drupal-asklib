@@ -1,0 +1,22 @@
+uuid: 129c629b-6109-4a54-a9f3-0a7f12434c5e
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.asklib_carousel
+  module:
+    - text
+id: node.asklib_carousel.body
+field_name: body
+entity_type: node
+bundle: asklib_carousel
+label: Body
+description: 'Karusellissa kuvan päällä näytettävä teksti. Laita tähän se kysymys siistiksi editoituna ja käytä kysymysmuotoa.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+field_type: text_with_summary

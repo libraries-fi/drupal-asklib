@@ -1,0 +1,23 @@
+uuid: 594cb5f1-d410-49c5-9b47-d9df851bba08
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_asklib_active
+    - taxonomy.vocabulary.asklib_libraries
+id: taxonomy_term.asklib_libraries.field_asklib_active
+field_name: field_asklib_active
+entity_type: taxonomy_term
+bundle: asklib_libraries
+label: 'Aktiivinen vastaajakirjasto'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: Käytössä
+  off_label: 'Pois päältä'
+field_type: boolean

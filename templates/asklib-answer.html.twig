@@ -1,0 +1,13 @@
+<div {{ attributes }}>
+  <h2{{ title_attributes.addClass(title_classes, "visually-hidden") }}>{{ "Answer"|t }}</h2>
+
+  {{ answered }}
+  {{ updated }}
+  {{ content }}
+  {{ rating }}
+
+  <div class="asklib-answer__footer">
+    {{ views }}
+    {{ library }}
+  </div>
+</div>

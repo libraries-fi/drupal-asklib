@@ -1,0 +1,59 @@
+<?php
+
+use Drupal\comment\CommentManagerInterface;
+use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+
+function asklib_install() {
+  $em = Drupal::entityManager();
+
+  $em->getStorage('field_storage_config')->create([
+    'entity_type' => 'asklib_question',
+    'field_name' => 'comments',
+    'type' => 'comment',
+    'translatable' => true,
+    'settings' => [
+      'comment_type' => 'comment_asklib',
+    ]
+  ])->save();
+
+  $em->getStorage('field_config')->create([
+    'entity_type' => 'asklib_question',
+    'label' => t('Comments'),
+    'bundle' => 'asklib_question',
+    'description' => t('Comments posted on this question'),
+    'field_name' => 'comments',
+    'required' => 1,
+    'default_value' => [
+      [
+        'status' => CommentItemInterface::OPEN,
+        'cid' => 0,
+        'last_comment_name' => '',
+        'last_comment_timestamp' => 0,
+        'last_comment_uid' => 0,
+      ],
+    ],
+  ])->save();
+
+  // $em->getStorage('entity_form_display')->create([
+  //   'targetEntityType' => 'asklib_question',
+  //   'bundle' => 'asklib_question',
+  //   'mode' => 'default',
+  //   'status' => true,
+  // ])
+  // ->setComponent('comments', [
+  //   'type' => 'comment_default',
+  //   'weight' => 99
+  // ])->save();
+
+  // $em->getStorage('entity_view_display')->create([
+  //   'targetEntityType' => 'asklib_question',
+  //   'bundle' => 'asklib_question',
+  //   'mode' => 'default',
+  //   'status' => true,
+  // ])
+  // ->setComponent('comments', [
+  //   'label' => 'above',
+  //   'type' => 'comment_default',
+  //   'weight' => 100,
+  // ])->save();
+}

@@ -1,0 +1,28 @@
+uuid: 348d6935-5520-4099-a13b-ee918abe179b
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_answer.asklib_answer
+targetEntityType: asklib_answer
+bundle: asklib_answer
+types:
+  - 'schema:Answer'
+fieldMappings:
+  body:
+    properties:
+      - 'schema:text'
+  created:
+    properties:
+      - 'schema:dateCreated'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  changed:
+    properties:
+      - 'schema:dateModified'
+    datatype_callback:
+      callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
+  library:
+    properties:
+      - 'schema:author'

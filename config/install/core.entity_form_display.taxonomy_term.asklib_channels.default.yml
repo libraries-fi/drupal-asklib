@@ -1,0 +1,65 @@
+uuid: ecfb1659-b543-48db-b5a5-88daa6683916
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.asklib_channels.field_asklib_email_groups
+    - field.field.taxonomy_term.asklib_channels.field_asklib_icon
+    - image.style.thumbnail
+    - taxonomy.vocabulary.asklib_channels
+  module:
+    - image
+    - path
+    - text
+id: taxonomy_term.asklib_channels.default
+targetEntityType: taxonomy_term
+bundle: asklib_channels
+mode: default
+content:
+  description:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+      rows: 5
+    third_party_settings: {  }
+  field_asklib_email_groups:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_asklib_icon:
+    type: image_image
+    weight: 2
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 3
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

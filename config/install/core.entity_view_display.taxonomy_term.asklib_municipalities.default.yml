@@ -1,0 +1,47 @@
+uuid: 4fd9ba82-0178-463c-9850-8094c502b9fe
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.asklib_municipalities.field_asklib_active
+    - field.field.taxonomy_term.asklib_municipalities.field_asklib_email
+    - field.field.taxonomy_term.asklib_municipalities.field_asklib_library_name
+    - field.field.taxonomy_term.asklib_municipalities.field_asklib_subscribers
+    - field.field.taxonomy_term.asklib_municipalities.field_asklib_webpage
+    - taxonomy.vocabulary.asklib_municipalities
+  module:
+    - link
+    - text
+id: taxonomy_term.asklib_municipalities.default
+targetEntityType: taxonomy_term
+bundle: asklib_municipalities
+mode: default
+content:
+  description:
+    type: text_default
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_asklib_email:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+  field_asklib_webpage:
+    weight: 1
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+hidden:
+  field_asklib_active: true
+  field_asklib_library_name: true
+  field_asklib_subscribers: true
+  langcode: true

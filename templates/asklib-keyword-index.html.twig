@@ -1,0 +1,22 @@
+<ul class="asklib-keyword-index">
+  <li class="list-item">
+    <div>
+      <a class="name" href="{{ path('asklib.keywords.misc') }}">0–9</a>
+      <a class="total" href="{{ path('asklib.keywords.misc') }}">({{ items.misc.total }})</a>
+    </div>
+    <div class="list-sub">
+      {{ items.misc.first_word }} ⇾ {{ items.misc.last_word }}
+    </div>
+  </li>
+  {% for item in items|without('misc') %}
+    <li class="list-item">
+      <div>
+        <a class="name" href="{{ path('asklib.keywords.letter.' ~ langcode, {'letter': item.letter}) }}">{{ item.letter|upper }}</a>
+        <a class="total" href="{{ path('asklib.keywords.letter.' ~ langcode, {'letter': item.letter}) }}">({{ item.total }})</span></a>
+      </div>
+      <div class="list-sub">
+        {{ item.first_word }} ⇾ {{ item.last_word }}
+      </div>
+    </li>
+  {% endfor %}
+</ul>

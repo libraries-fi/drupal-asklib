@@ -1,0 +1,9 @@
+uuid: 74324c20-93fa-43e6-bb02-0e6a471099b1
+langcode: fi
+status: true
+dependencies: {  }
+id: node__asklib_collection
+type: node
+bundle: asklib_collection
+word_limit: '5'
+url: '/kysy-kirjastonhoitajalta/kokoelmat/{title}'

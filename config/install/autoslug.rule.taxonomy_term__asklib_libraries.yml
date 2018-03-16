@@ -1,0 +1,9 @@
+uuid: d655bf9d-182f-40fa-ba90-f5f4c8d91b74
+langcode: fi
+status: true
+dependencies: {  }
+id: taxonomy_term__asklib_libraries
+type: taxonomy_term
+bundle: asklib_libraries
+word_limit: '5'
+url: '/kysy-kirjastonhoitajalta/tietoa-palvelusta/kirjastot/{name}'

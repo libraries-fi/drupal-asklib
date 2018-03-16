@@ -1,0 +1,18 @@
+uuid: df024e88-06dd-46fd-8d11-2d651aacd448
+langcode: fi
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.field_asklib_active
+field_name: field_asklib_active
+entity_type: taxonomy_term
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

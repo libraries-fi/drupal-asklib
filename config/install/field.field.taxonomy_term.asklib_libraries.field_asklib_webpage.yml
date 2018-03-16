@@ -1,0 +1,23 @@
+uuid: 8ad881ed-8c15-4b37-8a2e-dce54ed0f5de
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_asklib_webpage
+    - taxonomy.vocabulary.asklib_libraries
+  module:
+    - link
+id: taxonomy_term.asklib_libraries.field_asklib_webpage
+field_name: field_asklib_webpage
+entity_type: taxonomy_term
+bundle: asklib_libraries
+label: Verkkosivu
+description: 'Linkki kirjaston verkkosivuille.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 16
+  title: 1
+field_type: link

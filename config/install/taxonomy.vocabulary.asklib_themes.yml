@@ -1,0 +1,9 @@
+uuid: e1cb5ecc-b8cf-4ca8-adc1-a511156798fe
+langcode: fi
+status: true
+dependencies: {  }
+name: Aihealueet
+vid: asklib_themes
+description: 'Kirjastonhoitajan aihealueet'
+hierarchy: 0
+weight: 0

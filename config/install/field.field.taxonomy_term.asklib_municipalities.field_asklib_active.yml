@@ -1,0 +1,23 @@
+uuid: f4d567ad-395c-4d19-960c-80be847013d6
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_asklib_active
+    - taxonomy.vocabulary.asklib_municipalities
+id: taxonomy_term.asklib_municipalities.field_asklib_active
+field_name: field_asklib_active
+entity_type: taxonomy_term
+bundle: asklib_municipalities
+label: 'Aktiivinen vastaajakirjasto'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: Käytössä
+  off_label: 'Pois päältä'
+field_type: boolean

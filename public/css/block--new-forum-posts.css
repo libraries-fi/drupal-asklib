@@ -1,0 +1,18 @@
+/* line 2, ../scss/block--new-forum-posts.scss */
+.block-asklib-forum-new-block .post-summary {
+  border-top: 1px solid #bfbfbf;
+  padding: .5rem 0;
+}
+/* line 6, ../scss/block--new-forum-posts.scss */
+.block-asklib-forum-new-block .post-summary p {
+  display: inline;
+}
+/* line 11, ../scss/block--new-forum-posts.scss */
+.block-asklib-forum-new-block .post-summary-header {
+  line-height: 1.5rem;
+}
+/* line 14, ../scss/block--new-forum-posts.scss */
+.block-asklib-forum-new-block .post-summary-header img {
+  height: 1em;
+  vertical-align: text-top;
+}

@@ -1,0 +1,18 @@
+uuid: df62962d-27ac-4b6f-a481-624ed27e59d6
+langcode: fi
+status: true
+dependencies:
+  config:
+    - node.type.asklib_collection
+id: node.asklib_collection.title
+field_name: title
+entity_type: node
+bundle: asklib_collection
+label: Otsikko
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

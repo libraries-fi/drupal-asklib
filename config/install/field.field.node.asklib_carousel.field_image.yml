@@ -1,0 +1,45 @@
+uuid: 6b2cd455-8f0f-487c-af86-c491d2487dcc
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_image
+    - node.type.asklib_carousel
+  module:
+    - content_translation
+    - image
+third_party_settings:
+  content_translation:
+    translation_sync:
+      alt: alt
+      title: title
+      file: '0'
+id: node.asklib_carousel.field_image
+field_name: field_image
+entity_type: node
+bundle: asklib_carousel
+label: Kuva
+description: 'Karusellin kuva. Käytä kuvakokoa 750 x 345px.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: asklib-carousel
+  file_extensions: 'png gif jpg jpeg'
+  max_filesize: ''
+  max_resolution: 750x345
+  min_resolution: ''
+  alt_field: true
+  alt_field_required: false
+  title_field: false
+  title_field_required: false
+  default_image:
+    uuid: ''
+    alt: ''
+    title: ''
+    width: null
+    height: null
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: image

@@ -1,0 +1,202 @@
+entity.asklib_question.canonical:
+  path: '/asklib_question/{asklib_question}'
+  defaults:
+    _controller: '\Drupal\asklib\Controller\QuestionViewController::view'
+    _title_callback: '\Drupal\asklib\Controller\QuestionViewController::title'
+  requirements:
+    asklib_question: \d+
+    _entity_access: 'asklib_question.view'
+entity.asklib_question.add_form:
+  path: '/asklib_question/add'
+  defaults:
+    _title: 'Send us your question'
+    _entity_form: 'asklib_question.default'
+  requirements:
+    _permission: 'access content'
+entity.asklib_question.edit_form:
+  path: '/admin/content/asklib/{asklib_question}/edit'
+  defaults:
+    _title: 'Answer question'
+    _entity_form: 'asklib_question.edit'
+  requirements:
+    asklib_question: \d+
+    _permission: 'answer questions'
+entity.asklib_question.redirect_form:
+  path: '/admin/content/asklib/{asklib_question}/redirect'
+  defaults:
+    _title: 'Redirect to group'
+    _entity_form: 'asklib_question.redirect'
+  requirements:
+    asklib_question: \d+
+    _permission: 'answer questions'
+entity.asklib_question.delete_form:
+  path: '/admin/content/asklib/{asklib_question}/delete'
+  defaults:
+    _title: 'Delete question'
+    _entity_form: 'asklib_question.delete'
+  requirements:
+    asklib_question: \d+
+    _entity_access: 'asklib_question.delete'
+entity.asklib_question.email_form:
+  path: '/admin/content/asklib/{asklib_question}/email'
+  defaults:
+    _title: 'Email preview'
+    _entity_form: 'asklib_question.email.email'
+  requirements:
+    _entity_access: 'asklib_question.email'
+entity.asklib_question.email_preview:
+  path: '/admin/content/asklib/{asklib_question}/email_preview'
+  defaults:
+    _controller: '\Drupal\asklib\Controller\QuestionViewController::renderEmail'
+    _title: 'Rendered email'
+  requirements:
+    asklib_question: \d+
+    _entity_access: 'asklib_question.view'
+entity.asklib_question.release_form:
+  path: '/admin/content/asklib/{asklib_question}/release'
+  defaults:
+    _entity_form: 'asklib_question.release'
+    _title: 'Release question'
+  requirements:
+    asklib_question: \d+
+    _entity_access: 'asklib_question.release'
+asklib.admin:
+  path: '/admin/config/asklib'
+  defaults:
+    _title: 'Ask a Librarian'
+    _form: 'Drupal\asklib\Form\AdminForm'
+  requirements:
+    _permission: 'administer asklib'
+asklib.admin_respondents:
+  path: '/admin/config/asklib/respondents'
+  defaults:
+    _title: 'Respondents'
+    _form: 'Drupal\asklib\Form\RespondentsForm'
+  requirements:
+    _permission: 'administer asklib'
+asklib.admin_email_groups:
+  path: '/admin/config/asklib/emails'
+  defaults:
+    _title: 'Email groups'
+    _controller: 'Drupal\asklib\Controller\MailGroupController::groups'
+  requirements:
+    _permission: 'administer asklib'
+asklib.admin_email_groups:
+  path: '/admin/config/asklib/emails/groups/{taxonomy_term}'
+  defaults:
+    _title: 'Email groups'
+    _controller: 'Drupal\asklib\Controller\MailGroupController::showGroup'
+  requirements:
+    _permission: 'administer asklib'
+asklib.admin_email_users:
+  path: '/admin/config/asklib/emails/users'
+  defaults:
+    _title: 'Subscribed users'
+    _controller: 'Drupal\asklib\Controller\MailGroupController::users'
+  requirements:
+    _permission: 'administer asklib'
+asklib.admin_user_email_groups:
+  path: '/admin/config/asklib/emails/users/{user}'
+  defaults:
+    _title: 'User settings'
+    _entity_form: 'user.asklib_admin'
+  requirements:
+    _entity_access: 'user.update'
+    _permission: 'answer questions'
+entity.user.asklib_mail_group_form:
+  path: '/admin/config/asklib/emails/users/{user}'
+  defaults:
+    _entity_form: 'user.asklib_admin'
+  requirements:
+    _permission: 'administer asklib'
+entity.taxonomy_term.asklib_mail_group_form:
+  path: '/admin/config/asklib/emails/{taxonomy_term}'
+  defaults:
+    _entity_form: 'taxonomy_term.default'
+  requirements:
+    _permission: 'administer asklib'
+entity.asklib_keyword.canonical:
+  path: '/asklib_question/keyword/{asklib_keyword}'
+  defaults:
+    _controller: '\Drupal\asklib\Controller\QuestionViewController::view'
+    _title_callback: '\Drupal\asklib\Controller\QuestionViewController::title'
+  requirements:
+    _entity_access: 'asklib_keyword.view'
+asklib.admin_index:
+  path: '/admin/asklib'
+  defaults:
+    _controller: 'Drupal\asklib\Controller\AdminController::index'
+  requirements:
+    _permission: 'answer questions'
+asklib.statistics_overview:
+  path: '/admin/asklib/statistics'
+  defaults:
+    _title_callback: 'Drupal\kifistats\Controller\StatisticsController::title'
+    _controller: 'Drupal\kifistats\Controller\StatisticsController::view'
+    statistics_id: 'asklib_overview'
+  requirements:
+    _permission: 'answer questions'
+asklib.statistics_by_person:
+  path: '/admin/asklib/statistics/person'
+  defaults:
+    _title_callback: 'Drupal\kifistats\Controller\StatisticsController::title'
+    _controller: 'Drupal\kifistats\Controller\StatisticsController::view'
+    statistics_id: 'asklib_person_overview'
+  requirements:
+    _permission: 'answer questions'
+asklib.statistics_by_library:
+  path: '/admin/asklib/statistics/library'
+  defaults:
+    _title_callback: 'Drupal\kifistats\Controller\StatisticsController::title'
+    _controller: 'Drupal\kifistats\Controller\StatisticsController::view'
+    statistics_id: 'asklib_library_overview'
+  requirements:
+    _permission: 'answer questions'
+asklib.statistics_by_municipality:
+  path: '/admin/asklib/statistics/municipality'
+  defaults:
+    _title_callback: 'Drupal\kifistats\Controller\StatisticsController::title'
+    _controller: 'Drupal\kifistats\Controller\StatisticsController::view'
+    statistics_id: 'asklib_municipality_overview'
+  requirements:
+    _permission: 'answer questions'
+
+asklib.remote_question:
+  path: '/asklib/embed/{channel}'
+  defaults:
+    _entity_form: 'asklib_question.remote'
+  requirements:
+    channel: \d+
+    _permission: 'access content'
+  options:
+    parameters:
+      channel:
+        type: entity:taxonomy_term
+
+
+
+asklib.keywords:
+  path: '/asklib/keywords'
+  defaults:
+    _controller: 'Drupal\asklib\Controller\KeywordIndexController::index'
+    _title: 'Keyword index'
+  requirements:
+    _permission: 'access content'
+
+asklib.keywords.misc:
+  path: '/asklib/keywords/misc'
+  defaults:
+    _controller: 'Drupal\asklib\Controller\KeywordIndexController::misc'
+    _title_callback: 'Drupal\asklib\Controller\KeywordIndexController::miscTitle'
+  requirements:
+    _permission: 'access content'
+
+asklib.question_meteor_redirect:
+  path: '/asklib_migrate/{uuid}'
+  defaults:
+    _controller: 'Drupal\asklib\Controller\MeteorCompatibilityController::redirectToQuestion'
+  requirements:
+    _permission: 'access content'
+
+route_callbacks:
+  - 'Drupal\asklib\Routing\KeywordIndexRoutes::routes'

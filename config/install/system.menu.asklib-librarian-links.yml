@@ -1,0 +1,8 @@
+uuid: 01097bd8-b86c-4e4b-b459-8a2c3a69e284
+langcode: fi
+status: true
+dependencies: {  }
+id: asklib-librarian-links
+label: '[Kysy kirjastonhoitajalta] Ylläpidon etusivun linkit'
+description: 'Kirjastonhoitajan etusivun linkit'
+locked: false

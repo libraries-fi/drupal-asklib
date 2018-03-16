@@ -1,0 +1,31 @@
+<div class="rating-container">
+  <div class="rating-results" property="schema:aggregateRating" typeof="schema:AggregateRating">
+    <div class="rating-frame">
+      <meta property="schema:worstRating" content="0">
+      <meta property="schema:bestRating" content="100">
+      <div class="rating-fill" style="width: {{ rating }}%">
+        <span class="visually-hidden">
+          <span property="schema:ratingValue" content="{{ rating }}">{{ rating }}</span> %
+        </span>
+      </div>
+    </div>
+
+    {% if display_votes %}
+      <div class="rating-votes">
+        <span data-bind="votes" property="schema:ratingCount">{{ votes }}</span> {% trans %}votes{% endtrans %}
+      </div>
+    {% else %}
+      <meta property="schema:ratingCount" content="{{ votes }}">
+    {% endif %}
+  </div>
+  {% if allow_voting %}
+    <div class="rating-control">
+      <p>{% trans %}Was this answer helpful?{% endtrans %}</p>
+      <form class="rating-form" action="{{ form_url }}" method="post">
+        <input type="hidden" name="q" value="{{ id }}"/>
+        <button type="submit" name="p" value="yes">{% trans %}Yes{% endtrans %}</button>
+        <button type="submit" name="p" value="no">{% trans %}No{% endtrans %}</button>
+      </form>
+    </div>
+  {% endif %}
+</div>

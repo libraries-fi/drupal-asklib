@@ -1,0 +1,10 @@
+{
+  "name": "libraries-fi/asklib",
+  "description": "Public platform for asking questions and moderators to answer them.",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "require": {
+    "html2text/html2text": "^4.1",
+    "elasticsearch/elasticsearch": "^5.4"
+  }
+}

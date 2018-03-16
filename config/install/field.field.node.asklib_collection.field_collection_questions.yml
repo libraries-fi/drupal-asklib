@@ -1,0 +1,25 @@
+uuid: 72b54801-b765-492e-b75c-797b3826a6cb
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_collection_questions
+    - node.type.asklib_collection
+id: node.asklib_collection.field_collection_questions
+field_name: field_collection_questions
+entity_type: node
+bundle: asklib_collection
+label: Kysymykset
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:asklib_question'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: _none
+    auto_create: false
+field_type: entity_reference

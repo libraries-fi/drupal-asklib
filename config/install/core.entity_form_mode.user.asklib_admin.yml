@@ -1,0 +1,10 @@
+uuid: 09c03dbe-b397-4164-9d39-45d3211fd30e
+langcode: fi
+status: true
+dependencies:
+  module:
+    - user
+id: user.asklib_admin
+label: Vastaajaprofiili
+targetEntityType: user
+cache: true

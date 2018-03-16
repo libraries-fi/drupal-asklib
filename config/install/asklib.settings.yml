@@ -1,0 +1,13 @@
+reserved_window: 3
+highlight_pending_after: 3
+email:
+  question_received:
+    subject: Foobar
+    body: 'Lorem ipsum dolor sit amet'
+  answer:
+    subject: 'Your question has been answered'
+    body: 'Here is the answer'
+langcode: en
+reply:
+  address: ''
+  name: ''

@@ -1,0 +1,19 @@
+uuid: 7d2e1189-d4f3-43f4-9226-20231fb5b983
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_theme
+    - taxonomy.vocabulary.asklib_libraries
+id: taxonomy_term.asklib_libraries.field_theme
+field_name: field_theme
+entity_type: taxonomy_term
+bundle: asklib_libraries
+label: 'Aihealue (vanha)'
+description: '[Kysy kirjastonhoitajalta] Erikoiskirjaston vaihtoehtoinen nimi, joka näytetään kysymyslomakkeella aihealuetta valitessa.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

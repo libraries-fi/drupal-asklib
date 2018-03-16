@@ -1,0 +1,17 @@
+uuid: 46eacfe7-6459-471b-898d-8aee91c431ff
+langcode: fi
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+name: Kokoelma
+type: asklib_collection
+description: 'Kysy kirjastonhoitajalta -kokoelma'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: true

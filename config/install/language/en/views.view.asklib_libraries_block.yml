@@ -1,0 +1,15 @@
+display:
+  default:
+    display_options:
+      title: 'Public Libraries'
+      header:
+        area:
+          content:
+            value: '<p>Addresses to the libraries in the <a href="http://hakemisto.kirjastot.fi/en">Library Directory</a>.</p>'
+            format: basic_html
+  block_1:
+    display_title: 'Public Libraries'
+  block_2:
+    display_title: 'Special Libraries'
+    display_options:
+      title: 'Special Libraries'

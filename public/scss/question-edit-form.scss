@@ -1,0 +1,47 @@
+.asklib-question-edit-form {
+  #edit-question-group {
+    padding: 0.5rem 1rem;
+    margin: 0 -1rem;
+    background-color: rgba(150, 150, 150, .1);
+  }
+
+  #edit-attachments-wrapper {
+    .tabledrag-toggle-weight-wrapper {
+      display: none;
+    }
+  }
+
+  .form-item-attachments-0,
+  .form-item-attachments-2 {
+    display: none;
+  }
+
+  #link-open-finto {
+    position: absolute;
+    top: 0.5em;
+    right: 1.5em;
+  }
+
+  #edit-tags-group {
+    // Allow absolute positioning of #link-open-finto.
+    position: relative;
+  }
+
+  #edit-tags-legend {
+    padding: 30px 0.75em 0.45em;
+    background: transparent;
+  }
+
+  #edit-finto-legend,
+  #edit-freeform-legend {
+    display: inline-block;
+    margin-right: 1rem;
+  }
+
+  // Highlight field on the admin form when sent back from email preview form.
+  #edit-library-wrap.highlight-help {
+    background-color: rgba(255, 0, 255, .2);
+    margin: 0 -0.75em;
+    padding: 0 0.75em;
+  }
+}

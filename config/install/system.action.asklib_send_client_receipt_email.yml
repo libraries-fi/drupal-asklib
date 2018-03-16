@@ -1,0 +1,11 @@
+uuid: f88d3363-1674-4f2d-9be0-d995777280dc
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_send_client_receipt_email
+label: 'Send user a receipt by email'
+type: asklib_question
+plugin: asklib_send_client_receipt_email
+configuration: {  }

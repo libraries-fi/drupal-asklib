@@ -1,0 +1,19 @@
+.rating-container {
+  .rating-frame {
+    border: 1px solid #055A8E;
+    max-width: 100px;
+    position: relative;
+    line-height: 1;
+    .rating-fill {
+      background-color: #055A8E;
+      height: 1em;
+    }
+    .rating-votes {
+      position: absolute;
+      margin-left: 100%;
+      left: 0.5em;
+      top: 0;
+      white-space: pre;
+    }
+  }
+}

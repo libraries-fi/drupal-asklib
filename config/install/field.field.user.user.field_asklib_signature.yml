@@ -1,0 +1,20 @@
+uuid: 063fe14c-874a-42fd-9f68-5c0a00f8dd91
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_asklib_signature
+  module:
+    - user
+id: user.user.field_asklib_signature
+field_name: field_asklib_signature
+entity_type: user
+bundle: user
+label: 'Allekirjoitus (Kysy kirjastonhoitajalta)'
+description: 'Allekirjoitus liitetään lähettämiisi sähköposteihin.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

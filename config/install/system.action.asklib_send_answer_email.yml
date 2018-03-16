@@ -1,0 +1,11 @@
+uuid: e16a7b14-d963-46c1-a7f2-9540bfb4be47
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_send_answer_email
+label: 'Send answer email'
+type: asklib_question
+plugin: asklib_send_answer_email
+configuration: {  }

@@ -1,0 +1,69 @@
+asklib.admin:
+  title: Configuration
+  route_name: asklib.admin
+  base_route: asklib.admin
+asklib.admin_email_groups:
+  title: Answerers
+  route_name: asklib.admin_email_groups
+  base_route: asklib.admin
+asklib.admin_email_groups_by_group:
+  title: 'By group'
+  route_name: asklib.admin_email_groups
+  parent_id: asklib.admin_email_groups
+asklib.admin_email_groups_by_user:
+  title: 'By user'
+  route_name: asklib.admin_email_users
+  parent_id: asklib.admin_email_groups
+asklib.user_settings:
+  route_name: asklib.admin_user_email_groups
+  base_route: entity.user.canonical
+  title: 'Answerer profile'
+  weight: 50
+entity.asklib_question.canonical:
+  route_name: entity.asklib_question.canonical
+  base_route: entity.asklib_question.canonical
+  title: 'View'
+entity.asklib_question.edit_form:
+  title: 'Answer question'
+  route_name: entity.asklib_question.edit_form
+  base_route: entity.asklib_question.canonical
+entity.asklib_question.email_form:
+  title: 'Email preview'
+  route_name: entity.asklib_question.email_form
+  base_route: entity.asklib_question.canonical
+entity.asklib_question.redirect_form:
+  title: 'Redirect to group'
+  route_name: entity.asklib_question.redirect_form
+  base_route: entity.asklib_question.canonical
+entity.asklib_question.delete_form:
+  title: 'Delete'
+  route_name: entity.asklib_question.delete_form
+  base_route: entity.asklib_question.canonical
+asklib.comment_admin:
+  title: 'Comments'
+  route_name: view.asklib_admin_comments.page_1
+  base_route: system.admin_content
+asklib.comment_admin.new:
+  title: 'Published comments'
+  route_name: view.asklib_admin_comments.page_1
+  parent_id: asklib.comment_admin
+asklib.comment_admin.approval:
+  title: 'Unpublished comments'
+  route_name: view.asklib_admin_comments.page_2
+  parent_id: asklib.comment_admin
+asklib.statistics_overview:
+  title: Overview
+  route_name: asklib.statistics_overview
+  base_route: asklib.statistics_overview
+asklib.statistics_by_person:
+  title: By answerer
+  route_name: asklib.statistics_by_person
+  base_route: asklib.statistics_overview
+asklib.statistics_by_library:
+  title: By library
+  route_name: asklib.statistics_by_library
+  base_route: asklib.statistics_overview
+asklib.statistics_by_municipality:
+  title: By municipality
+  route_name: asklib.statistics_by_municipality
+  base_route: asklib.statistics_overview

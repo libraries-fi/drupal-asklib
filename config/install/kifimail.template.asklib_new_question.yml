@@ -1,0 +1,12 @@
+uuid: efcfacef-ba4f-461a-9a09-9ad0f859a1ca
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: SZYmG59yw9vB86-1vAPBkZtO4wL45om2M5Kv9xk3gBQ
+id: asklib_new_question
+label: '[Kysy kirjastonhoitajalta] Kuittaus vastaanotetusta kysymyksestä (asiakas)'
+theme: asklib_email
+subject: 'Kysymyksesi on vastaanotettu'
+body: "<p>Hei!</p>\r\n<p>Kiitos kysymyksestäsi. Vastaamme siihen mahdollisimman pian, viimeistään kolmen työpäivän kuluessa. Mikäli et saa vastausta luvatussa ajassa, ota yhteys Kirjastot.fi-toimitukseen, toimitus@kirjastot.fi.</p>\r\n<blockquote>\r\n  <cite>[asklib_question:email]</cite>\r\n  <p>[asklib_question:body]</p>\r\n</blockquote>"
+with_signature: 0

@@ -1,0 +1,17 @@
+uuid: 652efb28-550f-443f-ab26-eed03333849e
+langcode: fi
+status: true
+dependencies:
+  module:
+    - menu_ui
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+name: 'Kysy kirjastonhoitajalta -karuselli'
+type: asklib_carousel
+description: 'Kysy kirjastonhoitajalta -karusellin sisällöt'
+help: ''
+new_revision: false
+preview_mode: 0
+display_submitted: false

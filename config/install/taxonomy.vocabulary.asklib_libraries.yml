@@ -1,0 +1,11 @@
+uuid: 69b1fed5-1f09-41d7-b32c-441dd9d69b87
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: MurlLdFeu-TSmxr0IJanZtKL6vG1lA7GBieDDr-gmug
+name: Erikoiskirjastot
+vid: asklib_libraries
+description: ''
+hierarchy: 0
+weight: 0

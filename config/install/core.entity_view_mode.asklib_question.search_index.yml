@@ -1,0 +1,10 @@
+uuid: 252c4b0f-09ff-474c-8d98-83fb37dd0b5a
+langcode: en
+status: false
+dependencies:
+  module:
+    - asklib
+id: asklib_question.search_index
+label: 'Search index'
+targetEntityType: asklib_question
+cache: true

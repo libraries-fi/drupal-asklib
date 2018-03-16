@@ -1,0 +1,11 @@
+uuid: bd0095b3-7162-4cd8-bfb6-6bf695f2e27e
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_mark_question_answered
+label: 'Mark question answered'
+type: asklib_question
+plugin: asklib_mark_question_answered
+configuration: {  }

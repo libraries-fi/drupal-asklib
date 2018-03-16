@@ -1,0 +1,16 @@
+uuid: 99a8e711-0564-4412-8728-293c579afdd8
+langcode: fi
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.asklib_libraries
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.asklib_libraries
+target_entity_type_id: taxonomy_term
+target_bundle: asklib_libraries
+default_langcode: site_default
+language_alterable: true

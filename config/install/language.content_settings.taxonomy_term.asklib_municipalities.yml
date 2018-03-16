@@ -1,0 +1,16 @@
+uuid: 492d989e-2a93-476c-a25b-49b6e6514afe
+langcode: fi
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.asklib_municipalities
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.asklib_municipalities
+target_entity_type_id: taxonomy_term
+target_bundle: asklib_municipalities
+default_langcode: site_default
+language_alterable: true

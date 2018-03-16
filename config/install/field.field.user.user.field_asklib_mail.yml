@@ -1,0 +1,20 @@
+uuid: 5a077ec7-8669-4201-b687-c5651a59faf1
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_asklib_mail
+  module:
+    - user
+id: user.user.field_asklib_mail
+field_name: field_asklib_mail
+entity_type: user
+bundle: user
+label: 'Sähköpostiosoite (Kysy kirjastonhoitajalta)'
+description: 'Kysy kirjastonhoitajalta -palvelussa käytettävä sähköpostiosoite'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

@@ -1,0 +1,13 @@
+tr.pending-question-warning,
+tr.pending-question-warning:hover {
+  background-color: rgba(200, 100, 100, 0.3);
+}
+
+.views-field > span.not-answerer {
+  color: red;
+}
+
+tr.self-reserved-question,
+tr.self-reserved-question:hover {
+  background-color: rgba(100, 255, 100, 0.3);
+}

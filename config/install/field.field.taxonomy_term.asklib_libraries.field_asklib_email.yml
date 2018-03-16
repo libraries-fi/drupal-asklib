@@ -1,0 +1,19 @@
+uuid: 19d951c2-92de-429f-ae2d-de80d0ebd1da
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_asklib_email
+    - taxonomy.vocabulary.asklib_libraries
+id: taxonomy_term.asklib_libraries.field_asklib_email
+field_name: field_asklib_email
+entity_type: taxonomy_term
+bundle: asklib_libraries
+label: Sähköpostiosoite
+description: '[Kysy kirjastonhoitajalta] Kirjaston sähköpostiosoite ilmoituksia varten.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

@@ -1,0 +1,38 @@
+uuid: 9bc5accb-abaa-4c25-b9b7-c914afc19023
+langcode: fi
+status: true
+dependencies: {  }
+id: asklib_question.asklib_question.redirect
+targetEntityType: asklib_question
+bundle: asklib_question
+mode: redirect
+content:
+  target_library:
+    weight: 80
+    type: options_select
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  admin_notes: true
+  answer: true
+  attachments: true
+  body: true
+  captcha: true
+  channel: true
+  comments: true
+  created: true
+  details: true
+  displays: true
+  email: true
+  feeds: true
+  langcode: true
+  municipality: true
+  name: true
+  parent: true
+  published: true
+  reservation: true
+  state: true
+  tags: true
+  title: true
+  user: true

@@ -1,0 +1,10 @@
+uuid: 3545fec7-0dbb-42ff-89c5-12eb15d5e968
+langcode: en
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib_question.rss
+label: RSS
+targetEntityType: asklib_question
+cache: true

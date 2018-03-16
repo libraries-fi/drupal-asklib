@@ -1,0 +1,41 @@
+{#
+/**
+ * Override page.html.twig from theme Seven to include a custom block region.
+ *
+ * @variable page.asklib_sidebar
+ */
+#}
+<header class="content-header clearfix">
+  <div class="layout-container">
+    {{ page.header }}
+  </div>
+</header>
+
+<div class="layout-container">
+  {{ page.pre_content }}
+  {{ page.breadcrumb }}
+  <main class="page-content clearfix" role="main">
+    <div class="visually-hidden"><a id="main-content" tabindex="-1"></a></div>
+    {{ page.highlighted }}
+    {% if page.help %}
+      <div class="help">
+        {{ page.help }}
+      </div>
+    {% endif %}
+
+    <div class="layout-column layout-column--three-quarter">
+      <div class="panel">
+        {{ page.content }}
+      </div>
+    </div>
+    <aside class="asklib-sidebar layout-column layout-column--quarter">
+      {% for key in page.asklib_sidebar|keys %}
+        {% if '#' not in key %}
+          <div class="panel">
+            {{ page.asklib_sidebar[key] }}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </aside>
+  </main>
+</div>

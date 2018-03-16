@@ -1,0 +1,15 @@
+display:
+  default:
+    display_options:
+      title: Collections
+  block_1:
+    display_options:
+      title: Collection
+  block_2:
+    display_options:
+      title: 'Latest collections'
+  collections_cols:
+    display_options:
+      header:
+        result:
+          content: '@total collections. Displaying collections @start&ndash;@end.'

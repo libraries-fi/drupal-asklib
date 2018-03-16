@@ -1,0 +1,6 @@
+administer asklib:
+  title: 'Administer module settings'
+answer questions:
+  title: 'Answer questions'
+delete questions:
+  title: 'Delete questions'

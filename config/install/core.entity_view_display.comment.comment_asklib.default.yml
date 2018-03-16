@@ -1,0 +1,26 @@
+uuid: eed93c93-0f93-43ea-bb00-d4ce0944d8b0
+langcode: fi
+status: true
+dependencies:
+  config:
+    - comment.type.comment_asklib
+    - field.field.comment.comment_asklib.comment_body
+  module:
+    - text
+id: comment.comment_asklib.default
+targetEntityType: comment
+bundle: comment_asklib
+mode: default
+content:
+  comment_body:
+    type: text_default
+    weight: 0
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  links:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  langcode: true

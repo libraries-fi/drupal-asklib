@@ -1,0 +1,11 @@
+uuid: 1b1c1f62-83be-41a3-986b-8ee23c6704e4
+langcode: fi
+status: true
+dependencies:
+  config:
+    - node.type.asklib_collection
+id: node.asklib_collection
+target_entity_type_id: node
+target_bundle: asklib_collection
+default_langcode: site_default
+language_alterable: true

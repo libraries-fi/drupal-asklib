@@ -1,0 +1,33 @@
+{% block nav_index %}
+<nav class="ask-list-nav">
+  <h2 class="visually-hidden">{{ "Alphabetical index"|trans }}</h2>
+  <a href="{{ path('asklib.keywords.misc') }}">0–9</a>
+  {% for c in range('a', 'z') %}
+    <a href="{{ path('asklib.keywords.letter.' ~ langcode, {'letter': c}) }}">{{ c|upper }}</a>
+  {% endfor %}
+  <a href="{{ path('asklib.keywords.letter.' ~ langcode, {'letter': 'å'}) }}">Å</a>
+  <a href="{{ path('asklib.keywords.letter.' ~ langcode, {'letter': 'ä'}) }}">Ä</a>
+  <a href="{{ path('asklib.keywords.letter.' ~ langcode, {'letter': 'ö'}) }}">Ö</a>
+</nav>
+{% endblock %}
+
+{% block keywords_heading %}
+{% if misc %}
+  {% set total = terms|length %}
+  <p>{% trans %}Displaying miscellaneous keywords. This page contains {{ total }} words.{% endtrans %}</p>
+{% else %}
+<p>
+  {% set total = terms|length %}
+  {% trans %}Displaying keywords for letter <em>{{ letter }}</em>. This page contains {{ total }} words.{% endtrans %}
+</p>
+{% endif %}
+{% endblock %}
+
+{% block keywords_list %}
+<ul class="asklib-keyword-subpage">
+  {% for term in terms %}
+    <li class="list-item">
+      <a class="name" href="{{ path('entity.taxonomy_term.canonical', {'taxonomy_term': term.tid}) }}">{{ term.name}}</a> ({{ term.total }})</li>
+  {% endfor %}
+</ul>
+{% endblock %}

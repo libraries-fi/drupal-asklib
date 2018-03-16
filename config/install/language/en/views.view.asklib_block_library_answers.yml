@@ -1,0 +1,31 @@
+display:
+  default:
+    display_options:
+      empty:
+        area:
+          content:
+            value: '<p>Library has not yet answered any questions in english.</p>'
+            format: basic_html
+      title: 'Latest answers'
+  block_1:
+    display_options:
+      fields:
+        body__value:
+          label: Answer
+        question:
+          label: Question
+        displays:
+          label: Reads
+        created:
+          label: Answered
+        nothing:
+          label: Open
+          alter:
+            text: '<span class="toggle-answer" role="button" aria-label="Show answer" tabindex="0"></span>'
+        nothing_1:
+          label: Answer
+        rating__value:
+          label: Rating
+      header:
+        result:
+          content: '@total results. Showing @start&ndash;@end hits.'

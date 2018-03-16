@@ -1,0 +1,17 @@
+langcode: fi
+status: true
+dependencies: {  }
+id: asklib_admin
+label: 'Kysy kirjastonhoitajalta -admin'
+weight: 3
+is_admin: null
+permissions:
+  - 'administer asklib'
+  - 'answer questions'
+  - 'delete questions'
+  - 'view the administration theme'
+  - 'access toolbar'
+  - 'access user profiles'
+  - 'administer comments'
+  - 'administer kifimail'
+  - 'access administration pages'

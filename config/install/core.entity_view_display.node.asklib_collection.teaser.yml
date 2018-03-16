@@ -1,0 +1,27 @@
+uuid: 99a1491f-49eb-4d85-854c-324c8591347e
+langcode: fi
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.asklib_collection.body
+    - node.type.asklib_collection
+  module:
+    - text
+    - user
+id: node.asklib_collection.teaser
+targetEntityType: node
+bundle: asklib_collection
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+  links:
+    weight: 100
+hidden:
+  langcode: true

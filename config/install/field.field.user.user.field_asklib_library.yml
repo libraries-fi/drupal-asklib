@@ -1,0 +1,32 @@
+uuid: 198a22d2-88b7-499b-8413-cac213fda5d5
+langcode: fi
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_asklib_library
+    - taxonomy.vocabulary.asklib_libraries
+    - taxonomy.vocabulary.asklib_municipalities
+  module:
+    - user
+id: user.user.field_asklib_library
+field_name: field_asklib_library
+entity_type: user
+bundle: user
+label: 'Oma kirjasto'
+description: 'Käytetään vastaajakirjastona.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      asklib_libraries: asklib_libraries
+      asklib_municipalities: asklib_municipalities
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: asklib_libraries
+field_type: entity_reference

@@ -1,0 +1,11 @@
+uuid: dd2bb2ec-655e-46ac-949b-070a69d53aee
+langcode: fi
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: qF1mPwM5AgVFr3CEj3_1_w1_XAANNVPvnglt4kPA_Vw
+name: Asiasanat
+vid: asklib_tags
+description: ''
+hierarchy: 0
+weight: 0
