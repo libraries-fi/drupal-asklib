@@ -4,7 +4,7 @@
   "type": "drupal-module",
   "license": "GPL-2.0+",
   "require": {
-    "html2text/html2text": "^4.1",
+    "html2text/html2text": "^4.0",
     "elasticsearch/elasticsearch": "^5.3"
   }
 }
