@@ -170,7 +170,7 @@ class QuestionElasticSearch extends SearchPluginBase implements AccessibleInterf
       }
 
       $library = $question->getTargetLibrary();
-      $feed_ids = array_map(function($f) { return $f->id(); }, $uestion->getFeeds());
+      $feed_ids = array_map(function($f) { return $f->id(); }, $question->getFeeds());
 
       $document = [
         'id' => (int)$question->id(),
