@@ -22,9 +22,11 @@ class QuestionForm extends ContentEntityForm {
       ];
     }
 
-    // Override needed maybe because Question entity has langcode but is not 'translatable'.
-    // FIXME: Check if this is actually required after using viewmodes.
-    $form['langcode']['widget'][0]['value']['#default_value'] = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    // Need to set language manually because Question is not marked as 'translatable'.
+    $form['langcode'] = [
+      '#type' => 'value',
+      '#value' => \Drupal::languageManager()->getCurrentLanguage()->getId(),
+    ];
 
     $form['body']['widget'][0]['#title'] = $this->t('Your question');
     $form['body']['widget'][0]['#format'] = 'basic_html_without_ckeditor';
