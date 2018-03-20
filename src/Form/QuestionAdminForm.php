@@ -283,10 +283,16 @@ class QuestionAdminForm extends ContentEntityForm {
     ];
 
     if (isset($form['answer'])) {
+      $uid = $this->currentUser()->id();
+      $user = $this->entityManager->getStorage('user')->load($uid);
+      $default_id = $user->get('field_asklib_library')->target_id;
+
       foreach (Element::children($form['answer']['widget']) as $delta) {
         $form['answer']['widget'][$delta]['library']['#weight'] = 100;
 
         $form['answer_meta_group']['answering_library'] = $form['answer']['widget'][$delta]['library'];
+
+        $form['answer_meta_group']['answering_library']['widget']['target_id']['#default_value'] = $default_id;
 
         unset($form['answer']['widget'][$delta]['library']);
 
