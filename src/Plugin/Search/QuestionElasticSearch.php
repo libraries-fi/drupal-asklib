@@ -155,10 +155,12 @@ class QuestionElasticSearch extends SearchPluginBase implements AccessibleInterf
 
   public function updateIndex() {
     foreach ($this->fetchItemsForIndexing() as $item) {
-      $langcode = $item->question->language()->getId();
+      $question = $item->question;
+      $answer = $item->answer;
+      $langcode = $question->language()->getId();
       $tags = [];
 
-      foreach ($item->question->getTags() as $tag) {
+      foreach ($question->getTags() as $tag) {
         if ($tag->hasTranslation($langcode)) {
           $tags[(int)$tag->id()] = $tag->getTranslation($langcode)->label();
         } else {
@@ -167,21 +169,21 @@ class QuestionElasticSearch extends SearchPluginBase implements AccessibleInterf
         }
       }
 
-      $library = $item->question->getTargetLibrary();
-      $channel = $item->question->getChannel();
+      $library = $question->getTargetLibrary();
+      $feed_ids = array_map(function($f) { return $f->id(); }, $uestion->getFeeds());
 
       $document = [
-        'id' => (int)$item->question->id(),
+        'id' => (int)$question->id(),
         'langcode' => $langcode,
-        'title' => $item->question->label(),
-        'body' => (new Html2Text($item->question->getBody()))->getText(),
-        'answer' => (new Html2Text($item->answer->getBody()))->getText(),
-        'score' => (int)$item->answer->getRating(),
+        'title' => $question->label(),
+        'body' => (new Html2Text($question->getBody()))->getText(),
+        'answer' => (new Html2Text($answer->getBody()))->getText(),
+        'score' => (int)$answer->getRating(),
         'tags' => array_values($tags),
-        'created' => (int)$item->question->getCreatedTime(),
-        'changed' => (int)$item->answer->getChangedTime(),
+        'created' => (int)$question->getCreatedTime(),
+        'changed' => (int)$answer->getChangedTime(),
         'meta' => [
-          'channel_id' => $channel ?(int) $channel->id() : NULL,
+          'feed_ids' => $feed_ids,
           'tag_ids' => array_keys($tags),
         ]
       ];
@@ -189,12 +191,12 @@ class QuestionElasticSearch extends SearchPluginBase implements AccessibleInterf
       $this->client->index([
         'index' => 'kirjastot_fi',
         'type' => 'asklib_question',
-        'id' => sprintf('%d::%s', $item->question->id(), $langcode),
+        'id' => sprintf('%d::%s', $question->id(), $langcode),
         'body' => $document,
       ]);
 
       // Rely on Drupal's internal index to keep track of indexed items.
-      search_index($this->getPluginId(), $item->question->id(), $langcode, '');
+      search_index($this->getPluginId(), $question->id(), $langcode, '');
     }
   }
 
@@ -276,8 +278,6 @@ class QuestionElasticSearch extends SearchPluginBase implements AccessibleInterf
   }
 
   protected function indexQuestion(QuestionInterface $question, AnswerInterface $answer) {
-    $builder = $this->entityManager->getViewBuilder('asklib_question');
-
     foreach ($question->getTranslationLanguages() as $language) {
       search_index($this->getPluginId(), $question->id(), $language->getId(), '');
     }
@@ -346,7 +346,7 @@ class QuestionElasticSearch extends SearchPluginBase implements AccessibleInterf
         $query['bool']['must'][] = [
           // Use the singular 'term' query to require every single term in the result.
           'term' => [
-            'meta.channel_id' => $fid
+            'meta.feed_ids' => $fid
           ]
         ];
       }

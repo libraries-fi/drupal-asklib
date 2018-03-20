@@ -351,6 +351,14 @@ class Question extends ContentEntityBase implements QuestionInterface {
     $this->set('channel', $data);
   }
 
+  public function getFeeds() {
+    return $this->feeds->referencedEntities();
+  }
+
+  public function setFeeds(array $feeds) {
+    $this->set('feeds', $feeds);
+  }
+
   public function setAttachments(array $values) {
     $this->set('attachments', $values);
   }
