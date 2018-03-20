@@ -529,6 +529,73 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
+        answered:
+          id: answered
+          table: asklib_answers
+          field: answered
+          relationship: answer
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: "{{ answered }}<br/>\n{{ user_1 }}"
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: false
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: date_only
+            custom_date_format: ''
+            timezone: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: asklib_answer
+          entity_field: answered
+          plugin_id: field
         user_1:
           id: user_1
           table: asklib_answers
@@ -592,6 +659,71 @@ display:
           separator: ', '
           field_api_classes: false
           entity_type: asklib_answer
+          entity_field: user
+          plugin_id: field
+        user_2:
+          id: user_2
+          table: asklib_locks
+          field: user
+          relationship: reservation
+          group_type: group
+          admin_label: 'Varaajan ID'
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: user_email
+          settings:
+            link: 1
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: asklib_lock
           entity_field: user
           plugin_id: field
         id:
@@ -989,18 +1121,18 @@ display:
           entity_type: asklib_question
           entity_field: target_library
           plugin_id: field
-        answered:
-          id: answered
-          table: asklib_answers
-          field: answered
-          relationship: answer
+        created_1:
+          id: created_1
+          table: asklib_questions
+          field: created
+          relationship: none
           group_type: group
-          admin_label: ''
+          admin_label: Vastattu/varattu
           label: Vastattu
           exclude: false
           alter:
             alter_text: true
-            text: "{{ answered }}<br/>\n{{ user_1 }}"
+            text: "{% if user_2 %}\n  <em>{% trans %}Reserved to{% endtrans %}</em><br/>\n  {{ user_2 }}\n{% else %}\n  {{ answered }}<br/>\n  {{ user_1 }}\n{% endif %}"
             make_link: false
             path: ''
             absolute: false
@@ -1040,7 +1172,7 @@ display:
           click_sort_column: value
           type: timestamp
           settings:
-            date_format: date_only
+            date_format: medium
             custom_date_format: ''
             timezone: ''
           group_column: value
@@ -1053,8 +1185,8 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: asklib_answer
-          entity_field: answered
+          entity_type: asklib_question
+          entity_field: created
           plugin_id: field
         state:
           id: state
@@ -1687,6 +1819,17 @@ display:
           entity_type: asklib_question
           entity_field: channel
           plugin_id: standard
+        user:
+          id: user
+          table: asklib_locks
+          field: user
+          relationship: reservation
+          group_type: group
+          admin_label: User
+          required: false
+          entity_type: asklib_lock
+          entity_field: user
+          plugin_id: standard
       arguments: {  }
       display_extenders: {  }
       filter_groups:
@@ -1705,7 +1848,7 @@ display:
         - user
         - user.permissions
       cacheable: false
-      max-age: 0
+      max-age: -1
       tags:
         - 'config:field.storage.taxonomy_term.field_asklib_active'
         - 'config:field.storage.taxonomy_term.field_asklib_icon'
@@ -1740,7 +1883,7 @@ display:
         - user
         - user.permissions
       cacheable: false
-      max-age: 0
+      max-age: -1
       tags:
         - 'config:field.storage.taxonomy_term.field_asklib_active'
         - 'config:field.storage.taxonomy_term.field_asklib_icon'
