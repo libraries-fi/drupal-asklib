@@ -283,24 +283,20 @@ class QuestionAdminForm extends ContentEntityForm {
     ];
 
     if (isset($form['answer'])) {
-      $uid = $this->currentUser()->id();
-      $user = $this->entityManager->getStorage('user')->load($uid);
-      $default_id = $user->get('field_asklib_library')->target_id;
+      if ($question->isAnswered()) {
+        foreach (Element::children($form['answer']['widget']) as $delta) {
+          $form['answer']['widget'][$delta]['library']['#weight'] = 100;
 
-      foreach (Element::children($form['answer']['widget']) as $delta) {
-        $form['answer']['widget'][$delta]['library']['#weight'] = 100;
+          $form['answer_meta_group']['answering_library'] = $form['answer']['widget'][$delta]['library'];
 
-        $form['answer_meta_group']['answering_library'] = $form['answer']['widget'][$delta]['library'];
+          unset($form['answer']['widget'][$delta]['library']);
 
-        $form['answer_meta_group']['answering_library']['widget']['target_id']['#default_value'] = $default_id;
-
-        unset($form['answer']['widget'][$delta]['library']);
-
-        if (isset($form['answer']['widget'][$delta]['rating'])) {
-          $form['rating'] = $form['answer']['widget'][$delta]['rating'];
-          $form['rating']['#group'] = 'stats_group';
-          $form['answer']['widget'][$delta]['rating']['#access'] = FALSE;
-          $form['stats_group']['#open'] = $answer->get('rating')->votes > 0;
+          if (isset($form['answer']['widget'][$delta]['rating'])) {
+            $form['rating'] = $form['answer']['widget'][$delta]['rating'];
+            $form['rating']['#group'] = 'stats_group';
+            $form['answer']['widget'][$delta]['rating']['#access'] = FALSE;
+            $form['stats_group']['#open'] = $answer->get('rating')->votes > 0;
+          }
         }
       }
 
