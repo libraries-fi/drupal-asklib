@@ -218,7 +218,6 @@ class QuestionAdminForm extends ContentEntityForm {
     $form['municipality']['#group'] = 'questioner_group';
 
     $form['tags']['#group'] = 'tags_group';
-    $form['tags']['#attached']['library'][] = 'kifiform/autocomplete-tags';
     $form['tags']['#attached']['library'][] = 'finto_taxonomy/kifiform-tags-plugin';
 
     $form['tags']['widget']['target_id']['#description'] = $this->t('Select keywords from the drop-down list or press Enter to add a new one.');
