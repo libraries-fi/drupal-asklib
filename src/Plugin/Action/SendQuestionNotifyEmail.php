@@ -79,11 +79,7 @@ class SendQuestionNotifyEmail extends EmailActionBase {
     }
     $users = [];
     foreach ($term->get('field_asklib_subscribers')->referencedEntities() as $user) {
-      $enabled = $this->userData->get('asklib', $user->id(), 'email.notifications');
-
-      if ($enabled) {
-        $users[] = $user;
-      }
+      $users[] = $user;
     }
     return $users;
   }
