@@ -87,7 +87,7 @@ class QuestionSearch extends ContentSearch {
 
       $build['extra']['rating'] = [
         '#type' => 'kifiform_stars',
-        '#value' => $answer->getRating(),
+        '#value' => $question['fields']['asklib_question']['rating'],
       ];
 
       $prepared[] = $build;
