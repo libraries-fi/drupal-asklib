@@ -63,12 +63,25 @@ class QuestionIndexer extends IndexerBase {
 
         foreach ($question->getTags() as $tag) {
           $document['terms'][] = (int)$tag->id();
-          
+
           try {
             // Terms from asklib_tags vocabulary don't have translations but for some reason
             // they can / have been bound to questions of all languages. Maybe a bug, maybe inherited
             // from the old Meteor CMS.
             $document['tags'][] = $tag->getTranslation($langcode)->label();
+          } catch (InvalidArgumentException $e) {
+            // pass
+          }
+        }
+
+        foreach ($question->getFeeds() as $feed) {
+          $document['terms'][] = (int)$feed->id();
+
+          try {
+            // Terms from asklib_tags vocabulary don't have translations but for some reason
+            // they can / have been bound to questions of all languages. Maybe a bug, maybe inherited
+            // from the old Meteor CMS.
+            $document['tags'][] = $feed->getTranslation($langcode)->label();
           } catch (InvalidArgumentException $e) {
             // pass
           }

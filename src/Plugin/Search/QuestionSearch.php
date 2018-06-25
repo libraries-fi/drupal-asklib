@@ -159,7 +159,7 @@ class QuestionSearch extends ContentSearch {
         $query['bool']['must'][] = [
           // Use the singular 'term' query to require every single term in the result.
           'term' => [
-            'terms' => $fid
+            'terms' => (int)$fid
           ]
         ];
       }
