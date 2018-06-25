@@ -4,7 +4,6 @@ namespace Drupal\asklib;
 
 use InvalidArgumentException;
 use Drupal\kifisearch\IndexerBase;
-use Html2Text\Html2Text;
 
 class QuestionIndexer extends IndexerBase {
   public function getTotal() {
@@ -56,8 +55,8 @@ class QuestionIndexer extends IndexerBase {
           'changed' => date('Y-m-d\TH:i:s', $question->getChangedTime()),
         ];
 
-        $question_body = (new Html2Text($question->getBody()))->getText();
-        $answer_body = (new Html2Text($answer->getBody()))->getText();
+        $question_body = $this->stripHtml($question->getBody());
+        $answer_body = $this->stripHtml($answer->getBody());
 
         $document['body'] = $question_body . "\n\n\n\n\n" . $answer_body;
 
