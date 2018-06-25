@@ -85,6 +85,11 @@ class QuestionSearch extends ContentSearch {
         }
       }
 
+      $build['extra']['rating'] = [
+        '#type' => 'kifiform_stars',
+        '#value' => 40,
+      ];
+
       $prepared[] = $build;
 
       $this->addCacheableDependency($question);
