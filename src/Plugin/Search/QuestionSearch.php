@@ -63,7 +63,6 @@ class QuestionSearch extends ContentSearch {
         continue;
       }
 
-      $data = $item['_source'];
       $question = $cache[$entity_type][$entity_id];
 
       $build = [
@@ -87,7 +86,7 @@ class QuestionSearch extends ContentSearch {
 
       $build['extra']['rating'] = [
         '#type' => 'kifiform_stars',
-        '#value' => $question['fields']['asklib_question']['rating'],
+        '#value' => $item['_source']['fields']['asklib_question']['rating'],
       ];
 
       $prepared[] = $build;
