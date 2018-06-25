@@ -10,6 +10,7 @@ dependencies:
   - forum
   - kifiform
   - kifimail
+  - kifisearch
   - kifistats
   - language
   - node
