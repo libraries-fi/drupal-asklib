@@ -50,7 +50,7 @@ class QuestionSearch extends ContentSearch {
 
     $prepared = [];
 
-    $questions = $this->loadMatchedEntities($result);
+    $cache = $this->loadMatchedEntities($result);
 
     pager_default_initialize($total, 10);
 
@@ -64,19 +64,26 @@ class QuestionSearch extends ContentSearch {
       }
 
       $data = $item['_source'];
-      $question = $questions[$entity_id];
+      $question = $cache[$entity_type][$entity_id];
 
       $build = [
         'link' => $question->url('canonical', ['absolute' => TRUE, 'language' => $question->language()]),
         'asklib_question' => $question,
         'title' => $question->label(),
         'score' => $item['_score'],
-        'date' => $item['_source']['created'],
-
+        'date' => strtotime($item['_source']['created']),
         'langcode' => $question->language()->getId(),
-
-        'snippet' => search_excerpt($this->keywords, implode(' ', [$data['body'], $data['answer']]), $data['langcode']),
       ];
+
+      if (!empty($item['highlight'])) {
+        $matches = reset($item['highlight']);
+
+        foreach ($matches as $match) {
+          $build['snippet'][] = [
+            '#markup' => $match
+          ];
+        }
+      }
 
       $prepared[] = $build;
 
@@ -105,8 +112,8 @@ class QuestionSearch extends ContentSearch {
      * Elasticsearch will throw an exception when the syntax is invalid, so we
      * do a simple sanity check here.
      */
-    $query_string = preg_replace('/^(AND|OR|NOT)/', '', trim($query_string));
-    $query_string = preg_replace('/(AND|OR|NOT)$/', '', trim($query_string));
+    // $query_string = preg_replace('/^(AND|OR|NOT)/', '', trim($query_string));
+    // $query_string = preg_replace('/(AND|OR|NOT)$/', '', trim($query_string));
 
     if (empty($this->searchParameters['all_languages'])) {
       $langcode = $this->languageManager->getCurrentLanguage()->getId();
@@ -127,36 +134,14 @@ class QuestionSearch extends ContentSearch {
       ]
     ];
 
-    if ($query_string) {
-      $query['bool']['should'][] = [
-        'query_string' => [
-          'query' => $query_string,
-          'fields' => ['body', 'answer'],
-          'default_operator' => 'AND',
-          'boost' => 10,
-          // 'fuzziness' => 2,
-          // 'analyzer' => 'snowball',
-        ]
-      ];
-
-      $query['bool']['must'][] = [
-        'query_string' => [
-          'query' => $query_string,
-          'fields' => ['body', 'answer', 'title', 'tags'],
-          // 'fuzziness' => 2,
-          // 'analyzer' => 'finnish',
-          // 'boost' => 10,
-        ]
-      ];
-    }
+    $query['bool']['must'][] = [
+      'multi_match' => [
+        'query' => $query_string,
+        'fields' => ['body', 'title', 'tags'],
+      ]
+    ];
 
     if ($langcode) {
-      // $query['bool']['should'][] = [
-      //   'term' => ['langcode' => [
-      //     'value' => $langcode,
-      //     'boost' => 100,
-      //   ]],
-      // ];
       $query['bool']['must'][] = [
         'term' => ['langcode' => [
           'value' => $langcode,
@@ -169,7 +154,7 @@ class QuestionSearch extends ContentSearch {
         $query['bool']['must'][] = [
           // Use the singular 'term' query to require every single term in the result.
           'term' => [
-            'meta.feed_ids' => $fid
+            'terms' => $fid
           ]
         ];
       }
@@ -180,20 +165,19 @@ class QuestionSearch extends ContentSearch {
         $query['bool']['must'][] = [
           // Use the singular 'term' query to require every single term in the result.
           'term' => [
-            'meta.tag_ids' => (int)$tid
+            'terms' => (int)$tid
           ]
         ];
       }
-      // $query['bool']['must'][] = [[
-      //   'terms' => [
-      //     'meta.tag_ids' => Tags::explode($this->searchParameters['tags']),
-      //   ]
-      // ]];
     }
 
     return [
       'query' => $query,
-      'highlight' => ['fields' => ['body' => (object)[], 'answer' => (object)[]]]
+      'highlight' => [
+        'fields' => ['body' => (object)[]],
+        'pre_tags' => ['<strong>'],
+        'post_tags' => ['</strong>'],
+      ]
     ];
   }
 
