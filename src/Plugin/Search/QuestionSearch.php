@@ -55,9 +55,9 @@ class QuestionSearch extends ContentSearch {
 
     pager_default_initialize($total, 10);
 
-    foreach ($result['hits']['hits'] as $item) {
-      $entity_type = $item['_source']['entity_type'];
-      $entity_id = $item['_source']['id'];
+    foreach ($result['hits']['hits'] as $hit) {
+      $entity_type = $hit['_source']['entity_type'];
+      $entity_id = $hit['_source']['id'];
 
       if (!isset($cache[$entity_type][$entity_id])) {
         user_error(sprintf('Stale search entry: %s #%d does not exist', $entity_type, $entity_id));
@@ -70,8 +70,8 @@ class QuestionSearch extends ContentSearch {
         'link' => $question->url('canonical', ['absolute' => TRUE, 'language' => $question->language()]),
         'asklib_question' => $question,
         'title' => $question->label(),
-        'score' => $item['_score'],
-        'date' => strtotime($item['_source']['created']),
+        'score' => $hit['_score'],
+        'date' => strtotime($hit['_source']['created']),
         'langcode' => $question->language()->getId(),
       ];
 
@@ -89,7 +89,7 @@ class QuestionSearch extends ContentSearch {
 
       $build['extra']['rating'] = [
         '#type' => 'kifiform_stars',
-        '#value' => $item['_source']['fields']['asklib_question']['score'],
+        '#value' => $hit['_source']['fields']['asklib_question']['score'],
       ];
 
       $prepared[] = $build;
