@@ -43,7 +43,12 @@ class QuestionIndexer extends IndexerBase {
       foreach ($question->getTranslationLanguages() as $language) {
         $langcode = $language->getId();
         $question = $question->getTranslation($langcode);
-        $answer = $question->getAnswer();
+        // $answer = $question->getAnswer();
+        $answer = $this->cachedAnswers[$question->get('answer')->target_id];
+
+        if (!$answer) {
+          exit('fail!');
+        }
 
         $document = [
           'entity_type' => 'asklib_question',
@@ -86,6 +91,14 @@ class QuestionIndexer extends IndexerBase {
           }
         }
 
+        if (!empty($document['terms'])) {
+          $document['terms'] = array_values(array_unique($document['terms']));
+        }
+
+        if (!empty($document['tags'])) {
+          $document['tags'] = array_values(array_unique($document['tags']));
+        }
+
         $document['fields']['asklib_question']['score'] = (int)$answer->getRating();
         $this->index($document);
       }
@@ -95,7 +108,7 @@ class QuestionIndexer extends IndexerBase {
   protected function fetchItemsForIndexing() {
     $query = $this->database->select('asklib_questions', 'entity')
       ->distinct()
-      ->fields('entity', ['id'])
+      ->fields('entity', ['id', 'answer'])
       ->range(0, $this->batchSize)
       ->orderBy('entity.id')
       ->condition('entity.state', QuestionInterface::STATE_ANSWERED)
@@ -110,10 +123,13 @@ class QuestionIndexer extends IndexerBase {
       ':type' => 'asklib_question'
     ]);
 
-    $ids = $query->execute()->fetchCol();
+    $result = $query->execute()->fetchAll();
+    $qids = array_column($result, 'id');
+    $aids = array_column($result, 'answer');
 
-    if ($ids) {
-      return $this->storage->loadMultiple($ids);
+    if ($qids) {
+      $this->cachedAnswers = \Drupal::entityTypeManager()->getStorage('asklib_answer')->loadMultiple($aids);
+      return $this->storage->loadMultiple($qids);
     } else {
       return [];
     }
