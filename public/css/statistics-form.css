@@ -1,14 +1,12 @@
-/* line 1, ../scss/statistics-form.scss */
 form.kifistats-statistics-form > fieldset {
   display: inline-block;
   vertical-align: top;
   min-height: 6em;
   margin-top: 0;
   margin-bottom: 9px;
-  padding-bottom: 5px;
-}
+  padding-bottom: 5px; }
 
-/* line 11, ../scss/statistics-form.scss */
 form.kifistats-statistics-form #edit-year {
-  min-width: 8em;
-}
+  min-width: 8em; }
+
+/*# sourceMappingURL=statistics-form.css.map */

@@ -1,42 +1,26 @@
 @charset "UTF-8";
-/* line 2, ../scss/statistics-overview.scss */
 .asklib-statistics th.fill-column,
 .asklib-statistics td.fill-column {
-  width: 100%;
-}
-/* line 7, ../scss/statistics-overview.scss */
+  width: 100%; }
 .asklib-statistics th:last-child {
-  width: 30%;
-}
-/* line 11, ../scss/statistics-overview.scss */
+  width: 30%; }
 .asklib-statistics th.last-answer {
-  width: 25%;
-}
-/* line 15, ../scss/statistics-overview.scss */
+  width: 25%; }
 .asklib-statistics caption {
   font-size: medium;
   font-weight: bold;
-  margin-bottom: .5rem;
-}
-/* line 21, ../scss/statistics-overview.scss */
+  margin-bottom: .5rem; }
 .asklib-statistics table {
-  margin-bottom: 2rem;
-}
-/* line 25, ../scss/statistics-overview.scss */
+  margin-bottom: 2rem; }
 .asklib-statistics tr.nested-data {
-  padding: 0;
-}
-/* line 28, ../scss/statistics-overview.scss */
-.asklib-statistics tr.nested-data td {
-  padding-top: 0;
-  padding-bottom: 0;
-  background-color: #f7fcff;
-}
-/* line 34, ../scss/statistics-overview.scss */
-.asklib-statistics tr.nested-data td:first-child {
-  text-indent: 0.5em;
-}
-/* line 38, ../scss/statistics-overview.scss */
-.asklib-statistics tr.nested-data td:first-child:before {
-  content: "↳ ";
-}
+  padding: 0; }
+  .asklib-statistics tr.nested-data td {
+    padding-top: 0;
+    padding-bottom: 0;
+    background-color: #f7fcff; }
+  .asklib-statistics tr.nested-data td:first-child {
+    text-indent: 0.5em; }
+  .asklib-statistics tr.nested-data td:first-child:before {
+    content: "↳ "; }
+
+/*# sourceMappingURL=statistics-overview.css.map */

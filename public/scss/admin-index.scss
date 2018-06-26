@@ -11,3 +11,11 @@ tr.self-reserved-question,
 tr.self-reserved-question:hover {
   background-color: rgba(100, 255, 100, 0.3);
 }
+
+th.channel {
+  width: 24px;
+}
+
+td > img {
+  max-width: unset;
+}

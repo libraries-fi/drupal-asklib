@@ -1,20 +1,16 @@
-/* line 2, ../sass/rating.scss */
 .rating-container .rating-frame {
   border: 1px solid #055A8E;
   max-width: 100px;
   position: relative;
-  line-height: 1;
-}
-/* line 7, ../sass/rating.scss */
-.rating-container .rating-frame .rating-fill {
-  background-color: #055A8E;
-  height: 1em;
-}
-/* line 11, ../sass/rating.scss */
-.rating-container .rating-frame .rating-votes {
-  position: absolute;
-  margin-left: 100%;
-  left: 0.5em;
-  top: 0;
-  white-space: pre;
-}
+  line-height: 1; }
+  .rating-container .rating-frame .rating-fill {
+    background-color: #055A8E;
+    height: 1em; }
+  .rating-container .rating-frame .rating-votes {
+    position: absolute;
+    margin-left: 100%;
+    left: 0.5em;
+    top: 0;
+    white-space: pre; }
+
+/*# sourceMappingURL=rating.css.map */

@@ -1,16 +1,18 @@
-/* line 1, ../scss/admin-index.scss */
 tr.pending-question-warning,
 tr.pending-question-warning:hover {
-  background-color: rgba(200, 100, 100, 0.3);
-}
+  background-color: rgba(200, 100, 100, 0.3); }
 
-/* line 6, ../scss/admin-index.scss */
 .views-field > span.not-answerer {
-  color: red;
-}
+  color: red; }
 
-/* line 10, ../scss/admin-index.scss */
 tr.self-reserved-question,
 tr.self-reserved-question:hover {
-  background-color: rgba(100, 255, 100, 0.3);
-}
+  background-color: rgba(100, 255, 100, 0.3); }
+
+th.channel {
+  width: 24px; }
+
+td > img {
+  max-width: unset; }
+
+/*# sourceMappingURL=admin-index.css.map */
