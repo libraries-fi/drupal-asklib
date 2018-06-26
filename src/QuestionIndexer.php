@@ -46,10 +46,6 @@ class QuestionIndexer extends IndexerBase {
         // $answer = $question->getAnswer();
         $answer = $this->cachedAnswers[$question->get('answer')->target_id];
 
-        if (!$answer) {
-          exit('fail!');
-        }
-
         $document = [
           'entity_type' => 'asklib_question',
           'id' => (int)$question->id(),
