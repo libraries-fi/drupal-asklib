@@ -4,7 +4,6 @@ namespace Drupal\asklib\Plugin\Search;
 
 use DateTime;
 use InvalidArgumentException;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\Tags;
 use Drupal\Core\Access\AccessibleInterface;
 use Drupal\Core\Access\AccessResult;
@@ -73,19 +72,8 @@ class QuestionSearch extends ContentSearch {
         'score' => $hit['_score'],
         'date' => strtotime($hit['_source']['created']),
         'langcode' => $question->language()->getId(),
+        'snippet' => $this->processSnippet($hit),
       ];
-
-      if (!empty($hit['highlight'])) {
-        $matches = reset($hit['highlight']);
-
-        $build['snippet'][] = [
-          '#markup' => implode(' ... ', $matches)
-        ];
-      } else {
-        $build['snippet'][] = [
-          '#markup' => Unicode::truncate($hit['_source']['body'], 200, TRUE, TRUE)
-        ];
-      }
 
       $build['extra']['rating'] = [
         '#type' => 'kifiform_stars',
