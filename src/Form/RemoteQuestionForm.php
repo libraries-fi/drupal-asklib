@@ -28,12 +28,6 @@ class RemoteQuestionForm extends ContentEntityForm {
       }
     }
 
-    $form['debug'] = [
-      '#type' => 'item',
-      '#plain_text' => $this->channelFromRoute()->label(),
-      '#weight' => -100,
-    ];
-
     $form['body']['widget'][0]['#format'] = 'basic_html_without_ckeditor';
     $form['body']['widget'][0]['#rows'] = 12;
     $form['body']['widget'][0]['#description'] = '';
