@@ -20,7 +20,7 @@ class RemoteQuestionForm extends ContentEntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
-    $allowed = ['body', 'email', 'municipality'];
+    $allowed = ['body', 'email', 'municipality', 'captcha'];
 
     foreach (Element::children($form) as $key) {
       if (!in_array($key, $allowed)) {
