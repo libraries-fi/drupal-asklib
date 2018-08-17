@@ -29,7 +29,7 @@ class RemoteQuestionForm extends ContentEntityForm {
     }
 
     $form['body']['widget'][0]['#format'] = 'basic_html_without_ckeditor';
-    $form['body']['widget'][0]['#rows'] = 12;
+    $form['body']['widget'][0]['#rows'] = 6;
     $form['body']['widget'][0]['#description'] = '';
 
     $form['body']['widget'][0]['#title'] = $this->t('Your question');
