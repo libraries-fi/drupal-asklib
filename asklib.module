@@ -720,11 +720,15 @@ function asklib_delete_question_index(QuestionInterface $question) {
     ->execute();
 
   foreach ($question->getTranslationLanguages() as $language) {
-    Drupal::service('kifisearch.client')->delete([
-      'index' => 'kirjastot_fi',
-      'type' => 'content',
-      'id' => sprintf('asklib_question:%d:%s', $question->id(), $language->getId())
-    ]);
+    try {
+      Drupal::service('kifisearch.client')->delete([
+        'index' => 'kirjastot_fi',
+        'type' => 'content',
+        'id' => sprintf('asklib_question:%d:%s', $question->id(), $language->getId())
+      ]);
+    } catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
+      // pass
+    }
   }
 }
 
