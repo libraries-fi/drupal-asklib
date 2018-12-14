@@ -586,6 +586,8 @@ class QuestionAdminForm extends ContentEntityForm {
     $slug = substr(strrchr($this->entity->url(), '/'), 1);
 
     if (!ctype_digit($slug)) {
+      // Strip query variables potentially injected by other modules etc.
+      list($slug, $_) = explode('?', $slug . '?'); 
       return $slug;
     }
 
