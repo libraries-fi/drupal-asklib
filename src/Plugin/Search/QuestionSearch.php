@@ -173,11 +173,12 @@ class QuestionSearch extends ContentSearch {
           break;
       }
     } else {
-      $sort = '_score';
+      $sort = ['_score' => 'desc  '];
     }
 
     return [
       'query' => $query,
+      'sort' => $sort,
       'highlight' => [
         'fields' => ['body' => (object)[]],
         'pre_tags' => ['<strong>'],
@@ -205,7 +206,7 @@ class QuestionSearch extends ContentSearch {
                 '' => $this->t('Relevance'),
                 'newest' => $this->t('Newest first')
             ],
-            '#default_value' => '',
+            '#default_value' => empty($parameters['order']) ? '' : $parameters['order'],
         ]
     ];
 
