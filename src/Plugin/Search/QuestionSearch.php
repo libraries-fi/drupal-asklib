@@ -166,6 +166,16 @@ class QuestionSearch extends ContentSearch {
       }
     }
 
+    if (!empty($this->searchParameters['order'])) {
+      switch ($this->searchParameters['order']) {
+        case 'newest':
+          $sort = ['created' => 'desc'];
+          break;
+      }
+    } else {
+      $sort = '_score';
+    }
+
     return [
       'query' => $query,
       'highlight' => [
@@ -186,9 +196,22 @@ class QuestionSearch extends ContentSearch {
       $tags = [];
     }
 
+    $form['sorting'] = [
+        '#type' => 'container',
+        'order' => [
+            '#type' => 'radios',
+            '#title' => $this->t('Order'),
+            '#options' => [
+                '' => $this->t('Relevance'),
+                'newest' => $this->t('Newest first')
+            ],
+            '#default_value' => '',
+        ]
+    ];
+
     $form['advanced'] = [
       '#type' => 'details',
-      '#title' => t('Advanced search'),
+      '#title' => $this->t('Advanced search'),
       '#open' => count(array_diff(array_keys($parameters), ['page', 'keys'])) > 1,
       'all_languages' => [
         '#type' => 'checkbox',
@@ -282,6 +305,10 @@ class QuestionSearch extends ContentSearch {
     if ($feeds = array_filter($form_state->getValue('feeds', []))) {
       $feeds = array_keys(array_filter($feeds));
       $query['feeds'] = Tags::implode($feeds);
+    }
+
+    if ($order = $form_state->getValue('order')) {
+      $query['order'] = $order;
     }
 
     return $query;
