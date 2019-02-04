@@ -18,7 +18,7 @@ fieldMappings:
       - 'schema:dateCreated'
     datatype_callback:
       callable: 'Drupal\rdf\CommonDataConverter::dateIso8601Value'
-  changed:
+  updated:
     properties:
       - 'schema:dateModified'
     datatype_callback:

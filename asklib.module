@@ -371,7 +371,7 @@ function asklib_preprocess_asklib_answer(&$variables) {
   $variables['library'] = $take('library', $variables['elements']);
   // $variables['rating'] = $take('rating', $variables['elements']);
   $variables['answered'] = $take('answered', $variables['elements']);
-  $variables['updated'] = $take('changed', $variables['elements']);
+  $variables['updated'] = $take('updated', $variables['elements']);
 
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];

@@ -15,7 +15,7 @@ use Drupal\views\Plugin\views\wizard\WizardPluginBase;
  */
 class Answer extends WizardPluginBase {
   protected $createdColumn = 'created';
-  protected $changedColumn = 'changed';
+  protected $changedColumn = 'updated';
 
   protected $answerField = [
     'id' => 'answer',
