@@ -300,9 +300,18 @@ class QuestionAdminForm extends ContentEntityForm {
       }
 
       $form['answer_meta_group']['answering_library']['#access'] = $this->currentUser()->hasPermission('administer asklib');
+
     }
 
     if (isset($answer)) {
+      $form['answer_meta_group']['update_time'] = [
+        '#type' => 'item',
+        '#title' => $this->t('Last updated'),
+        '#markup' => $question->getUpdatedTime()
+          ? $this->dates->format($question->getUpdatedTime())
+          : $this->t('Question is waiting to be answered.'),
+      ];
+
       $form['answer_meta_group']['answer_time'] = [
         '#type' => 'item',
         '#title' => $this->t('Answered on'),
@@ -587,7 +596,7 @@ class QuestionAdminForm extends ContentEntityForm {
 
     if (!ctype_digit($slug)) {
       // Strip query variables potentially injected by other modules etc.
-      list($slug, $_) = explode('?', $slug . '?'); 
+      list($slug, $_) = explode('?', $slug . '?');
       return $slug;
     }
 

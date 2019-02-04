@@ -727,7 +727,9 @@ function asklib_delete_question_index(QuestionInterface $question) {
         'id' => sprintf('asklib_question:%d:%s', $question->id(), $language->getId())
       ]);
     } catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
-      // pass
+      // Question was not indexed before, pass.
+    } catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
+      // Elasticsearch is down (or not installed), pass.
     }
   }
 }

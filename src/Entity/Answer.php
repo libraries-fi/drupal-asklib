@@ -171,6 +171,17 @@ class Answer extends ContentEntityBase implements AnswerInterface {
     $this->answered->setValue($time);
   }
 
+  public function getUpdatedTime() {
+    return $this->updated->value;
+  }
+
+  public function setUpdatedTime($time) {
+    if ($time instanceof DateTime) {
+      $time = $time->format('U');
+    }
+    $this->updated->setValue($time);
+  }
+
   public function getUser() {
     return $this->user->entity;
   }
@@ -276,6 +287,12 @@ class Answer extends ContentEntityBase implements AnswerInterface {
       ->setLabel(t('Updated'))
       ->setDescription(t('The time that the node was last edited.'))
       ->setDisplayConfigurable('view', FALSE)
+      ;
+
+    $fields['updated'] = BaseFieldDefinition::create('timestamp')
+      ->setLabel(t('Last updated'))
+      ->setDescription(t('The time answer body was last updated.'))
+      ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('view', [
         'type' => 'timestamp',
         'weight' => -151,
@@ -286,7 +303,7 @@ class Answer extends ContentEntityBase implements AnswerInterface {
 
     $fields['answered'] = BaseFieldDefinition::create('timestamp')
       ->setLabel(t('Answered'))
-      ->setDescription(t('The time time this question was marked as answered.'))
+      ->setDescription(t('The time this question was marked as answered.'))
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayOptions('view', [
         'type' => 'timestamp',
@@ -338,5 +355,18 @@ class Answer extends ContentEntityBase implements AnswerInterface {
       ]);
 
     return $fields;
+  }
+
+  public function onChange($field_name) {
+    parent::onChange($field_name);
+
+    if ($field_name == 'body') {
+      $original_body = $this->values['body']['x-default']['value'];
+      $new_body = $this->getBody();
+
+      if ($original_body != $new_body) {
+        $this->setUpdatedTime(time());
+      }
+    }
   }
 }

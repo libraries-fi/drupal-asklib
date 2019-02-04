@@ -308,6 +308,12 @@ class Question extends ContentEntityBase implements QuestionInterface {
     }
   }
 
+  public function getUpdatedTime() {
+    if ($answer = $this->getAnswer()) {
+      return $answer->getUpdatedTime();
+    }
+  }
+
   public function getEmailSentTime() {
     if ($answer = $this->getAnswer()) {
       return $answer->getEmailSentTime();

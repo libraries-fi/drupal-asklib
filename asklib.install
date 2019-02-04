@@ -33,27 +33,4 @@ function asklib_install() {
       ],
     ],
   ])->save();
-
-  // $em->getStorage('entity_form_display')->create([
-  //   'targetEntityType' => 'asklib_question',
-  //   'bundle' => 'asklib_question',
-  //   'mode' => 'default',
-  //   'status' => true,
-  // ])
-  // ->setComponent('comments', [
-  //   'type' => 'comment_default',
-  //   'weight' => 99
-  // ])->save();
-
-  // $em->getStorage('entity_view_display')->create([
-  //   'targetEntityType' => 'asklib_question',
-  //   'bundle' => 'asklib_question',
-  //   'mode' => 'default',
-  //   'status' => true,
-  // ])
-  // ->setComponent('comments', [
-  //   'label' => 'above',
-  //   'type' => 'comment_default',
-  //   'weight' => 100,
-  // ])->save();
 }
