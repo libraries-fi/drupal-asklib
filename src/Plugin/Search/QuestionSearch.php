@@ -173,7 +173,7 @@ class QuestionSearch extends ContentSearch {
           break;
       }
     } else {
-      $sort = ['_score' => 'desc  '];
+      $sort = ['_score' => 'desc'];
     }
 
     return [
