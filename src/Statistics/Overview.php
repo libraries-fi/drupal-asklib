@@ -22,10 +22,17 @@ class Overview extends StatisticsBase {
       'by_answerer' => [
         'data' => $this->countByAnswerer(),
       ],
+      'by_archive' => [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['layout-column', 'layout-column--d']
+        ],
+        'data' => $this->countByArchive(),
+      ],
       'by_delay' => [
         '#type' => 'container',
         '#attributes' => [
-          'class' => ['layout-column', 'layout-column--half']
+          'class' => ['layout-column', 'layout-column--quadrter']
         ],
         'data' => $this->countByDelay(),
       ],
@@ -35,14 +42,14 @@ class Overview extends StatisticsBase {
       //     'class' => ['layout-column', 'layout-column--half']
       //   ],
       //   'data' => $this->countByLanguage()
-      // ]
-      'by_archive' => [
+      // ],
+      'by_channel' => [
         '#type' => 'container',
         '#attributes' => [
-          'class' => ['layout-column', 'layout-column--half']
+          'class' => ['layout-column', 'layout-column--quadrter'],
         ],
-        'data' => $this->countByArchive(),
-      ]
+        'date' => $this->countByChannel(),
+      ],
     ];
 
     // $langtotal = array_reduce($view['by_language']['#rows'], function($total, $row) { return $total + $row['total']; }, 0);
@@ -191,6 +198,37 @@ class Overview extends StatisticsBase {
       '#caption' => $this->t('Questions by status'),
       '#header' => [$this->t('Archive'), $this->t('Total')],
       '#rows' => $result,
+    ];
+
+    return $table;
+  }
+
+  protected function countByChannel() {
+    $query = $this->getQuery();
+    $query->fields('q', ['channel']);
+    $query->addExpression('COUNT(*)', 'total');
+    $query->groupBy('q.channel');
+
+    $channels = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['vid' => 'asklib_channels']);
+
+    $result = $query->execute()->fetchAll(PDO::FETCH_UNIQUE);
+
+    $data = array_map(function($c) use ($result) {
+      return [
+        'name' => $c->label(),
+        'total' => isset($result[$c->id()]) ? $result[$c->id()]->total : 0,
+      ];
+    }, $channels);
+
+    usort($data, function($a, $b) {
+      return strcasecmp($a['name'], $b['name']);
+    });
+
+    $table = [
+      '#type' => 'table',
+      '#caption' => $this->t('Questions by channel'),
+      '#header' => [$this->t('Channel'), $this->t('Total')],
+      '#rows' => $data,
     ];
 
     return $table;
