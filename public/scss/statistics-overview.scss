@@ -22,6 +22,10 @@
     margin-bottom: 2rem;
   }
 
+  td {
+    white-space: nowrap;
+  }
+
   tr.nested-data {
     padding: 0;
 

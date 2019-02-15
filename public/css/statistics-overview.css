@@ -12,6 +12,8 @@
   margin-bottom: .5rem; }
 .asklib-statistics table {
   margin-bottom: 2rem; }
+.asklib-statistics td {
+  white-space: nowrap; }
 .asklib-statistics tr.nested-data {
   padding: 0; }
   .asklib-statistics tr.nested-data td {

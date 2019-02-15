@@ -25,14 +25,14 @@ class Overview extends StatisticsBase {
       'by_archive' => [
         '#type' => 'container',
         '#attributes' => [
-          'class' => ['layout-column', 'layout-column--d']
+          'class' => ['layout-column', 'layout-column--quarter']
         ],
         'data' => $this->countByArchive(),
       ],
       'by_delay' => [
         '#type' => 'container',
         '#attributes' => [
-          'class' => ['layout-column', 'layout-column--quadrter']
+          'class' => ['layout-column', 'layout-column--quarter']
         ],
         'data' => $this->countByDelay(),
       ],
@@ -46,7 +46,7 @@ class Overview extends StatisticsBase {
       'by_channel' => [
         '#type' => 'container',
         '#attributes' => [
-          'class' => ['layout-column', 'layout-column--quadrter'],
+          'class' => ['layout-column', 'layout-column--quarter'],
         ],
         'date' => $this->countByChannel(),
       ],
