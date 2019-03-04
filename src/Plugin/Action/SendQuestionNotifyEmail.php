@@ -6,7 +6,7 @@ use Exception;
 use Drupal\taxonomy\TermInterface;
 
 /**
- * Changes question status to answered.
+ * Sends notification email to group subscribers.
  *
  * @Action(
  *   id = "asklib_send_question_notify_email",

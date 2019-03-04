@@ -14,7 +14,6 @@ use Drupal\Core\Url;
 use Drupal\asklib\ProvideQuestionFormHeader;
 use Drupal\asklib\QuestionInterface;
 use Drupal\asklib\UserMailGroupHelper;
-use Drupal\asklib\Event\QuestionEvent;
 use Drupal\autoslug\Slugger;
 use Drupal\autoslug\SluggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;

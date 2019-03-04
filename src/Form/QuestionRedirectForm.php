@@ -7,7 +7,6 @@ use Drupal\Core\Url;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\asklib\Event\QuestionEvent;
 use Drupal\asklib\QuestionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -62,7 +61,7 @@ class QuestionRedirectForm extends ContentEntityForm {
     $this->entity->setNotificationFlags(QuestionInterface::NOTIFY_SUBSCRIBERS);
     $form_state->setRedirect('view.asklib_index.page_1');
     drupal_set_message(t('Target library updated.'));
-    
+
     return parent::save($form, $form_state);
   }
 }

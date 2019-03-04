@@ -12,7 +12,6 @@ use Drupal\Core\Render\Element;
 use Drupal\File\FileUsage\FileUsageInterface;
 use Drupal\asklib\QuestionInterface;
 use Drupal\asklib\UserMailGroupHelper;
-use Drupal\asklib\Event\QuestionEvent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 

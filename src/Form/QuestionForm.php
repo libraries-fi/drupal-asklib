@@ -6,7 +6,6 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\asklib\Event\QuestionEvent;
 use Drupal\asklib\Entity\QuestionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -42,7 +41,6 @@ class QuestionForm extends ContentEntityForm {
     $form['municipality']['widget']['#empty_value'] = '';
     $form['municipality']['widget']['#empty_option'] = $this->t('- Select a value -');
     unset($form['municipality']['widget']['#options']['_none']);
-
 
     $form['attachments']['widget']['#description'] = $this->t('You may add files if needed.');
 
