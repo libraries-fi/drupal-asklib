@@ -36,7 +36,7 @@ abstract class StatisticsBase extends KifiStatisticsBase {
       'year' => [
         '#type' => 'select',
         '#title' => $this->t('Year'),
-        '#options' => array_combine(range(date('Y'), 2000), range(date('Y'), 2000)),
+        '#options' => array_combine(range(date('Y'), 1999), range(date('Y'), 1999)),
         '#empty_option' => $this->t('- Any -'),
         '#default_value' => $this->getParameter('year'),
       ]
