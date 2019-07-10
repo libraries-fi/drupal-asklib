@@ -6,7 +6,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\asklib\UserMailGroupHelper;
-use Drupal\kifimail\VariablesProcessorInterface;
 /**
  * Extract variables from questions.
  *
@@ -15,7 +14,7 @@ use Drupal\kifimail\VariablesProcessorInterface;
  *   class = "Drupal\asklib\QuestionInterface"
  * )
  */
-class QuestionVariables implements VariablesProcessorInterface {
+class QuestionVariables {
   protected $user_storage;
   protected $mail_groups;
 
