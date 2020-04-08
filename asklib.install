@@ -2,6 +2,8 @@
 
 use Drupal\comment\CommentManagerInterface;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 function asklib_install() {
   $em = Drupal::entityManager();
@@ -33,4 +35,14 @@ function asklib_install() {
       ],
     ],
   ])->save();
+}
+
+function asklib_update_8001() {
+  
+  $storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(new TranslatableMarkup('Asker\'s IP address'))
+    ->setDescription(new TranslatableMarkup('IP address from which the question was originally submitted.'));
+  
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('ip_address', 'asklib_question', 'asklib', $storage_definition);
 }
