@@ -213,6 +213,25 @@ class QuestionAdminForm extends ContentEntityForm {
       '#access' => $this->currentUser()->hasPermission('administer asklib'),
     ];
 
+    $ip_address = $question->getIpAddress();
+    $form['asker_details'] = [
+      '#type' => 'details',
+      '#group' => 'advanced',
+      '#title' => $this->t('Asker\'s details'),
+      '#open' => TRUE,
+      'askers_ip_address' => [
+        '#type' => 'item',
+        '#title' => $this->t('Asker\'s IP address'),
+        '#markup' => '<strong>' . $ip_address . '</strong>'
+      ],
+      'ban_link' => [
+        '#type' => 'link',
+        '#title' => $this->t('Block asker\'s IP address'),
+        '#url' => Url::fromRoute('ban.admin_page', ['default_ip' => $ip_address]),
+      ],
+      '#access' => $this->currentUser()->hasPermission('administer asklib') && $ip_address,
+    ];
+
     $form['email']['#group'] = 'questioner_group';
     $form['municipality']['#group'] = 'questioner_group';
 

@@ -49,6 +49,7 @@ use Drupal\asklib\QuestionInterface;
  *     "revision" = "vid",
  *     "status" = "published",
  *     "published" = "published",
+ *     "ip_address" = "ip_address",
  *   },
  *   links = {
  *     "add-form" = "/kysy-kirjastonhoitajalta",
@@ -373,6 +374,14 @@ class Question extends ContentEntityBase implements QuestionInterface {
     return $this->get('attachments')->referencedEntities();
   }
 
+  public function getIpAddress() {
+    return $this->get('ip_address')->value;
+  }
+
+  public function setIpAddress($ip_address) {
+    $this->set('ip_address', $ip_address);
+  }
+
   public function preSave(EntityStorageInterface $storage) {
     parent::preSave($storage);
 
@@ -380,6 +389,18 @@ class Question extends ContentEntityBase implements QuestionInterface {
       $this->setTitle(static::titleFromBody($this->getBody()));
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function preCreate(EntityStorageInterface $storage, array &$values) {
+    $asker_ip_address = filter_var(\Drupal::request()->getClientIP(), FILTER_VALIDATE_IP,
+      FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+    if($asker_ip_address) {
+      $values['ip_address'] = $asker_ip_address;
+    }
+  }
+
 
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     /*
@@ -752,6 +773,10 @@ class Question extends ContentEntityBase implements QuestionInterface {
         'type' => 'kifiform_captcha',
         'weight' => 100,
       ]);
+
+    $fields['ip_address'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Asker\'s IP address'))
+      ->setDescription(t('IP address from which the question was originally submitted.'));
 
       return $fields;
   }
