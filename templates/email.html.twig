@@ -30,6 +30,11 @@
   <div style="padding: 5px" id="body-content">
     {% autoescape false %}{{ body }}{% endautoescape %}
   </div>
+  <div style="padding: 5px">
+    <p><strong>{% trans %}Like and comment!{% endtrans %}</strong></p>
+    <p>{% trans %}Major part of the Ask a Librarian answers are published to benefit also other information seekers. You can like and comment a published answer, https://www.libraries.fi/ask/answers.{% endtrans %}</p>
+    <p>{% trans %}If you have a new question, please ask, https://www.libraries.fi/ask.{% endtrans %}</p>
+  </div>
   <div style="text-align: center; padding: 10px 5px" id="footer">
     <strong>{% trans %}Kysy kirjastonhoitajalta{% endtrans %}</strong><br />
     <span style="font-size: 0.8em">www.kirjastot.fi/kysy</span><br />
