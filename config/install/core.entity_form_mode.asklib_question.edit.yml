@@ -1,0 +1,10 @@
+langcode: fi
+status: true
+dependencies:
+  enforced:
+    module:
+      - asklib
+id: asklib_question.edit
+label: 'Ask a Librarian Question'
+targetEntityType: asklib_question
+cache: true
