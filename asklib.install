@@ -2,6 +2,7 @@
 
 use Drupal\comment\CommentManagerInterface;
 use Drupal\comment\Plugin\Field\FieldType\CommentItemInterface;
+use Drupal\Core\Config\FileStorage;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
@@ -45,4 +46,22 @@ function asklib_update_8001() {
   
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('ip_address', 'asklib_question', 'asklib', $storage_definition);
+}
+
+/**
+ * Add missing form mode configuration to asklib_question. This helps to bypass
+ * an error that happens during Drupal core update, from 8.7 to 8.8.
+ */
+function asklib_update_8002() {
+
+  // Check if we already have installed the configuration
+  $entity = \Drupal::entityTypeManager()->getStorage('entity_form_mode')->load('asklib_question.edit');
+  if(!$entity) {
+    // If not load and write the configuration to Drupal config.
+    $config_path = drupal_get_path('module', 'asklib') . '/config/install';
+    $source = new FileStorage($config_path);
+    $config_storage = \Drupal::service('config.storage');
+    $config_storage->write('core.entity_form_mode.asklib_question.edit', $source->read('core.entity_form_mode.asklib_question.edit'));
+  }
+
 }
