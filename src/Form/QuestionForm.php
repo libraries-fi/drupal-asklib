@@ -33,6 +33,7 @@ class QuestionForm extends ContentEntityForm {
 
     $form['email']['widget'][0]['value']['#title'] = $this->t('Your email address');
     $form['email']['widget'][0]['value']['#required'] = TRUE;
+    $form['email']['widget'][0]['value']['#attributes']['autocomplete'] = 'email';
 
     $form['municipality']['widget']['#description'] = '';
     $form['municipality']['widget']['#title'] = $this->t('Your municipality');

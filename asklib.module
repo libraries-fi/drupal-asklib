@@ -403,6 +403,7 @@ function asklib_form_comment_comment_asklib_form_alter(&$form, FormStateInterfac
   $form['actions']['submit']['#value'] = t('Send');
   $form['comment_body']['widget'][0]['#format'] = 'basic_html_without_ckeditor';
   $form['comment_body']['widget'][0]['#title'] = t('Your comment');
+  $form['field_email']['widget'][0]['value']['#attributes']['autocomplete'] = 'email';
 }
 
 function asklib_user_login($account) {
