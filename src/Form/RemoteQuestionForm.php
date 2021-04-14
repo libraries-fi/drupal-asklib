@@ -28,6 +28,12 @@ class RemoteQuestionForm extends ContentEntityForm {
       }
     }
 
+    // Need to set language manually because Question is not marked as 'translatable'.
+    $form['langcode'] = [
+      '#type' => 'value',
+      '#value' => \Drupal::languageManager()->getCurrentLanguage()->getId(),
+    ];
+
     $form['body']['widget'][0]['#format'] = 'basic_html_without_ckeditor';
     $form['body']['widget'][0]['#rows'] = 6;
     $form['body']['widget'][0]['#description'] = '';
