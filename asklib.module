@@ -124,6 +124,47 @@ function asklib_cron() {
       $question->save();
     }
   }
+
+  // Clear contact information of questions older than 2 years every day after 1 am.
+  $request_time = \Drupal::time()->getRequestTime();
+  $next_execution = \Drupal::state()->get('asklib.next_question_contact_cleanup', 0);
+
+  if($request_time > $next_execution) {
+    \Drupal::state()->set('asklib.next_question_contact_cleanup',
+    mktime(1, 0, 0, date("m")  , date("d") + 7, date("Y")));
+
+    _asklib_clear_old_question_contact_info();
+  }
+  
+}
+
+/**
+ * Clears contact information from questions, that are more than two years old.
+ * This is done in small batches to avoid slowing down the server.
+ */
+function _asklib_clear_old_question_contact_info()
+{
+  $two_years_ago = mktime(1, 0, 0, date("m"), date("d"), date("Y") - 2);
+  $storage = \Drupal::entityTypeManager()->getStorage('asklib_question');
+  $query = $storage->getQuery();
+  $info_not_cleared = $query->orConditionGroup()
+    ->exists('email')
+    ->condition('name', 'Kysyjätieto poistettu', '<>');
+  $qids = $query
+    ->condition('created', $two_years_ago, '<=')
+    ->condition($info_not_cleared)
+    ->range(0, 5000)
+    ->execute();
+  
+  if(!empty($qids)) {
+    $query = \Drupal::database()->update('asklib_questions')
+    ->fields([
+      'name' => 'Kysyjätieto poistettu',
+      'email' => NULL,
+    ])
+    ->condition('id', $qids, 'IN');
+    $query->execute();
+  }
 }
 
 function template_preprocess_asklib_email(&$variables) {
