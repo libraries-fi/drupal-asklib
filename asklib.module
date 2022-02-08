@@ -125,7 +125,7 @@ function asklib_cron() {
     }
   }
 
-  // Clear contact information of questions older than 2 years every day after 1 am.
+  // Clear contact information of old questions periodically to improve privacy.
   $request_time = \Drupal::time()->getRequestTime();
   $next_execution = \Drupal::state()->get('asklib.next_question_contact_cleanup', 0);
 
