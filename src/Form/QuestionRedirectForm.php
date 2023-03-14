@@ -60,7 +60,7 @@ class QuestionRedirectForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->setNotificationFlags(QuestionInterface::NOTIFY_SUBSCRIBERS);
     $form_state->setRedirect('view.asklib_index.page_1');
-    drupal_set_message(t('Target library updated.'));
+    $this->messenger()->addStatus(t('Target library updated.'));
 
     return parent::save($form, $form_state);
   }

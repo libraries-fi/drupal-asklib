@@ -2,6 +2,8 @@
 
 namespace Drupal\asklib\Statistics;
 
+use Drupal\Core\Database\Query\PagerSelectExtender;
+use Drupal\Core\Database\Query\TableSortExtender;
 use PDO;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\asklib\QuestionInterface;
@@ -26,7 +28,7 @@ class LibraryOverview extends StatisticsBase {
           'city' => $this->t('Municipality'),
           'special' => $this->t('Special library'),
         ],
-        '#default_value' => isset($this->parameters['t']) ? $this->parameters['t'] : '',
+        '#default_value' => $this->parameters['t'] ?? '',
       ]
     ];
 
@@ -36,7 +38,7 @@ class LibraryOverview extends StatisticsBase {
       'name' => [
         '#type' => 'textfield',
         '#title' => $this->t('Name'),
-        '#default_value' => isset($this->parameters['n']) ? $this->parameters['n'] : '',
+        '#default_value' => $this->parameters['n'] ?? '',
         '#size' => 20,
       ],
     ];
@@ -87,8 +89,8 @@ class LibraryOverview extends StatisticsBase {
     ];
 
     $query = $this->getQuery()
-      ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
-      ->extend('Drupal\Core\Database\Query\TableSortExtender');
+      ->extend(PagerSelectExtender::class)
+      ->extend(TableSortExtender::class);
     $query->innerJoin('taxonomy_term_field_data', 't', 'a.library = t.tid');
     $query->addExpression('COUNT(*)', 'total');
     $query->addExpression('MAX(a.answered)', 'last_answer');

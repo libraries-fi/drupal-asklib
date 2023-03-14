@@ -28,14 +28,14 @@ class MailGroupController extends ControllerBase
     private function getGroupListBuilder()
     {
         $container = \Drupal::getContainer();
-        $type = $this->entityManager()->getDefinition('taxonomy_term');
+        $type = \Drupal::service('entity_type.manager')->getDefinition('taxonomy_term');
         return MailGroupListBuilder::createInstance($container, $type);
     }
 
     private function getUserListBuilder()
     {
         $container = \Drupal::getContainer();
-        $type = $this->entityManager()->getDefinition('user');
+        $type = \Drupal::service('entity_type.manager')->getDefinition('user');
         return MailUserListBuilder::createInstance($container, $type);
     }
 }

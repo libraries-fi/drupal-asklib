@@ -22,7 +22,7 @@ class QuestionFromKeywordIndexCrumb extends PathBasedBreadcrumbBuilder {
 
   public static function termIdFromQuery($from) {
     // Variable value should be 'term/{tid}'
-    list($foo, $tid) = explode('/', $from . '//');
+    [$foo, $tid] = explode('/', $from . '//');
     if ($foo == 'term' && ctype_digit($tid)) {
       return $tid;
     }

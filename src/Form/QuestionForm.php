@@ -116,7 +116,7 @@ class QuestionForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->setNotificationFlags(-1);
 
-    drupal_set_message(t('Thank you for your question! We will answer you within three days. If you do not hear from us, please contact us at @email.', [
+    $this->messenger()->addStatus(t('Thank you for your question! We will answer you within three days. If you do not hear from us, please contact us at @email.', [
       '@email' => 'toimitus@kirjastot.fi'
     ]));
 

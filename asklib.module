@@ -1,5 +1,11 @@
 <?php
 
+use Drupal\asklib\Form\MailGroupTermForm;
+use Drupal\asklib\Form\MailGroupUserForm;
+use Drupal\Core\Database\Query\ConditionInterface;
+use Drupal\Core\Extension\Extension;
+use Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Access\AccessResult;
@@ -85,13 +91,13 @@ function asklib_theme() {
 function asklib_entity_type_build(array &$entity_types) {
   if (isset($entity_types['taxonomy_term'])) {
     $term = $entity_types['taxonomy_term'];
-    $term->setFormClass('asklib_admin', \Drupal\asklib\Form\MailGroupTermForm::class);
+    $term->setFormClass('asklib_admin', MailGroupTermForm::class);
     $term->setLinkTemplate('asklib-mail-group-form', '/admin/config/asklib/emails/{taxonomy_term}');
   }
 
   if (isset($entity_types['user'])) {
     $user = $entity_types['user'];
-    $user->setFormClass('asklib_admin', \Drupal\asklib\Form\MailGroupUserForm::class);
+    $user->setFormClass('asklib_admin', MailGroupUserForm::class);
     $user->setLinkTemplate('asklib-mail-group-form', '/admin/config/asklib/emails/users/{user}');
   }
 }
@@ -112,7 +118,7 @@ function asklib_mail($key, &$message, $params) {
 function asklib_cron() {
   $day_limit = Drupal::config('asklib.settings')->get('reserved_window');
   $date_limit = date('Y-m-d', strtotime(sprintf('-%d days', $day_limit)));
-  $storage = Drupal::entityManager()->getStorage('asklib_question');
+  $storage = \Drupal::service('entity_type.manager')->getStorage('asklib_question');
   $qids = $storage->getQuery()
     ->condition('state', QuestionInterface::STATE_RESERVED)
     ->execute();
@@ -267,8 +273,9 @@ function asklib_views_query_alter(ViewExecutable $view, QueryPluginBase $query) 
 function asklib_bug_fix_rss_query(array &$conditions) {
   foreach ($conditions as &$rule) {
     if (is_array($rule)) {
-      if ($rule['field'] instanceof \Drupal\Core\Database\Query\ConditionInterface) {
-        asklib_bug_fix_rss_query($rule['field']->conditions());
+      if ($rule['field'] instanceof ConditionInterface) {
+        $conditions = $rule['field']->conditions();
+        asklib_bug_fix_rss_query($conditions);
       } elseif (is_string($rule['field'])) {
         if (trim($rule['field']) == 'asklib_question__feeds.feeds = :asklib_question__feeds_feeds') {
           $rule['field'] = 'asklib_question__feeds.feeds_target_id = :asklib_question__feeds_feeds';
@@ -280,7 +287,8 @@ function asklib_bug_fix_rss_query(array &$conditions) {
 
 function asklib_views_pre_execute(ViewExecutable $view) {
   if ($view->storage->id() == 'asklib_rss') {
-    asklib_bug_fix_rss_query($view->build_info['query']->conditions());
+    $conditions = $view->build_info['query']->conditions();
+    asklib_bug_fix_rss_query($conditions);
   }
 }
 
@@ -463,7 +471,7 @@ function asklib_user_update(UserInterface $user) {
   }
 }
 
-function asklib_system_info_alter(array &$info, \Drupal\Core\Extension\Extension $file, $type) {
+function asklib_system_info_alter(array &$info, Extension $file, $type) {
   if ($type != 'theme' || !in_array($file->getName(), ['seven', 'kifi_admin'])) {
     return;
   }
@@ -560,7 +568,7 @@ function asklib_tokens($type, array $tokens, array $data, array $options, Bubble
   }
 
   if ($type == 'asklib_answer') {
-    $answer = isset($data['asklib_answer']) ? $data['asklib_answer'] : $data['asklib_question']->getAnswer();
+    $answer = $data['asklib_answer'] ?? $data['asklib_question']->getAnswer();
 
     if ($answer) {
       foreach ($tokens as $name => $original) {
@@ -615,12 +623,13 @@ function asklib_preprocess_html(array &$variables) {
 
     if (!$user->get('field_asklib_library')->target_id) {
       $url = Url::fromRoute('entity.user.asklib_mail_group_form', ['user' => $user->id()])->toString();
-      drupal_set_message(t('Changes to Ask a Librarian: Set your home library in <a href=":url">settings</a>.', [':url' => $url]), 'warning');
+      \Drupal::messenger()->addWarning(t('Changes to Ask a Librarian: Set your home library in <a href=":url">settings</a>.', [':url' => $url]));
     }
   }
 }
 
 function asklib_toolbar() {
+  $items = [];
   $items['asklib'] = [
     '#type' => 'toolbar_item',
     '#weight' => 200,
@@ -753,7 +762,8 @@ function asklib_asklib_question_delete(QuestionInterface $question) {
   $url = Url::fromRoute('entity.asklib_question.canonical', ['asklib_question' => $question->id()]);
   Drupal::service('path.alias_storage')->delete(['source' => $url]);
 
-  search_index_clear('asklib_search_elastic', $question->id());
+  // Get searchindex service and clear the index.
+  Drupal::service('search.index')->clear('asklib_search_elastic', $question->id());
 }
 
 function asklib_delete_question_index(QuestionInterface $question) {
@@ -768,9 +778,9 @@ function asklib_delete_question_index(QuestionInterface $question) {
         'type' => 'content',
         'id' => sprintf('asklib_question:%d:%s', $question->id(), $language->getId())
       ]);
-    } catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e) {
+    } catch (Missing404Exception $e) {
       // Question was not indexed before, pass.
-    } catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e) {
+    } catch (NoNodesAvailableException $e) {
       // Elasticsearch is down (or not installed), pass.
     }
   }

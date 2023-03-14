@@ -48,13 +48,15 @@ class SimilarQuestions extends BlockBase implements ContainerFactoryPluginInterf
     $elements = [];
 
     foreach ($this->findSimilarQuestions() as $delta => $question) {
+      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+      // Please confirm that `$question` is an instance of `Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
       $elements[$delta] = [
         '#prefix' => '<li>',
         '#suffix' => '</li>',
         'link' => [
           '#type' => 'link',
           '#title' => $question->label(),
-          '#url' => $question->urlInfo(),
+          '#url' => $question->toUrl(),
         ]
       ];
     }

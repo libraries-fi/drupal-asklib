@@ -64,9 +64,7 @@ class UserMailGroupHelper {
 
     // Filter user from terms that the user is not subscribed to anymore.
     foreach ($storage->loadMultiple($tids) as $term) {
-      $term->get('field_asklib_subscribers')->filter(function($field) use ($term, $uid, $gids) {
-        return $field->target_id != $uid || in_array($term->id(), $gids);
-      });
+      $term->get('field_asklib_subscribers')->filter(fn($field) => $field->target_id != $uid || in_array($term->id(), $gids));
       $term->save();
     }
 

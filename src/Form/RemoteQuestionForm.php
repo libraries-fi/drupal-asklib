@@ -63,7 +63,7 @@ class RemoteQuestionForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->setNotificationFlags(-1);
     $message = \Drupal::config('asklib.settings')->get('confirmation');
-    drupal_set_message($message);
+    $this->messenger()->addStatus($message);
 
     return parent::save($form, $form_state);
   }

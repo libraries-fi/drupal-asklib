@@ -18,6 +18,7 @@ use Drupal\autoslug\Slugger;
 use Drupal\autoslug\SluggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 use Drupal\Core\Config\Config;
 
@@ -32,7 +33,7 @@ class QuestionAdminForm extends ContentEntityForm {
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('date.formatter'),
       $container->get('path.alias_storage'),
       $container->get('autoslug.slugger.default'),
@@ -41,8 +42,8 @@ class QuestionAdminForm extends ContentEntityForm {
     );
   }
 
-  public function __construct(EntityManagerInterface $em, DateFormatterInterface $dates, AliasStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups) {
-    parent::__construct($em);
+  public function __construct(EntityRepositoryInterface $entity_repository, DateFormatterInterface $dates, AliasStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups) {
+    parent::__construct($entity_repository);
     $this->dates = $dates;
     $this->aliases = $aliases;
     $this->aliasGenerator = $alias_generator;
@@ -151,7 +152,7 @@ class QuestionAdminForm extends ContentEntityForm {
         '#type' => 'link',
         '#weight' => 100,
         '#title' => $this->t('Redirect to another group'),
-        '#url' => $question->urlInfo('redirect-form'),
+        '#url' => $question->toUrl('redirect-form'),
         '#access' => $question->isAvailableTo($this->currentUser()) && !$question->isAnswered(),
       ]
     ];
@@ -504,7 +505,7 @@ class QuestionAdminForm extends ContentEntityForm {
       $answer->save();
     }
 
-    drupal_set_message(t('Changes have been saved.'));
+    $this->messenger()->addStatus(t('Changes have been saved.'));
     return $status;
   }
 
@@ -515,18 +516,18 @@ class QuestionAdminForm extends ContentEntityForm {
     if ($skip_email && !$question->isAnswered()) {
       $this->executeAction('asklib_mark_question_answered', $question);
 
-      drupal_set_message(t('Question was marked answered.'));
+      $this->messenger()->addStatus(t('Question was marked answered.'));
       $form_state->setRedirect('view.asklib_index.page_1');
     } else if (!$skip_email && !$question->getEmailSentTime() && $question->isAnswered()) {
       $question->getAnswer()->setAnsweredTime(NULL);
 
-      drupal_set_message(t('Question was marked unanswered.'));
+      $this->messenger()->addStatus(t('Question was marked unanswered.'));
     }
   }
 
   public function processSlug(array $form, FormStateInterface $form_state) {
     $langcode = $this->entity->language()->getId();
-    $source = '/' . $this->entity->urlInfo()->getInternalPath();
+    $source = '/' . $this->entity->toUrl()->getInternalPath();
     $match = $this->aliases->load([
       'source' => $source,
       'langcode' => $langcode,
@@ -581,7 +582,7 @@ class QuestionAdminForm extends ContentEntityForm {
   }
 
   public function redirectToPreview(array $form, FormStateInterface $form_state) {
-    $form_state->setRedirectUrl($this->entity->urlInfo('email-form'));
+    $form_state->setRedirectUrl($this->entity->toUrl('email-form'));
   }
 
   public function reserve(array $form, FormStateInterface $form_state) {
@@ -599,7 +600,7 @@ class QuestionAdminForm extends ContentEntityForm {
 
     $question->release()->save();
     $form_state->setRedirect('view.asklib_index.page_1');
-    drupal_set_message(t('Question released successfully.'));
+    $this->messenger()->addStatus(t('Question released successfully.'));
   }
 
   protected function rowCountForQuestion($body, $fallback = 4) {
@@ -610,11 +611,11 @@ class QuestionAdminForm extends ContentEntityForm {
   }
 
   protected function slugForQuestion() {
-    $slug = substr(strrchr($this->entity->url(), '/'), 1);
+    $slug = substr(strrchr($this->entity->toUrl()->toString(), '/'), 1);
 
     if (!ctype_digit($slug)) {
       // Strip query variables potentially injected by other modules etc.
-      list($slug, $_) = explode('?', $slug . '?');
+      [$slug, $_] = explode('?', $slug . '?');
       return $slug;
     }
 
@@ -702,12 +703,14 @@ class QuestionAdminForm extends ContentEntityForm {
     ];
 
     foreach ($locks as $lock) {
+      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+      // Please confirm that `getUser()` is an instance of `Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
       $table['#rows'][] = [
         [
           'data' => [
             '#type' => 'link',
             '#title' => $lock->getUser()->getUsername(),
-            '#url' => $lock->getUser()->urlInfo(),
+            '#url' => $lock->getUser()->toUrl(),
           ]
         ],
         [

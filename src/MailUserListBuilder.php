@@ -32,6 +32,7 @@ class MailUserListBuilder extends EntityListBuilder
 
   public function buildRow(EntityInterface $user)
   {
+    $row = [];
     $groups = [];
     foreach ($this->groups($user->id()) as $tid) {
       $groups[] = $this->term_cache[$tid]->label();
@@ -75,7 +76,7 @@ class MailUserListBuilder extends EntityListBuilder
 
     $ops['edit'] = [
       'title' => $this->t('Edit'),
-      'url' => $term->urlInfo('asklib-mail-group-form'),
+      'url' => $term->toUrl('asklib-mail-group-form'),
       'weight' => 0,
     ];
 
@@ -90,7 +91,7 @@ class MailUserListBuilder extends EntityListBuilder
     if (empty($uids)) {
       return;
     }
-    $phs = implode(',', array_fill(0, count($uids), '?'));
+    $phs = implode(',', array_fill(0, is_countable($uids) ? count($uids) : 0, '?'));
     $query = sprintf('
       SELECT entity_id tid, field_asklib_subscribers_target_id uid
       FROM {taxonomy_term__field_asklib_subscribers}
@@ -106,6 +107,6 @@ class MailUserListBuilder extends EntityListBuilder
       $tids[] = $row->tid;
     }
 
-    $this->term_cache = \Drupal::entityManager()->getStorage('taxonomy_term')->loadMultiple($tids);
+    $this->term_cache = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term')->loadMultiple($tids);
   }
 }

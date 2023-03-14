@@ -27,6 +27,8 @@ class ParentQuestion extends WidgetBase {
       $parent = $item->entity;
 
       if ($parent) {
+        // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+        // Please confirm that `$parent` is an instance of `Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
         $element = [
           '#type' => 'item',
           '#title' => $parent->parent->getFieldDefinition()->getLabel(),
@@ -36,7 +38,7 @@ class ParentQuestion extends WidgetBase {
           'link' => [
             '#type' => 'link',
             '#title' => $parent->label(),
-            '#url' => $parent->urlInfo('edit-form'),
+            '#url' => $parent->toUrl('edit-form'),
           ],
           'value' => [
             '#type' => 'value',

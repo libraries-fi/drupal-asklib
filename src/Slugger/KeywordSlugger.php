@@ -9,7 +9,7 @@ use Drupal\taxonomy\TermInterface;
 class KeywordSlugger extends DefaultSlugger {
   public function applies(EntityInterface $entity) {
     $vids = ['asklib_tags', 'finto'];
-    return $entity instanceof TermInterface && in_array($entity->getVocabularyId(), $vids, TRUE);
+    return $entity instanceof TermInterface && in_array($entity->bundle(), $vids, TRUE);
   }
 
   protected function extractTokens(EntityInterface $entity, $pattern, $max_words = 0) {

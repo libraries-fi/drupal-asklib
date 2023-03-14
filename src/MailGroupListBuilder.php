@@ -30,6 +30,7 @@ class MailGroupListBuilder extends EntityListBuilder {
   }
 
   public function buildRow(EntityInterface $term) {
+    $row = [];
     $status = [
       $this->t('Disabled'),
       $this->t('Enabled'),
@@ -37,7 +38,7 @@ class MailGroupListBuilder extends EntityListBuilder {
     $row['name']['data'] = [
       '#type' => 'link',
       '#title' => $term->label(),
-      '#url' => $term->urlInfo(),
+      '#url' => $term->toUrl(),
     ];
     $row['type'] = $term->vid->entity->label();
     $row['enabled'] = $status[$term->get('field_asklib_active')->value];
@@ -49,7 +50,7 @@ class MailGroupListBuilder extends EntityListBuilder {
 
     $ops['edit'] = [
       'title' => $this->t('Edit'),
-      'url' => $term->urlInfo('asklib-mail-group-form'),
+      'url' => $term->toUrl('asklib-mail-group-form'),
       'weight' => 0,
     ];
 

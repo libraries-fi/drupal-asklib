@@ -8,6 +8,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 class MailGroupUserForm extends ContentEntityForm {
   private $groupHelper;
@@ -21,14 +22,14 @@ class MailGroupUserForm extends ContentEntityForm {
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
       $container->get('user.data'),
       $container->get('asklib.user_mail_group_helper')
     );
   }
 
-  public function __construct(EntityManagerInterface $entity_manager, UserDataInterface $config, UserMailGroupHelper $group_helper) {
-    parent::__construct($entity_manager);
+  public function __construct(EntityRepositoryInterface $entity_repository, UserDataInterface $config, UserMailGroupHelper $group_helper) {
+    parent::__construct($entity_repository);
     $this->userData = $config;
     $this->groupHelper = $group_helper;
   }
@@ -39,7 +40,7 @@ class MailGroupUserForm extends ContentEntityForm {
 
     $user_groups = $this->groupHelper->getGroupsForUser($this->entity->id());
     $groups = $this->sortGroups($this->groups(), $user_groups);
-    $labels = array_map(function($term) { return $term->label(); }, $groups);
+    $labels = array_map(fn($term) => $term->label(), $groups);
 
     if (empty($form['field_asklib_mail']['widget'][0]['value']['#default_value'])) {
       $form['field_asklib_mail']['widget'][0]['value']['#default_value'] = $this->entity->getEmail();
@@ -50,7 +51,7 @@ class MailGroupUserForm extends ContentEntityForm {
       $form['field_asklib_signature']['widget'][0]['value']['#default_value'] = $this->getSetting('email.signature');
     }
 
-    $label_suffix = array_map(function($g) { return $g->getName(); }, $user_groups);
+    $label_suffix = array_map(fn($g) => $g->getName(), $user_groups);
     $label_suffix = implode(', ', $label_suffix);
 
     if ($label_suffix) {

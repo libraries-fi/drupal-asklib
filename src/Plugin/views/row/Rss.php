@@ -93,7 +93,7 @@ class Rss extends RssPluginBase {
       ]
     ];
 
-    $build = entity_view($question, $display_mode, $question->language()->getId());
+    $build = \Drupal::entityTypeManager()->getViewBuilder($question->getEntityTypeId())->view($question, $display_mode, $question->language()->getId());
     unset($build['#theme']);
 
     if (!empty($question->rss_namespaces)) {

@@ -279,9 +279,7 @@ class Answer extends ContentEntityBase implements AnswerInterface {
     $fields['created'] = BaseFieldDefinition::create('created')
       ->setLabel(t('Created'))
       ->setDescription(t('The time that the node was created.'))
-      ->setDisplayOptions('view', array(
-        'type' => 'hidden',
-      ));
+      ->setDisplayOptions('view', ['type' => 'hidden']);
 
     $fields['changed'] = BaseFieldDefinition::create('changed')
       ->setLabel(t('Updated'))

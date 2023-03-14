@@ -2,6 +2,7 @@
 
 namespace Drupal\asklib\Entity;
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal;
 use LogicException;
 use RuntimeException;
@@ -105,7 +106,7 @@ class Question extends ContentEntityBase implements QuestionInterface {
   public function reserve($user_or_id) {
     $uid = is_object($user_or_id) ? $user_or_id->id() : $user_or_id;
 
-    $lock = Drupal::entityManager()->getStorage('asklib_lock')->create();
+    $lock = \Drupal::service('entity_type.manager')->getStorage('asklib_lock')->create();
     $lock->setUser($uid);
     $lock->setQuestion($this);
 
@@ -326,7 +327,7 @@ class Question extends ContentEntityBase implements QuestionInterface {
       throw new LogicException('Cannot set answer time without Answer object');
     }
     if ($time instanceof DateTime) {
-      $time = $time->format(DATETIME_DATETIME_STORAGE_FORMAT);
+      $time = $time->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     }
     $this->getAnswer()->setAnsweredTime($time);
   }

@@ -31,7 +31,7 @@ class QuestionDeleteForm extends ContentEntityConfirmFormbase
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
         $this->entity->delete();
-        drupal_set_message($this->t('The question has been deleted.'));
+        $this->messenger()->addStatus($this->t('The question has been deleted.'));
         $this->logger('content')->notice('Deleted question @id', ['@id' => $this->entity->id()]);
         $form_state->setRedirectUrl($this->getCancelUrl());
     }

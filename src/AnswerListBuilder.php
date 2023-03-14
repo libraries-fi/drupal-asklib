@@ -17,7 +17,7 @@ class AnswerListBuilder extends EntityListBuilder
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     return new static(
       $entity_type,
-      $container->get('entity.manager')->getStorage($entity_type->id()),
+      $container->get('entity_type.manager')->getStorage($entity_type->id()),
       $container->get('current_user')
     );
   }
@@ -45,10 +45,10 @@ class AnswerListBuilder extends EntityListBuilder
     $row['answer']['data'] = [
       '#type' => 'link',
       '#title' => $this->trimTitle($answer->getBody(), 80),
-      '#url' => $answer->urlInfo(),
+      '#url' => $answer->toUrl(),
     ];
     $row['rating'] = $answer->getRating();
-    $row['created'] = format_date($answer->getCreatedTime(), 'short');
+    $row['created'] = \Drupal::service('date.formatter')->format($answer->getCreatedTime(), 'short');
 
     $row += parent::buildRow($answer);
 
@@ -82,12 +82,12 @@ class AnswerListBuilder extends EntityListBuilder
     // }
     $ops['edit'] = [
       'title' => $this->t('Edit'),
-      'url' => $answer->urlInfo('edit-form'),
+      'url' => $answer->toUrl('edit-form'),
       'weight' => 5,
     ];
     $ops['delete'] = [
       'title' => $this->t('Delete'),
-      'url' => $answer->urlInfo('delete-form'),
+      'url' => $answer->toUrl('delete-form'),
       'weight' => 10,
     ];
     return $ops;

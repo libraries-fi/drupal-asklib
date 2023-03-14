@@ -51,7 +51,7 @@ class TaxonomyCrumb extends PathBasedBreadcrumbBuilder {
 
       $parts = explode('/', $route_match->getParameter('taxonomy_term')->url());
       $letter = strtoupper($parts[count($parts) - 2]);
-      $links[3]->setText(t('Letter @letter', ['@letter' => $letter]), $links[3]->getText());
+      $links[3]->setText(t('Letter @letter', ['@letter' => $letter]));
     }
 
     return $crumb;

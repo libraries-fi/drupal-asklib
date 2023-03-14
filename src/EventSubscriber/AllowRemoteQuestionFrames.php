@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class AllowRemoteQuestionFrames implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
+    $events = [];
     $events[KernelEvents::RESPONSE] = [['onResponse']];
     return $events;
   }

@@ -15,15 +15,15 @@ class MailUserController extends ControllerBase
 
     private function getGroupListBuilder()
     {
-        $type = $this->entityManager()->getDefinition('taxonomy_term');
-        $storage = $this->entityManager()->getStorage('taxonomy_term');
+        $type = \Drupal::service('entity_type.manager')->getDefinition('taxonomy_term');
+        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
         return new MailGroupListBuilder($type, $storage);
     }
 
     private function getUserListBuilder()
     {
-        $type = $this->entityManager()->getDefinition('user');
-        $storage = $this->entityManager()->getStorage('user');
+        $type = \Drupal::service('entity_type.manager')->getDefinition('user');
+        $storage = \Drupal::service('entity_type.manager')->getStorage('user');
         return new MailUserListBuilder($type, $storage);
     }
 }

@@ -55,6 +55,7 @@ class Lock extends ContentEntityBase implements LockInterface {
   }
 
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
+    $fields = [];
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('ID'))
       ->setDescription(t('Lock ID'))

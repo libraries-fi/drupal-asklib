@@ -8,7 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\Routing\Route;
 
 class KeywordIndexRoutes {
-  private static $aliases = [
+  private static array $aliases = [
     'fi' => '/kysy/asiasanat',
     'en' => '/ask/keywords',
     'sv' => '/fraga/amnesord'
@@ -39,7 +39,7 @@ class KeywordIndexRoutes {
     $path = Drupal::request()->getPathInfo();
 
     foreach (self::$aliases as $langcode => $alias) {
-      if ($active_langcode == $langcode && strpos($path, $alias) === 0) {
+      if ($active_langcode == $langcode && strpos($path, (string) $alias) === 0) {
         return AccessResult::allowed()->addCacheContexts(['languages:language_content']);
       }
     }

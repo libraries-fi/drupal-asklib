@@ -28,7 +28,7 @@ class MeteorCompatibilityController extends ControllerBase {
     $question = reset($result);
 
     if ($question && $question->access('view')) {
-      header('Location: ' . $question->url());
+      header('Location: ' . $question->toUrl());
       exit;
     } else {
       throw new NotFoundHttpException;
