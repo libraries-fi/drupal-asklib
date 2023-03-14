@@ -120,6 +120,7 @@ function asklib_cron() {
   $date_limit = date('Y-m-d', strtotime(sprintf('-%d days', $day_limit)));
   $storage = \Drupal::service('entity_type.manager')->getStorage('asklib_question');
   $qids = $storage->getQuery()
+    ->accessCheck(FALSE)
     ->condition('state', QuestionInterface::STATE_RESERVED)
     ->execute();
   $questions = $storage->loadMultiple($qids);
@@ -152,7 +153,7 @@ function _asklib_clear_old_question_contact_info()
 {
   $two_years_ago = mktime(1, 0, 0, date("m"), date("d"), date("Y") - 2);
   $storage = \Drupal::entityTypeManager()->getStorage('asklib_question');
-  $query = $storage->getQuery();
+  $query = $storage->getQuery()->accessCheck(FALSE);
   $info_not_cleared = $query->orConditionGroup()
     ->exists('email')
     ->condition('name', 'Kysyjätieto poistettu', '<>');
