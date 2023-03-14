@@ -25,12 +25,12 @@ class QuestionChannelForm extends ContentEntityForm {
 
   public function save(array $form, FormStateInterface $form_state) {
     $status = parent::save($form, $form_state);
-    $form_state->setRedirectUrl($this->entity->urlInfo('collection'));
+    $form_state->setRedirectUrl($this->entity->toUrl('collection'));
 
     if ($status == SAVED_NEW) {
-      drupal_set_message($this->t('Channel @id has been created.', ['@id' => $this->entity->id()]));
+      $this->messenger()->addStatus($this->t('Channel @id has been created.', ['@id' => $this->entity->id()]));
     } else {
-      drupal_set_message($this->t('Changes have been saved.'));
+      $this->messenger()->addStatus($this->t('Changes have been saved.'));
     }
 
     return $status;

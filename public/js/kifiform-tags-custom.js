@@ -1,8 +1,7 @@
 (function($) {
   "use strict";
 
-  $("form.asklib-question-edit-form input.form-autocomplete")
-    .once("asklib-tag-insert")
+  $(once("asklib-tag-insert", "form.asklib-question-edit-form input.form-autocomplete"))
     .on("kififormtaginsert", function(event, ui) {
       console.log(event);
 

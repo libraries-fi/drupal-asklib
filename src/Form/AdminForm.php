@@ -14,7 +14,7 @@ class AdminForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('entity.manager')->getStorage("taxonomy_term")
+      $container->get('entity_type.manager')->getStorage("taxonomy_term")
     );
   }
 
@@ -85,7 +85,7 @@ class AdminForm extends ConfigFormBase {
     ];
 
     $terms = $this->terms->loadByProperties(['vid' => 'forums']);
-    $options = array_map(function($term) { return $term->label(); }, $terms);
+    $options = array_map(fn($term) => $term->label(), $terms);
 
     $form['field_forum'] = [
       '#type' => 'details',

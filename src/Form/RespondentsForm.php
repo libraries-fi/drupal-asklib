@@ -12,7 +12,7 @@ class RespondentsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('entity.manager')->getStorage('taxonomy_term')
+      $container->get('entity_type.manager')->getStorage('taxonomy_term')
     );
   }
 
@@ -26,6 +26,7 @@ class RespondentsForm extends ConfigFormBase {
   }
 
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $mopts = [];
     $config = $this->config('asklib.settings');
     $form = parent::buildForm($form, $form_state);
 

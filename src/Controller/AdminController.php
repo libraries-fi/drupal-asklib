@@ -2,6 +2,7 @@
 
 namespace Drupal\asklib\Controller;
 
+use Drupal\Core\Database\Database;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -23,7 +24,7 @@ class AdminController extends ControllerBase {
     $help = check_markup($this->config->get('help'), $this->config->get('help_format'));
 
     if (isset($_GET['create_index'])) {
-      $query = \Drupal\Core\Database\Database::getConnection()->select('asklib_questions', 'a')
+      $query = Database::getConnection()->select('asklib_questions', 'a')
         ->distinct()
         ->fields('a', ['id'])
         ->condition('published', 1)

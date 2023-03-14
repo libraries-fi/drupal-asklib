@@ -81,7 +81,7 @@ class QuestionArchiveCrumb implements BreadcrumbBuilderInterface {
 
     if (isset(self::$sourcePages[$from])) {
       $route = self::$sourcePages[$from];
-      list(, $view_id, $display_id) = explode('.', $route);
+      [, $view_id, $display_id] = explode('.', $route);
 
       $view = \Drupal::entityTypeManager()->getStorage('view')->load($view_id);
       $display = $view->getDisplay($display_id);

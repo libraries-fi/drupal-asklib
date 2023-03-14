@@ -29,13 +29,10 @@ class SlugLink extends FormatterBase {
       $entity = $item->getEntity();
 
       if ($entity) {
-        $url = $entity->url();
-        // $alias = $aliases->lookupPathAlias($url, $langcode);
-
         $elements[$delta] = [
           '#type' => 'link',
           '#title' => $entity->label(),
-          '#url' => $entity->urlInfo(),
+          '#url' => $entity->toUrl(),
         ];
       }
     }

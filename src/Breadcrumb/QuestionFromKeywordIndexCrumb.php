@@ -22,7 +22,7 @@ class QuestionFromKeywordIndexCrumb extends PathBasedBreadcrumbBuilder {
 
   public static function termIdFromQuery($from) {
     // Variable value should be 'term/{tid}'
-    list($foo, $tid) = explode('/', $from . '//');
+    [$foo, $tid] = explode('/', $from . '//');
     if ($foo == 'term' && ctype_digit($tid)) {
       return $tid;
     }
@@ -48,7 +48,7 @@ class QuestionFromKeywordIndexCrumb extends PathBasedBreadcrumbBuilder {
     if (!empty($terms)) {
       $term = reset($terms);
 
-      if ($request = $this->getRequestForPath($term->url(), [])) {
+      if ($request = $this->getRequestForPath($term->toUrl()->toString(), [])) {
         $this->context->fromRequest($request);
       }
       $crumb = parent::build($route_match);

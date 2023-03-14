@@ -38,7 +38,7 @@ use Drupal\asklib\QuestionIndexer;
  * )
  */
 class QuestionSearch extends ContentSearch {
-  const SEARCH_ID = 'asklib_search';
+  public const SEARCH_ID = 'asklib_search';
 
   /**
    * @param $result Elasticsearch response.
@@ -52,7 +52,7 @@ class QuestionSearch extends ContentSearch {
 
     $cache = $this->loadMatchedEntities($result);
 
-    pager_default_initialize($total, 10);
+    \Drupal::service('pager.manager')->createPager($total, 10);
 
     foreach ($result['hits']['hits'] as $hit) {
       $entity_type = $hit['_source']['entity_type'];
@@ -300,7 +300,7 @@ class QuestionSearch extends ContentSearch {
     }
 
     if ($tags = $form_state->getValue('tags')) {
-      $query['tags'] = Tags::implode(array_map(function($t) { return $t['target_id']; }, $tags));
+      $query['tags'] = Tags::implode(array_map(fn($t) => $t['target_id'], $tags));
     }
 
     if ($feeds = array_filter($form_state->getValue('feeds', []))) {

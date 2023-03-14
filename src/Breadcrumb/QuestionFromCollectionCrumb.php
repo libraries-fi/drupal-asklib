@@ -22,7 +22,7 @@ class QuestionFromCollectionCrumb extends PathBasedBreadcrumbBuilder {
 
   public static function collectionIdFromQuery($from) {
     // Variable value should be 'collection/{nid}'
-    list($foo, $nid) = explode('/', $from . '//');
+    [$foo, $nid] = explode('/', $from . '//');
     if ($foo == 'collection' && ctype_digit($nid)) {
       return $nid;
     }
@@ -48,7 +48,7 @@ class QuestionFromCollectionCrumb extends PathBasedBreadcrumbBuilder {
 
     $node = reset($nodes);
 
-    $request = $this->getRequestForPath($node->url(), []);
+    $request = $this->getRequestForPath($node->toUrl()->toString(), []);
     $this->context->fromRequest($request);
 
     $crumb = parent::build($route_match);

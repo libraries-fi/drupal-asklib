@@ -3,7 +3,8 @@
 namespace Drupal\asklib\Plugin\views\row;
 
 use stdClass;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\views\Plugin\views\row\RssPluginBase;
 
 /**
@@ -21,13 +22,20 @@ use Drupal\views\Plugin\views\row\RssPluginBase;
  */
 class Rss extends RssPluginBase {
   public $base_table = 'asklib_questions';
-  public $base_field = 'id';
 
   // Stores the questions loaded in preRender.
   public $questions = [];
   public $answers = [];
 
   protected $entityTypeId = 'asklib_question';
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityDisplayRepositoryInterface $entity_display_repository) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $entity_display_repository);
+    $this->base_field = 'id';
+  }
 
   public function buildOptionsForm_summary_options() {
     $options = parent::buildOptionsForm_summary_options();
@@ -47,14 +55,15 @@ class Rss extends RssPluginBase {
       $qids[] = $row->{$this->field_alias};
     }
     if (!empty($qids)) {
-      $this->questions = $this->entityManager->getStorage('asklib_question')->loadMultiple($qids);
+      $this->questions = $this->entityTypeManager->getStorage('asklib_question')->loadMultiple($qids);
 
-      $aids = $this->entityManager->getStorage('asklib_answer')
+      $aids = $this->entityTypeManager->getStorage('asklib_answer')
         ->getQuery()
+        ->accessCheck(TRUE)
         ->condition('question', $qids, 'IN')
         ->execute();
 
-      $this->answers = $this->entityManager->getStorage('asklib_answer')->loadMultiple($aids);
+      $this->answers = $this->entityTypeManager->getStorage('asklib_answer')->loadMultiple($aids);
     }
   }
 
@@ -75,7 +84,7 @@ class Rss extends RssPluginBase {
     $answer = $question->getAnswer();
     $library = $answer->getLibrary();
 
-    $question->link = $question->url('canonical', ['absolute' => FALSE]);
+    $question->link = $question->toUrl('canonical', ['absolute' => FALSE]);
     $question->rss_namespaces = [];
     $question->rss_elements = [
       [
@@ -93,7 +102,7 @@ class Rss extends RssPluginBase {
       ]
     ];
 
-    $build = entity_view($question, $display_mode, $question->language()->getId());
+    $build = \Drupal::entityTypeManager()->getViewBuilder($question->getEntityTypeId())->view($question, $display_mode, $question->language()->getId());
     unset($build['#theme']);
 
     if (!empty($question->rss_namespaces)) {
