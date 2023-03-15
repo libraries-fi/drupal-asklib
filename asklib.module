@@ -760,8 +760,13 @@ function asklib_asklib_question_delete(QuestionInterface $question) {
   /*
    * NOTE: Makes deleting questions in hordes veeeery slow!
    */
-  $url = Url::fromRoute('entity.asklib_question.canonical', ['asklib_question' => $question->id()]);
-  Drupal::service('path.alias_storage')->delete(['source' => $url]);
+  $path = '/asklib_question/' . $question->id();
+
+  // Drupal::service('path.alias_storage')->delete(['source' => $url]);
+  $aliases = Drupal::service('entity_type.manager')->getStorage('path_alias')->loadByProperties(['path' => $path]);
+  foreach ($aliases as $alias) {
+    $alias->delete();
+  }
 
   // Get searchindex service and clear the index.
   Drupal::service('search.index')->clear('asklib_search_elastic', $question->id());

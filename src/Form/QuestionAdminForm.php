@@ -8,7 +8,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Path\AliasStorageInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 use Drupal\asklib\ProvideQuestionFormHeader;
@@ -35,14 +35,14 @@ class QuestionAdminForm extends ContentEntityForm {
     return new static(
       $container->get('entity.repository'),
       $container->get('date.formatter'),
-      $container->get('path.alias_storage'),
+      $container->get('entity_type.manager')->getStorage('path_alias'),
       $container->get('autoslug.slugger.default'),
       $container->get('config.factory')->get('asklib.settings'),
       $container->get('asklib.user_mail_group_helper')
     );
   }
 
-  public function __construct(EntityRepositoryInterface $entity_repository, DateFormatterInterface $dates, AliasStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups) {
+  public function __construct(EntityRepositoryInterface $entity_repository, DateFormatterInterface $dates, EntityStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups) {
     parent::__construct($entity_repository);
     $this->dates = $dates;
     $this->aliases = $aliases;
@@ -528,8 +528,8 @@ class QuestionAdminForm extends ContentEntityForm {
   public function processSlug(array $form, FormStateInterface $form_state) {
     $langcode = $this->entity->language()->getId();
     $source = '/' . $this->entity->toUrl()->getInternalPath();
-    $match = $this->aliases->load([
-      'source' => $source,
+    $path_alias = $this->aliases->loadByProperties([
+      'path' => $source,
       'langcode' => $langcode,
     ]);
 
@@ -539,8 +539,18 @@ class QuestionAdminForm extends ContentEntityForm {
       $alias = substr_replace($alias, $slug, strrpos($alias, '/') + 1);
     }
 
-    $pid = empty($match) ? NULL : $match['pid'];
-    $this->aliases->save($source, $alias, $langcode, $pid);
+    if (empty($path_alias)) {
+      $path_alias = \Drupal::entityTypeManager()->getStorage('path_alias')->create([
+        'path' => $source,
+        'alias' => $alias,
+        'langcode' => $langcode
+      ]);
+    } else {
+      // First element is the only one we need.
+      $path_alias = reset($path_alias);
+      $path_alias->setAlias($alias);
+      $path_alias->save();
+    }
   }
 
   public function validateReserve(array $form, FormStateInterface $form_state) {
