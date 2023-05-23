@@ -31,7 +31,7 @@ class SendQuestionNotifyEmail extends EmailActionBase {
      */
     if ($library = $question->getTargetLibrary()) {
       $recipients = array_merge($recipients, $this->getGroupRecipients($library));
-    } else if ($channel = $question->getChannel()) {
+    } else if (($channel = $question->getChannel()) && !empty($this->getChannelRecipients($channel))) {
       $recipients = array_merge($recipients, $this->getChannelRecipients($channel));
     } else if ($city = $question->getMunicipality()) {
       $recipients = array_merge($recipients, $this->getGroupRecipients($city));
