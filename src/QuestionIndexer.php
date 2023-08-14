@@ -13,6 +13,8 @@ class QuestionIndexer extends IndexerBase {
       ->condition('entity.state', QuestionInterface::STATE_ANSWERED)
       ->condition('entity.published', 1);
 
+    $this->excludeOldEChannelQuestions($query);
+
     $total = $query->countQuery()->execute()->fetchField();
     return $total;
   }
@@ -23,6 +25,8 @@ class QuestionIndexer extends IndexerBase {
       ->fields('entity', ['id'])
       ->condition('entity.state', QuestionInterface::STATE_ANSWERED)
       ->condition('entity.published', 1);
+
+    $this->excludeOldEChannelQuestions($query);
 
     // NOTE: Reindex is NULL when left join is to zero rows.
     $query->condition($query->orConditionGroup()
@@ -95,7 +99,7 @@ class QuestionIndexer extends IndexerBase {
           $document['tags'] = array_values(array_unique($document['tags']));
         }
 
-        $document['fields']['asklib_question']['score'] = (int)$answer->getRating();
+        $document['asklib_score'] = (int)$answer->getRating();
         $this->index($document);
       }
     }
@@ -109,6 +113,8 @@ class QuestionIndexer extends IndexerBase {
       ->orderBy('entity.id')
       ->condition('entity.state', QuestionInterface::STATE_ANSWERED)
       ->condition('entity.published', 1);
+
+    $this->excludeOldEChannelQuestions($query);
 
     // NOTE: Reindex is NULL when left join is to zero rows.
     $query->condition($query->orConditionGroup()
@@ -129,5 +135,36 @@ class QuestionIndexer extends IndexerBase {
     } else {
       return [];
     }
+  }
+
+  protected function excludeOldEChannelQuestions(&$query) {
+    $echannel_id = 188298;
+    $echannel_cutoff_date = '23-04-2024';
+
+    // We need to filter out all questions, that 1. belong to the e-channel and 2. are older than 23.4.
+    // Unfortunately, we need to verify this in two places, 1. from 'channel' in asklib_questions,
+    // and 2. From table 'asklib_question__feeds'. In future, it probably would be better sync to
+    // either to question's channel or to the *_feeds table and then remove one of the query groups.
+
+
+    // First query based on question 'channel' parameter.
+    $query->condition($query->orConditionGroup()
+    ->condition('entity.channel', NULL, 'IS')
+    ->condition('entity.channel', $echannel_id, '<>')
+    ->condition($query->andConditionGroup()
+      ->condition('entity.channel', $echannel_id)
+      ->condition('entity.created', strtotime($echannel_cutoff_date), '>=')));
+
+
+    // Second query based on the addtional 'asklib_question__feeds' table.
+    $subquery = $this->database->select('asklib_questions', 'entity')
+    ->fields('entity', ['id'])
+    ->condition('entity.state', QuestionInterface::STATE_ANSWERED)
+    ->condition('entity.published', 1)
+    ->condition('entity.created', strtotime($echannel_cutoff_date), '<');
+    $subquery->join('asklib_question__feeds', 'af', 'af.entity_id = entity.id');
+    $subquery->condition('af.feeds_target_id', $echannel_id);
+
+    $query->condition('entity.id', $subquery, 'NOT IN');
   }
 }

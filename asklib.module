@@ -4,8 +4,6 @@ use Drupal\asklib\Form\MailGroupTermForm;
 use Drupal\asklib\Form\MailGroupUserForm;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Extension\Extension;
-use Elasticsearch\Common\Exceptions\Missing404Exception;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Access\AccessResult;
@@ -780,8 +778,6 @@ function asklib_asklib_question_delete(QuestionInterface $question) {
     $alias->delete();
   }
 
-  // Get searchindex service and clear the index.
-  Drupal::service('search.index')->clear('asklib_search_elastic', $question->id());
 }
 
 function asklib_delete_question_index(QuestionInterface $question) {
@@ -796,10 +792,8 @@ function asklib_delete_question_index(QuestionInterface $question) {
         'type' => 'content',
         'id' => sprintf('asklib_question:%d:%s', $question->id(), $language->getId())
       ]);
-    } catch (Missing404Exception $e) {
-      // Question was not indexed before, pass.
-    } catch (NoNodesAvailableException $e) {
-      // Elasticsearch is down (or not installed), pass.
+    } catch (\Exception $e) {
+      \Drupal::logger('asklib')->error($e->getMessage());
     }
   }
 }
