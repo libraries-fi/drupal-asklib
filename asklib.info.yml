@@ -4,7 +4,7 @@ core: 8.x
 package: Kirjastot.fi
 description: "Kysy kirjastonhoitajalta"
 configure: asklib.admin
-core_version_requirement: ^8 || ^9
+core_version_requirement: ">=8"
 dependencies:
   - autoslug
   - finto_taxonomy

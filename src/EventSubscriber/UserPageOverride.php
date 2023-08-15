@@ -2,12 +2,12 @@
 
 namespace Drupal\asklib\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 
 class UserPageOverride implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
@@ -21,7 +21,7 @@ class UserPageOverride implements EventSubscriberInterface {
     $this->currentUser = $current_user;
   }
 
-  public function onRequest(GetResponseEvent $event) {
+  public function onRequest(RequestEvent $event) {
     $allowed = $this->currentUser->hasPermission('answer questions');
 
     if ($allowed && $this->currentRoute->getRouteName() == 'user.page') {

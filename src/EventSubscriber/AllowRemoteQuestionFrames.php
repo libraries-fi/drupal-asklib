@@ -2,9 +2,9 @@
 
 namespace Drupal\asklib\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 class AllowRemoteQuestionFrames implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
@@ -13,7 +13,7 @@ class AllowRemoteQuestionFrames implements EventSubscriberInterface {
     return $events;
   }
 
-  public function onResponse(FilterResponseEvent $event) {
+  public function onResponse(ResponseEvent $event) {
     $path = $event->getRequest()->getPathInfo();
 
     if (strpos($path, '/asklib/embed/') === 0) {
