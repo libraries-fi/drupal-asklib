@@ -97,7 +97,7 @@ class MailUserListBuilder extends EntityListBuilder
       FROM {taxonomy_term__field_asklib_subscribers}
       WHERE field_asklib_subscribers_target_id IN (%s)
     ', $phs);
-    $smt = \Drupal::service('database')->prepareQuery($query);
+    $smt = \Drupal::service('database')->prepareStatement($query, ['allow_square_brackets' => FALSE]);
     $smt->execute(array_values($uids));
 
     $tids = [];
