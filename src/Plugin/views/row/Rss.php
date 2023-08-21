@@ -3,7 +3,8 @@
 namespace Drupal\asklib\Plugin\views\row;
 
 use stdClass;
-use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\views\Plugin\views\row\RssPluginBase;
 
 /**
@@ -21,13 +22,20 @@ use Drupal\views\Plugin\views\row\RssPluginBase;
  */
 class Rss extends RssPluginBase {
   public $base_table = 'asklib_questions';
-  public $base_field = 'id';
 
   // Stores the questions loaded in preRender.
   public $questions = [];
   public $answers = [];
 
   protected $entityTypeId = 'asklib_question';
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityDisplayRepositoryInterface $entity_display_repository) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $entity_display_repository);
+    $this->base_field = 'id';
+  }
 
   public function buildOptionsForm_summary_options() {
     $options = parent::buildOptionsForm_summary_options();
