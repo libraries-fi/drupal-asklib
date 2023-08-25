@@ -91,14 +91,14 @@ class QuestionSearch extends ContentSearch {
   public function updateIndex() {
     $storage = $this->entityManager->getStorage('asklib_question');
     $batch_size = $this->searchSettings->get('index.cron_limit');
-    $indexer = new QuestionIndexer($this->database, $storage, $this->client, [], $batch_size);
+    $indexer = new QuestionIndexer($this->database, $storage, $this->kifi_index, [], $batch_size);
     $indexer->updateIndex();
   }
 
   public function indexStatus() {
     $storage = $this->entityManager->getStorage('asklib_question');
     $batch_size = $this->searchSettings->get('index.cron_limit');
-    $indexer = new QuestionIndexer($this->database, $storage, $this->client, [], $batch_size);
+    $indexer = new QuestionIndexer($this->database, $storage, $this->kifi_index, [], $batch_size);
     return $indexer->indexStatus();
   }
 
