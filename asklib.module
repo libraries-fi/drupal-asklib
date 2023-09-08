@@ -313,7 +313,7 @@ function asklib_preprocess_views_view_table(&$variables) {
 
   $variables['#attached']['library'][] = 'asklib/admin-index';
   $config = Drupal::config('asklib.settings');
-  $expiry_limit = new DateTime(sprintf('midnight %d days ago', $config->get('highlight_pending_after')));
+  $expiry_limit = new DateTime(sprintf('%d days ago', $config->get('highlight_pending_after')));
   $expiry_limit = $expiry_limit->format('U');
 
   foreach ($variables['result'] as $i => $result) {
