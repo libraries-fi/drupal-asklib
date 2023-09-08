@@ -126,6 +126,7 @@ function asklib_cron() {
   }
 
   // Clear contact information of old questions periodically to improve privacy.
+  // Also strip 'Ask Librarian' role from unsued accounts.
   $request_time = \Drupal::time()->getRequestTime();
   $next_execution = \Drupal::state()->get('asklib.next_question_contact_cleanup', 0);
 
@@ -134,6 +135,7 @@ function asklib_cron() {
     mktime(1, 0, 0, date("m")  , date("d") + 7, date("Y")));
 
     _asklib_clear_old_question_contact_info();
+    _asklib_strip_role_asklib_librarian_from_unused_accounts();
   }
   
 }
@@ -164,6 +166,33 @@ function _asklib_clear_old_question_contact_info()
     ])
     ->condition('id', $qids, 'IN');
     $query->execute();
+  }
+}
+
+function _asklib_strip_role_asklib_librarian_from_unused_accounts()
+{
+  $five_years_ago = mktime(1, 0, 0, date("m"), date("d"), date("Y") - 5);
+
+  $storage = \Drupal::entityTypeManager()->getStorage('user');
+
+  $never_used_uids = $storage->getQuery()
+    ->condition('roles', 'asklib_librarian')
+    ->condition('login', 0)
+    ->condition('created', $five_years_ago, '<=')
+    ->execute();
+
+  $old_uids = $storage->getQuery()
+    ->condition('roles', 'asklib_librarian')
+    ->condition('login', $five_years_ago, '<=')
+    ->condition('login', 0, '!=')
+    ->execute();
+
+  $uids = array_unique(array_merge($never_used_uids, $old_uids));
+  $users = $storage->loadMultiple($uids);
+
+  foreach ($users as $user) {
+    $user->removeRole('asklib_librarian');
+    $user->save();
   }
 }
 
