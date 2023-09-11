@@ -44,9 +44,9 @@ class QuestionSearch extends ContentSearch {
    * @param $result Elasticsearch response.
    */
   protected function prepareResults(array $result) {
-    $total = $result['hits']['total'];
-    $time = $result['took'];
-    $rows = $result['hits']['hits'];
+
+    $total = $result['total'];
+    $rows = $result['hits'];
 
     $prepared = [];
 
@@ -54,9 +54,9 @@ class QuestionSearch extends ContentSearch {
 
     \Drupal::service('pager.manager')->createPager($total, 10);
 
-    foreach ($result['hits']['hits'] as $hit) {
-      $entity_type = $hit['_source']['entity_type'];
-      $entity_id = $hit['_source']['id'];
+    foreach ($result['hits'] as $hit) {
+      $entity_type = $hit['entity_type'];
+      $entity_id = $hit['entity_id'];
 
       if (!isset($cache[$entity_type][$entity_id])) {
         user_error(sprintf('Stale search entry: %s #%d does not exist', $entity_type, $entity_id));
@@ -66,11 +66,11 @@ class QuestionSearch extends ContentSearch {
       $question = $cache[$entity_type][$entity_id];
 
       $build = [
-        'link' => $question->url('canonical', ['absolute' => TRUE, 'language' => $question->language()]),
+        'link' => $question->toUrl('canonical', ['absolute' => TRUE, 'language' => $question->language()])->toString(),
         'asklib_question' => $question,
         'title' => $question->label(),
-        'score' => $hit['_score'],
-        'date' => strtotime($hit['_source']['created']),
+        'score' => $hit['score'],
+        'date' => $hit['created'],
         'langcode' => $question->language()->getId(),
         'snippet' => $this->processSnippet($hit),
       ];
