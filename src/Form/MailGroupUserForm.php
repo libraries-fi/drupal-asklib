@@ -9,6 +9,8 @@ use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Component\Datetime\TimeInterface;
 
 class MailGroupUserForm extends ContentEntityForm {
   private $groupHelper;
@@ -23,13 +25,18 @@ class MailGroupUserForm extends ContentEntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
       $container->get('user.data'),
       $container->get('asklib.user_mail_group_helper')
     );
   }
 
-  public function __construct(EntityRepositoryInterface $entity_repository, UserDataInterface $config, UserMailGroupHelper $group_helper) {
-    parent::__construct($entity_repository);
+  public function __construct(
+    EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time,
+    UserDataInterface $config, UserMailGroupHelper $group_helper) {
+    
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->userData = $config;
     $this->groupHelper = $group_helper;
   }
@@ -83,8 +90,9 @@ class MailGroupUserForm extends ContentEntityForm {
   }
 
   private function groups() {
-    $storage = $this->entityManager->getStorage('taxonomy_term');
+    $storage = $this->entityTypeManager->getStorage('taxonomy_term');
     $tids = $storage->getQuery()
+      ->accessCheck(false)
       ->sort('tid')
       ->condition('vid', ['asklib_libraries', 'asklib_municipalities'], 'in')
       ->execute();

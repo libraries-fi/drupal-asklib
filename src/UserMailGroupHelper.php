@@ -27,6 +27,7 @@ class UserMailGroupHelper {
     $storage = $this->entityManager->getStorage('taxonomy_term');
 
     $query = $storage->getQuery()
+      ->accessCheck(false)
       ->condition('field_asklib_subscribers', $uids)
       ->sort('vid', 'DESC');
 
@@ -42,7 +43,7 @@ class UserMailGroupHelper {
       FROM {taxonomy_term__field_asklib_subscribers}
       WHERE field_asklib_subscribers_target_id IN (%s)
     ', $phs);
-    $smt = $this->database->prepareQuery($query);
+    $smt = $this->database->prepareStatement($query, []);
     $smt->execute(array_values($uids));
 
     $tids = [];
@@ -60,6 +61,7 @@ class UserMailGroupHelper {
     $storage = $this->entityManager->getStorage('taxonomy_term');
     $tids = $storage->getQuery()
       ->condition('field_asklib_subscribers', $uid)
+      ->accessCheck(FALSE)
       ->execute();
 
     // Filter user from terms that the user is not subscribed to anymore.

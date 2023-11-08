@@ -14,6 +14,8 @@ use Drupal\asklib\UserMailGroupHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Component\Datetime\TimeInterface;
 
 use Drupal\Core\Session\AccountInterface;
 
@@ -25,12 +27,17 @@ class QuestionEmailPreviewForm extends ContentEntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
       $container->get('asklib.user_mail_group_helper')
     );
   }
 
-  public function __construct(EntityRepositoryInterface $entity_repository, UserMailGroupHelper $mail_groups) {
-    parent::__construct($entity_repository);
+  public function __construct(
+    EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time,
+  UserMailGroupHelper $mail_groups
+  ) {
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->mailGroups = $mail_groups;
   }
 
@@ -40,7 +47,7 @@ class QuestionEmailPreviewForm extends ContentEntityForm {
 
     $question = $this->entity;
     $answer = $question->getAnswer();
-    $sender = $this->entityManager->getStorage('user')->load($this->currentUser()->id());
+    $sender = $this->entityTypeManager->getStorage('user')->load($this->currentUser()->id());
 
     foreach (Element::children($form) as $name) {
       $form[$name]['#access'] = FALSE;

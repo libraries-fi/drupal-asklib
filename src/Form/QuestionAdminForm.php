@@ -18,9 +18,11 @@ use Drupal\autoslug\Slugger;
 use Drupal\autoslug\SluggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Component\Datetime\TimeInterface;
 
 use Drupal\Core\Config\Config;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 class QuestionAdminForm extends ContentEntityForm {
   use ProvideEntityFormActionGetter;
@@ -34,6 +36,8 @@ class QuestionAdminForm extends ContentEntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
       $container->get('date.formatter'),
       $container->get('entity_type.manager')->getStorage('path_alias'),
       $container->get('autoslug.slugger.default'),
@@ -42,8 +46,12 @@ class QuestionAdminForm extends ContentEntityForm {
     );
   }
 
-  public function __construct(EntityRepositoryInterface $entity_repository, DateFormatterInterface $dates, EntityStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups) {
-    parent::__construct($entity_repository);
+  public function __construct(
+    EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time,
+    DateFormatterInterface $dates, EntityStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups
+  ) {
+    
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->dates = $dates;
     $this->aliases = $aliases;
     $this->aliasGenerator = $alias_generator;
@@ -56,7 +64,7 @@ class QuestionAdminForm extends ContentEntityForm {
     $answer = $question->getAnswer();
 
     if (!$answer && $question->isReservedTo($this->currentUser())) {
-      $answer = $this->entityManager->getStorage('asklib_answer')->create();
+      $answer = $this->entityTypeManager->getStorage('asklib_answer')->create();
       $question->setAnswer($answer);
     }
 
@@ -473,7 +481,7 @@ class QuestionAdminForm extends ContentEntityForm {
     } else {
       $answer_data['email_sent'] = NULL;
 
-      $answer = $this->entityManager->getStorage('asklib_answer')->create($answer_data);
+      $answer = $this->entityTypeManager->getStorage('asklib_answer')->create($answer_data);
       $answer->setUser($this->currentUser()->id());
       $this->entity->setAnswer($answer);
     }
@@ -697,10 +705,11 @@ class QuestionAdminForm extends ContentEntityForm {
   }
 
   protected function buildQuestionLockHistory() {
-    $storage = $this->entityManager->getStorage('asklib_lock');
+    $storage = $this->entityTypeManager->getStorage('asklib_lock');
     $lids = $storage->getQuery()
       ->condition('question', $this->entity->id())
       ->sort('created', 'DESC')
+      ->accessCheck(false)
       ->execute();
 
     $locks = $storage->loadMultiple($lids);
@@ -715,11 +724,12 @@ class QuestionAdminForm extends ContentEntityForm {
     foreach ($locks as $lock) {
       // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
       // Please confirm that `getUser()` is an instance of `Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
+
       $table['#rows'][] = [
         [
           'data' => [
             '#type' => 'link',
-            '#title' => $lock->getUser()->getUsername(),
+            '#title' => $lock->getUser()->getAccountName(),
             '#url' => $lock->getUser()->toUrl(),
           ]
         ],

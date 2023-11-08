@@ -9,7 +9,7 @@ use Drupal\asklib\QuestionInterface;
  */
 trait ProvideEntityFormActionGetter {
   public function action($id) {
-    return $this->entityManager->getStorage('action')->load($id);
+    return $this->entityTypeManager->getStorage('action')->load($id);
   }
 
   public function executeAction($action_id, QuestionInterface $question) {

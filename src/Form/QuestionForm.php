@@ -92,8 +92,9 @@ class QuestionForm extends ContentEntityForm {
 
   public function processTheme(array $form, FormStateInterface $form_state) {
     if ($tid = $form_state->getValue('theme')) {
-      $term_storage = $this->entityManager->getStorage('taxonomy_term');
+      $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
       $query = $term_storage->getQuery()
+        ->accessCheck(FALSE)
         ->condition('vid', 'asklib_libraries')
         ->condition('field_asklib_theme', $tid);
 
