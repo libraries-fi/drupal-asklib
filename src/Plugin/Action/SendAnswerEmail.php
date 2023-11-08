@@ -23,9 +23,7 @@ class SendAnswerEmail extends EmailActionBase {
       'files' => $question->getAnswer()->getAttachments()
     ];
 
-    $sender = $question->getAnsweredBy();
-    $sender_email = $sender->get('field_asklib_mail')->value ?: $sender->getEmail();
-    $reply_to = sprintf('%s <%s>', $sender->field_real_name->value, $sender_email);
+    $reply_to = $question->getAnsweredBy();
 
     $this->mail('answer', $question->getEmail(), $question->language()->getId(), $mail, $reply_to);
 

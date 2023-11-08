@@ -1,0 +1,13 @@
+langcode: fi
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib.answer
+configuration:
+  email_subject:
+    value: 'Vastaus Kysy kirjastonhoitajalta -palvelusta'
+  email_body:
+    content:
+      value: "<p>Hei!</p>\r\n<p>Vastaus Kysy kirjastonhoitajalta -palveluun lähettämääsi kysymykseen.</p>\r\n\r\n<blockquote>\r\n  <p>[asklib_answer:body]</p>\r\n  {% if has_answer_details %}\r\n  <p class=\"hidden-details\">[asklib_answer:details]</p>\r\n  {% endif %}\r\n  {% if is_admin %}\r\n  <cite>[asklib_answer:author], Kirjastot.fi-toimitus</cite>\r\n  {% else %}\r\n  <cite>[asklib_answer:author], [asklib_answer:library]</cite>\r\n  {% endif %}\r\n  <blockquote>\r\n    <p>[asklib_question:body]</p>\r\n    {% if has_question_details %}\r\n    <p class=\"hidden-details\">[asklib_question:details]</p>\r\n    {% endif %}\r\n  </blockquote>\r\n\r\n  \r\n\r\n<p></p>\r\n  <p>[asklib_answer:signature]</p>\r\n</blockquote>"
+      format: email_html

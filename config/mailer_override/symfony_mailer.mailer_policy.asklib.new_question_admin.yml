@@ -1,0 +1,13 @@
+langcode: fi
+status: true
+dependencies:
+  module:
+    - asklib
+id: asklib.new_question_admin
+configuration:
+  email_subject:
+    value: '[Kysy kirjastonhoitajalta] Ilmoitus uudesta kysymyksestä (vastaajat)'
+  email_body:
+    content:
+      value: "<p>Kirjastonne alueelta on saapunut uusi kysymys vastattavaksi Kysy kirjastonhoitajalta -palveluun. Kirjaudu osoitteessa https://www.kirjastot.fi/user/login</p>\r\n<p><a href=\"{{ url('view.asklib_index.page_1') }}\">Odottavat kysymykset</a></p>\r\n<blockquote>\r\n  <cite>[asklib_question:email]</cite>\r\n  <p>[asklib_question:body]</p>\r\n</blockquote>\r\n"
+      format: email_html

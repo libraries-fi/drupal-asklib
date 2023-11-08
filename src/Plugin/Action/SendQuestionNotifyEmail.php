@@ -61,15 +61,18 @@ class SendQuestionNotifyEmail extends EmailActionBase {
     $recipients = [];
 
     if ($group->hasField('field_asklib_email') && $group->field_asklib_email->value) {
-      $recipients[] = sprintf('%s <%s>', $group->label(), $group->field_asklib_email->value);
+      // $recipients[] = sprintf('%s <%s>', $group->label(), $group->field_asklib_email->value);
+      $recipients[] = ['name' => $group->label(), 'email' => $group->field_asklib_email->value];
     }
 
     foreach ($users as $user) {
       $email = $user->get('field_asklib_mail')->value ?: $user->getEmail();
       if ($user->hasField('field_real_name') && $name = $user->get('field_real_name')->value) {
-        $recipients[] = sprintf('%s <%s>', $name, $email);
+        // $recipients[] = sprintf('%s <%s>', $name, $email);
+        $recipients[] = ['name' => $name, 'email' => $email];
       } else {
-        $recipients[] = $email;
+        // $recipients[] = $email;
+        $recipients[] = ['name' => NULL, 'email' => $email];
       }
     }
     return $recipients;
