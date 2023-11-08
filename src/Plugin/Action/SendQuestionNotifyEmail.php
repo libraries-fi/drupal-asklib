@@ -37,8 +37,8 @@ class SendQuestionNotifyEmail extends EmailActionBase {
       $recipients = array_merge($recipients, $this->getGroupRecipients($city));
     }
 
-    if ($recipients = array_unique($recipients)) {
-      $mail = ['asklib_question' => $question];
+    if (is_array($recipients) && empty($recipients) === false) {
+      $mail = ['asklib_question' => $question, 'files' => $question->getAttachments()];
       $langcode = $question->language()->getId();
       $this->mail('new_question_admin', $recipients, $langcode, $mail);
     }
@@ -61,15 +61,16 @@ class SendQuestionNotifyEmail extends EmailActionBase {
     $recipients = [];
 
     if ($group->hasField('field_asklib_email') && $group->field_asklib_email->value) {
-      $recipients[] = sprintf('%s <%s>', $group->label(), $group->field_asklib_email->value);
+      $email = $group->field_asklib_email->value;
+      $recipients[$email] = ['name' => $group->label(), 'email' => $email];
     }
 
     foreach ($users as $user) {
       $email = $user->get('field_asklib_mail')->value ?: $user->getEmail();
       if ($user->hasField('field_real_name') && $name = $user->get('field_real_name')->value) {
-        $recipients[] = sprintf('%s <%s>', $name, $email);
+        $recipients[$email] = ['name' => $name, 'email' => $email];
       } else {
-        $recipients[] = $email;
+        $recipients[$email] = ['name' => NULL, 'email' => $email];
       }
     }
     return $recipients;

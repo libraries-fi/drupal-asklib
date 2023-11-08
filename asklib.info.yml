@@ -10,7 +10,7 @@ dependencies:
   - finto_taxonomy
   - forum
   - kifiform
-  - kifimail
+  - symfony_mailer
   - kifisearch
   - kifistats
   - language
