@@ -28,6 +28,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\kifisearch\Plugin\Search\ContentSearch;
 use Drupal\asklib\QuestionIndexer;
+use Ehann\RediSearch\Query\BuilderInterface;
 
 /**
  * Search and indexing for asklib_question and asklib_answer entities.
@@ -69,7 +70,7 @@ class QuestionSearch extends ContentSearch {
         'link' => $question->toUrl('canonical', ['absolute' => TRUE, 'language' => $question->language()])->toString(),
         'asklib_question' => $question,
         'title' => $question->label(),
-        'score' => $hit['score'],
+        'score' => $hit['asklib_score'],
         'date' => $hit['created'],
         'langcode' => $question->language()->getId(),
         'snippet' => $this->processSnippet($hit),
@@ -102,89 +103,21 @@ class QuestionSearch extends ContentSearch {
     return $indexer->indexStatus();
   }
 
-  protected function compileSearchQuery($query_string) {
-    /*
-     * Elasticsearch will throw an exception when the syntax is invalid, so we
-     * do a simple sanity check here.
-     */
-    // $query_string = preg_replace('/^(AND|OR|NOT)/', '', trim($query_string));
-    // $query_string = preg_replace('/(AND|OR|NOT)$/', '', trim($query_string));
+  protected function compileSearchQuery(BuilderInterface &$search_query, $keywords) {
 
-    if (empty($this->searchParameters['all_languages'])) {
-      $langcode = $this->languageManager->getCurrentLanguage()->getId();
-    } else {
-      $langcode = NULL;
+    parent::compileSearchQuery($search_query, $keywords);
+
+    // Apply ordering
+    if ($this->getParameter('order') == 'newest')
+    {
+      $search_query->sortBy('created', 'DESC');
     }
 
-    $query = [
-      'bool' => [
-        // 'must' => [],
-        // 'should' => [],
-      ]
-    ];
-
-    $query['bool']['must'][] = [
-      'term' => [
-        'entity_type' => 'asklib_question'
-      ]
-    ];
-
-    $query['bool']['must'][] = [
-      'multi_match' => [
-        'query' => $query_string,
-        'fields' => ['body', 'title', 'tags'],
-      ]
-    ];
-
-    if ($langcode) {
-      $query['bool']['must'][] = [
-        'term' => ['langcode' => [
-          'value' => $langcode,
-        ]],
-      ];
-    }
-
+    // Apply channel/feeds filtering
     if (!empty($this->searchParameters['feeds'])) {
-      foreach (Tags::explode($this->searchParameters['feeds']) as $fid) {
-        $query['bool']['must'][] = [
-          // Use the singular 'term' query to require every single term in the result.
-          'term' => [
-            'terms' => (int)$fid
-          ]
-        ];
-      }
+      $search_query->tagFilter('terms', Tags::explode($this->searchParameters['feeds']));
     }
 
-    if (!empty($this->searchParameters['tags'])) {
-      foreach (Tags::explode($this->searchParameters['tags']) as $tid) {
-        $query['bool']['must'][] = [
-          // Use the singular 'term' query to require every single term in the result.
-          'term' => [
-            'terms' => (int)$tid
-          ]
-        ];
-      }
-    }
-
-    if (!empty($this->searchParameters['order'])) {
-      switch ($this->searchParameters['order']) {
-        case 'newest':
-          $sort = ['created' => 'desc'];
-          break;
-      }
-    } else {
-      $sort = ['_score' => 'desc'];
-    }
-
-    return [
-      'query' => $query,
-      'sort' => $sort,
-      'highlight' => [
-        'fields' => ['body' => (object)[]],
-        'pre_tags' => ['<strong>'],
-        'post_tags' => ['</strong>'],
-      ]
-    ];
   }
 
   public function searchFormAlter(array &$form, FormStateInterface $form_state) {
@@ -214,10 +147,10 @@ class QuestionSearch extends ContentSearch {
       '#type' => 'details',
       '#title' => $this->t('Advanced search'),
       '#open' => count(array_diff(array_keys($parameters), ['page', 'keys'])) > 1,
-      'all_languages' => [
+      'anylang' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Search all languages'),
-        '#default_value' => !empty($parameters['all_languages'])
+        '#default_value' => !empty($parameters['anylang'])
       ],
       'tags_container' => [
         /*
@@ -267,7 +200,7 @@ class QuestionSearch extends ContentSearch {
     ];
 
     if ($langcode != 'fi') {
-      $form['all_languages'] = $form['advanced']['all_languages'];
+      $form['anylang'] = $form['advanced']['anylang'];
       unset($form['advanced']);
     }
   }
@@ -295,8 +228,8 @@ class QuestionSearch extends ContentSearch {
   public function buildSearchUrlQuery(FormStateInterface $form_state) {
     $query = parent::buildSearchUrlQuery($form_state);
 
-    if ($form_state->getValue('all_languages')) {
-      $query['all_languages'] = '1';
+    if ($form_state->getValue('anylang')) {
+      $query['anylang'] = '1';
     }
 
     if ($tags = $form_state->getValue('tags')) {

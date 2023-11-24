@@ -95,7 +95,7 @@ class QuestionIndexer extends IndexerBase {
           $document['tags'] = array_values(array_unique($document['tags']));
         }
 
-        $document['fields']['asklib_question']['score'] = (int)$answer->getRating();
+        $document['asklib_score'] = (int)$answer->getRating();
         $this->index($document);
       }
     }
