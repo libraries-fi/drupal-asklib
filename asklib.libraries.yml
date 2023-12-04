@@ -17,6 +17,9 @@ question-edit-form:
   js:
     public/js/toggle-answered.js: {}
     public/js/kifiform-tags-custom.js: {}
+  dependencies:
+    - core/jquery
+    - core/once
 field-target-library:
   css:
     component:
