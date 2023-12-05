@@ -2,6 +2,7 @@
 
 namespace Drupal\asklib\Controller;
 
+use Drupal\asklib\Entity\Question;
 use Exception;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Controller\EntityViewController;
@@ -27,13 +28,19 @@ class QuestionViewController extends EntityViewController {
     $langcode = $asklib_question->language()->getId();
     $recipient = $asklib_question->getEmail();
 
-    $data = [
+    // Set the question "answered" for preview.
+    $asklib_question->setState(Question::STATE_ANSWERED);
+
+    $mail = [
       'from' => \Drupal::currentUser(),
       'asklib_question' => $asklib_question,
       'files' => $asklib_question->getAnswer()->getAttachments(),
+      'do_not_send' => true, // This will cancel the mailing in 'asklib_mailer_post_render'.
     ];
 
-    $mail = \Drupal::service('plugin.manager.mail')->mail('asklib', 'answer', $recipient, $langcode, $data, null, false);
+    $reply_to = $asklib_question->getAnsweredBy();
+
+    $mail = \Drupal::service('plugin.manager.mail')->mail('asklib', 'answer', $recipient, $langcode, $mail, $reply_to);
 
     return new Response($mail['body']);
   }

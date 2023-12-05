@@ -32,7 +32,7 @@ class AskLibEmailBuilder extends EmailBuilderBase {
 
   public function createParams(EmailInterface $email, $langcode = "fi", Question $question = NULL, 
   array|string $recipients = NULL, AccountInterface|array|string $reply_to = NULL, string $from = NULL,
-  array $attachments = null) 
+  array $attachments = [], $do_not_send = false) 
   {
     assert($question != NULL);
     $email->setParam('langcode', $langcode);
@@ -44,12 +44,19 @@ class AskLibEmailBuilder extends EmailBuilderBase {
     {
       $email->setParam('asklib_answer', $question->getAnswer());
       $email->setVariable('asklib_answer', $question->getAnswer());
+
+      $email->setVariable('has_answer_details', !empty($question->getAnswer()->getDetails()));
     }
 
     $email->setParam('recipients', $recipients);
     $email->setParam('reply-to', $reply_to);
     $email->setParam('from', $from);
     $email->setParam('attachments', $attachments);
+    $email->setParam('do_not_send', $do_not_send);
+
+
+    $email->setVariable('is_admin', \Drupal::currentUser()->hasPermission('administer asklib'));
+    $email->setVariable('has_question_details', !empty($question->getDetails()));
   }
 
   public function fromArray(EmailFactoryInterface $factory, array $message) {
@@ -62,8 +69,17 @@ class AskLibEmailBuilder extends EmailBuilderBase {
       $from = $message['params']['from']->getEmail();
     }
 
+    $attachments = [];
+
+    if (isset($message['params']['files']) && is_array($message['params']['files']) && !empty($message['params']['files']))
+    {
+      $attachments = $message['params']['files'];
+    }
+
+    $do_not_send = (isset($message['params']['do_not_send'])) ? $message['params']['do_not_send'] : false;
+
     return $factory->newTypedEmail($message['module'], $message['key'],
-      $message['langcode'], $message['params']['asklib_question'], $recipients, $reply_to, $from);
+      $message['langcode'], $message['params']['asklib_question'], $recipients, $reply_to, $from, $attachments, $do_not_send);
   }
 
 
@@ -113,6 +129,16 @@ class AskLibEmailBuilder extends EmailBuilderBase {
     if(!empty($from))
     {
       $email->setFrom(new Address($from));
+    }
+
+    // Check for attachments
+    $attachments = $email->getParam('attachments');
+    if (!empty($attachments))
+    {
+      foreach($attachments as $attachment)
+      {
+        $email->attachFromPath($attachment->getFileUri());
+      }
     }
 
     // If this is an answer, then set the answeree as reply-to mail.

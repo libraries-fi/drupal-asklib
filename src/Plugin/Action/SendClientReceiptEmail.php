@@ -17,7 +17,7 @@ class SendClientReceiptEmail extends EmailActionBase {
    */
   public function execute($question = NULL) {
     if ($question->getEmail()) {
-      $mail = ['asklib_question' => $question];
+      $mail = ['asklib_question' => $question, 'files' => $question->getAttachments()];
       $this->mail('new_question', $question->getEmail(), $question->language()->getId(), $mail, $this->getGenericSenderAddress());
     }
   }

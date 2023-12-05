@@ -38,7 +38,7 @@ class SendQuestionNotifyEmail extends EmailActionBase {
     }
 
     if ($recipients = array_unique($recipients)) {
-      $mail = ['asklib_question' => $question];
+      $mail = ['asklib_question' => $question, 'files' => $question->getAttachments()];
       $langcode = $question->language()->getId();
       $this->mail('new_question_admin', $recipients, $langcode, $mail);
     }
