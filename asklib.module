@@ -399,6 +399,14 @@ function asklib_preprocess_asklib_question(&$variables) {
     'resource' => 'https://www.kirjastot.fi/kysy/' . $variables['elements']['#asklib_question']->id(),
   ];
 
+  /**
+   * NOTE: These fields should be hidden from Drupal's built-in display management form.
+   * Currently, asklib does not provide one. Asklib question has only one view mode called "full".
+   * For future development, we could implement view support for asklib_question and asklib_answer.
+   */
+  unset($variables['question']['municipality']);
+  unset($variables['question']['user']);
+
   $variables['question']['title_meta'] = [
     '#weight' => -1000,
     '#theme' => 'rdf_metadata',
@@ -426,6 +434,9 @@ function asklib_preprocess_asklib_answer(&$variables) {
   foreach (Element::children($variables['elements']) as $key) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
+
+  // See the NOTE in asklib_preprocess_asklib_question about display managment.
+  unset($variables['content']['created']);
 
   $view = Drupal::entityTypeManager()->getViewBuilder('asklib_question');
   $displays = $variables['elements']['#asklib_answer']->getQuestion()->get('displays');

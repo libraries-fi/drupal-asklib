@@ -31,6 +31,12 @@ class QuestionViewBuilder extends EntityViewBuilder {
         $build[$delta]['comments']['#access'] = FALSE;
       }
     }
+
+    // See the NOTE in asklib_preprocess_asklib_question about display managment.
+    foreach ($build as $delta => $current_build) {
+      $build[$delta]['title']['#label_display'] = 'hidden';
+    }
+
   }
 
   /**
