@@ -29,7 +29,6 @@ class SlugLink extends FormatterBase {
       $entity = $item->getEntity();
 
       if ($entity) {
-        $url = $entity->url();
         // $alias = $aliases->lookupPathAlias($url, $langcode);
         // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
         // Please confirm that `$entity` is an instance of `Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.

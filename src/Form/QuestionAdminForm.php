@@ -495,9 +495,9 @@ class QuestionAdminForm extends ContentEntityForm {
         $old_langcode = $term->language()->getId();
         $new_langcode = $this->entity->language()->getId();
 
-        $new_term = $this->entityManager->getStorage('taxonomy_term')->create([
+        $new_term = $this->entityTypeManager->getStorage('taxonomy_term')->create([
           'name' => $term->getName(),
-          'vid' => $term->getVocabularyId(),
+          'vid' => $term->bundle(),
           'langcode' => $new_langcode,
         ]);
 

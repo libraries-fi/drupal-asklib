@@ -48,7 +48,7 @@ class QuestionFromKeywordIndexCrumb extends PathBasedBreadcrumbBuilder {
     if (!empty($terms)) {
       $term = reset($terms);
 
-      if ($request = $this->getRequestForPath($term->url(), [])) {
+      if ($request = $this->getRequestForPath($term->toUrl()->toString(), [])) {
         $this->context->fromRequest($request);
       }
       $crumb = parent::build($route_match);

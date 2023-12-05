@@ -33,7 +33,7 @@ class QuestionRedirectForm extends ContentEntityForm {
   }
 
   protected function filterDisabledAnswerers(array $options) {
-    $storage = $this->entityManager->getStorage('taxonomy_term');
+    $storage = $this->entityTypeManager->getStorage('taxonomy_term');
 
     foreach ($options as $id => $item) {
       if (is_array($item)) {

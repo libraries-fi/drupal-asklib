@@ -49,7 +49,7 @@ class TaxonomyCrumb extends PathBasedBreadcrumbBuilder {
     if (isset($links[3])) {
       // By default This link has the same title as the previous one. Rewrite it to make more sense.
 
-      $parts = explode('/', $route_match->getParameter('taxonomy_term')->url());
+      $parts = explode('/', $route_match->getParameter('taxonomy_term')->toUrl()->toString());
       $letter = strtoupper($parts[count($parts) - 2]);
       $links[3]->setText(t('Letter @letter', ['@letter' => $letter]));
     }
@@ -66,7 +66,7 @@ class TaxonomyCrumb extends PathBasedBreadcrumbBuilder {
   public function applies(RouteMatchInterface $route_match) {
     if (in_array($route_match->getRouteName(), $this->allowedRoutes)) {
       if ($route_match->getRouteName() == 'entity.taxonomy_term.canonical') {
-        $vid = $route_match->getParameter('taxonomy_term')->getVocabularyId();
+        $vid = $route_match->getParameter('taxonomy_term')->bundle();
         return in_array($vid, $this->allowedVocabularies);
       }
       return TRUE;
