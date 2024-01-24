@@ -437,6 +437,9 @@ function asklib_preprocess_asklib_answer(&$variables) {
     $variables['content'][$key] = $variables['elements'][$key];
   }
 
+  // See the NOTE in asklib_preprocess_asklib_question about display managment.
+  unset($variables['content']['created']);
+
   $view = Drupal::entityTypeManager()->getViewBuilder('asklib_question');
   $displays = $variables['elements']['#asklib_answer']->getQuestion()->get('displays');
   $rendered = $view->viewField($displays, $displays->getFieldDefinition()->getDisplayOptions('view'));
