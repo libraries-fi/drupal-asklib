@@ -466,13 +466,25 @@ function asklib_form_comment_comment_asklib_form_alter(&$form, FormStateInterfac
   $form['field_email']['widget'][0]['value']['#attributes']['autocomplete'] = 'email';
 }
 
-function asklib_user_login($account) {
-  $route_name = Drupal::routeMatch()->getRouteName();
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function asklib_form_user_login_form_alter(&$form, FormStateInterface $form_state) {
+  $form['#submit'][] = 'asklib_user_login_submit';
+}
+
+/**
+ * Form submission handler for user_login_form().
+ *
+ * Redirects the user to the asklib dashboard user can answer questions.
+ */
+function asklib_user_login_submit(&$form, FormStateInterface $form_state) {
+  $account = Drupal::currentUser();
 
   // Redirect only when request comes from the login form.
-  if ($route_name == 'user.login' && $account->hasPermission('answer questions')) {
-    $url = Url::fromRoute('asklib.admin_index')->toString();
-    RedirectResponse::create($url)->send();
+  if ($account->hasPermission('answer questions')) {
+    $url = Url::fromRoute('asklib.admin_index');
+    $form_state->setRedirectUrl($url);
   }
 }
 
