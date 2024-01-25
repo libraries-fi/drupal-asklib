@@ -218,6 +218,11 @@ class QuestionSearch extends ContentSearch {
         continue;
       }
 
+      // Skip unblished channels
+      if (!$term->isPublished()) {
+        continue;
+      }
+
       $options[$term->id()] = (string)$term->label();
     }
 
