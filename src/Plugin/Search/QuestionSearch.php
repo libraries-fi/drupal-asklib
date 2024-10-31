@@ -26,6 +26,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use Drupal\kifisearch\Plugin\Search\ContentSearch;
 use Drupal\asklib\QuestionIndexer;
+use Drupal\kifisearch\Plugin\Search\CustomSearchBase;
+use Drupal\kifisearch\Query\KifiBuilderInterface;
 use Ehann\RediSearch\Query\BuilderInterface;
 
 /**
@@ -36,7 +38,7 @@ use Ehann\RediSearch\Query\BuilderInterface;
  *   title = @Translation("Ask a Librarian")
  * )
  */
-class QuestionSearch extends ContentSearch {
+class QuestionSearch extends CustomSearchBase {
   public const SEARCH_ID = 'asklib_search';
 
   /**
@@ -101,7 +103,7 @@ class QuestionSearch extends ContentSearch {
     return $indexer->indexStatus();
   }
 
-  protected function compileSearchQuery(BuilderInterface &$search_query, $keywords) {
+  protected function compileSearchQuery(KifiBuilderInterface &$search_query, $keywords) {
 
     parent::compileSearchQuery($search_query, $keywords);
 
