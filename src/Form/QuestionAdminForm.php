@@ -247,8 +247,9 @@ class QuestionAdminForm extends ContentEntityForm {
     $form['tags']['#group'] = 'tags_group';
     $form['tags']['#attached']['library'][] = 'finto_taxonomy/kifiform-tags-plugin';
 
-    // Add this block to restrict new term creation in 'asklib_tags' when language is Swedish
-    if ($this->entity->language()->getId() == 'sv') {
+    // Add this block to restrict new term creation in 'asklib_tags' when language is Swedish or English
+    $content_langcode = $this->entity->language()->getId();
+    if (in_array($content_langcode, ['sv', 'en'])) {
       // Allow auto creation only in 'finto' vocabulary.
       $form['tags']['widget']['#selection_settings']['auto_create_bundles'] = ['finto'];
       $form['#attached']['drupalSettings']['kifiform'] = [
