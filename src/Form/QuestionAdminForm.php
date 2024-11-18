@@ -257,7 +257,7 @@ class QuestionAdminForm extends ContentEntityForm {
       ];
     }
 
-    $form['tags']['widget']['target_id']['#description'] = $this->t('Select keywords from the drop-down list or press Enter to add a new one.');
+    $form['tags']['widget']['target_id']['#description'] = $this->t('Select keywords from the drop-down list.');
 
     $form['tags']['tags_legend'] = [
       'finto_legend' => [
