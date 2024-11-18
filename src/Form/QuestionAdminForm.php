@@ -247,6 +247,15 @@ class QuestionAdminForm extends ContentEntityForm {
     $form['tags']['#group'] = 'tags_group';
     $form['tags']['#attached']['library'][] = 'finto_taxonomy/kifiform-tags-plugin';
 
+    // Add this block to restrict new term creation in 'asklib_tags' when language is Swedish
+    if ($this->entity->language()->getId() == 'sv') {
+      // Allow auto creation only in 'finto' vocabulary.
+      $form['tags']['widget']['#selection_settings']['auto_create_bundles'] = ['finto'];
+      $form['#attached']['drupalSettings']['kifiform'] = [
+        'disableEnter' => TRUE,
+      ];
+    }
+
     $form['tags']['widget']['target_id']['#description'] = $this->t('Select keywords from the drop-down list or press Enter to add a new one.');
 
     $form['tags']['tags_legend'] = [
@@ -403,6 +412,7 @@ class QuestionAdminForm extends ContentEntityForm {
 
     // Add header after possibly disabling inputs.
     $form['header'] = $this->getQuestionFormHeader($question);
+    // dump($form['tags']);
 
     return $form;
   }
