@@ -24,11 +24,10 @@ use Drupal\search\Plugin\SearchPluginBase;
 use Html2Text\Html2Text;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use Drupal\kifisearch\Plugin\Search\ContentSearch;
+use Ehann\RediSearch\Index;
 use Drupal\asklib\QuestionIndexer;
 use Drupal\kifisearch\Plugin\Search\CustomSearchBase;
 use Drupal\kifisearch\Query\KifiBuilderInterface;
-use Ehann\RediSearch\Query\BuilderInterface;
 
 /**
  * Search and indexing for asklib_question and asklib_answer entities.
@@ -38,8 +37,33 @@ use Ehann\RediSearch\Query\BuilderInterface;
  *   title = @Translation("Ask a Librarian")
  * )
  */
-class QuestionSearch extends CustomSearchBase {
+class QuestionSearch extends CustomSearchBase implements SearchIndexingInterface {
+
+
   public const SEARCH_ID = 'asklib_search';
+
+  protected $database;
+  protected $searchSettings;
+
+  static public function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager'),
+      $container->get('language_manager'),
+      $container->get('kifisearch.client'),
+      $container->get('database'),
+      $container->get('config.factory')->get('search.settings')
+    );
+  }
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_manager, LanguageManagerInterface $languages, Index $kifi_index, Connection $database, Config $search_settings) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager, $languages, $kifi_index);
+
+    $this->database = $database;
+    $this->searchSettings = $search_settings;
+  }
 
   /**
    * @param $result Redisearch response.
@@ -254,5 +278,13 @@ class QuestionSearch extends CustomSearchBase {
     }
 
     return $query;
+  }
+
+  public function markForReindex() {
+    $this->database->query('UPDATE {kifisearch_index} SET reindex = 1');
+  }
+
+  public function indexClear() {
+    $this->database->query('DELETE FROM {kifisearch_index}');
   }
 }
