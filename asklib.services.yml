@@ -24,7 +24,7 @@ services:
       - { name: cache.context }
   asklib.breadcrumb.default:
     class: Drupal\system\PathBasedBreadcrumbBuilder
-    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current']
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@path.matcher']
     tags:
       - { name: asklib_breadcrumb, priority: 0 }
   asklib.breadcrumb.archive:
@@ -34,17 +34,17 @@ services:
       - { name: asklib_breadcrumb, priority: 100 }
   asklib.breadcrumb.question_from_collection:
     class: 'Drupal\asklib\Breadcrumb\QuestionFromCollectionCrumb'
-    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@request_stack', '@entity_type.manager']
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@path.matcher', '@request_stack', '@entity_type.manager']
     tags:
       - { name: asklib_breadcrumb, priority: 200 }
   asklib.breadcrumb.collection_from_keyword_index:
     class: 'Drupal\asklib\Breadcrumb\QuestionFromKeywordIndexCrumb'
-    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@request_stack', '@entity_type.manager']
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@path.matcher', '@request_stack', '@entity_type.manager']
     tags:
       - { name: asklib_breadcrumb, priority: 200 }
   asklib.breadcrumb.taxonomy:
     class: 'Drupal\asklib\Breadcrumb\TaxonomyCrumb'
-    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@request_stack']
+    arguments: ['@router.request_context', '@access_manager', '@router', '@path_processor_manager', '@config.factory',  '@title_resolver', '@current_user', '@path.current', '@path.matcher', '@request_stack']
     tags:
       - { name: asklib_breadcrumb, priority: 200 }
   asklib.breadcrumb_proxy:
