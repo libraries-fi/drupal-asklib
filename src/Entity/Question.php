@@ -563,7 +563,7 @@ class Question extends ContentEntityBase implements QuestionInterface {
       ->setDescription(t('Municipality of the user.'))
       ->setSettings([
         'target_type' => 'taxonomy_term',
-        'handler' => 'default',
+        'handler' => 'asklib_question_municipality_selection',
         'handler_settings' => [
           'target_bundles' => ['asklib_municipalities' => 'asklib_municipalities'],
           'sort' => [
