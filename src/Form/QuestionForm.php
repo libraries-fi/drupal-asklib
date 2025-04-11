@@ -131,6 +131,7 @@ class QuestionForm extends ContentEntityForm {
       ->select('taxonomy_term_field_data', 't')
       ->fields('t', ['tid', 'name'])
       ->condition('t.vid', 'asklib_themes')
+      ->condition('t.status', 1)
       ->condition('t.langcode', $langcode)
       ->orderBy('t.name')
       ;
