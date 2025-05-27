@@ -315,6 +315,19 @@ function asklib_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   }
 }
 
+function asklib_form_asklib_question_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if (
+    isset($form['municipality']['widget']['#options']) &&
+    is_array($form['municipality']['widget']['#options'])
+  ) {
+    $options = $form['municipality']['widget']['#options'];
+    uasort($options, function ($a, $b) {
+      return strcoll($a, $b); // Locale-aware string comparison
+    });
+    $form['municipality']['widget']['#options'] = $options;
+  }
+}
+
 function asklib_preprocess_views_view_table(&$variables) {
   if ($variables['view']->id() != 'asklib_index') {
     return;
