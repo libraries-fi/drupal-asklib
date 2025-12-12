@@ -436,20 +436,6 @@ class QuestionAdminForm extends ContentEntityForm {
         '#limit_validation_errors' => [],
       ];
     } else if ($question->access('release')) {
-      $actions['release'] = [
-        '#type' => 'submit',
-        // '#value' => $this->t('Release question'),
-        '#value' => $question->isAnswered() ? $this->t('Release question') : $this->t('Release to waiting queue'),
-        '#submit' => ['::release'],
-        '#validate' => ['::validateRelease'],
-        '#limit_validation_errors' => [],
-
-        // This button is placed in the reserved status notification and we want to hide it
-        // from the bottom of the form.
-        '#attributes' => [
-          'style' => 'display: none'
-        ]
-      ];
 
       $actions['submit']['#submit'] = [
         '::submitForm',
@@ -694,13 +680,19 @@ class QuestionAdminForm extends ContentEntityForm {
       }
 
       if ($question->access('release')) {
-        $header['release'] = [
-          '#type' => 'button',
-          '#value' => $question->isAnswered() ? $this->t('Release question') : $this->t('Release to waiting queue'),
-          '#attributes' => [
-            'formnovalidate' => true,
-          ],
-        ];
+          $header['release'] = [
+              '#type' => 'submit',
+              '#value' => $question->isAnswered()
+                ? $this->t('Release question')
+                : $this->t('Release to waiting queue'),
+              '#name' => 'question_release_header',
+              '#submit' => ['::release'],
+              '#validate' => ['::validateRelease'],
+              '#limit_validation_errors' => [],
+              '#attributes' => [
+                  'formnovalidate' => 'formnovalidate',
+              ],
+          ];
       }
     } else {
       $header['reserved_status'] = [
