@@ -14,6 +14,11 @@ class AllowRemoteQuestionFrames implements EventSubscriberInterface {
   }
 
   public function onResponse(ResponseEvent $event) {
+
+    if (!$event->isMainRequest()) {
+      return;
+    }
+
     $path = $event->getRequest()->getPathInfo();
 
     if (strpos($path, '/asklib/embed/') === 0) {
