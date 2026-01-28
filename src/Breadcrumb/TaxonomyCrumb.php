@@ -16,6 +16,8 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\system\PathBasedBreadcrumbBuilder;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
+use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 
 class TaxonomyCrumb extends PathBasedBreadcrumbBuilder {
   protected $requestStack;
@@ -49,24 +51,23 @@ class TaxonomyCrumb extends PathBasedBreadcrumbBuilder {
     if (isset($links[3])) {
       // By default This link has the same title as the previous one. Rewrite it to make more sense.
 
-      $parts = explode('/', $route_match->getParameter('taxonomy_term')->url());
+      $parts = explode('/', $route_match->getParameter('taxonomy_term')->toUrl()->toString());
       $letter = strtoupper($parts[count($parts) - 2]);
-      $links[3]->setText(t('Letter @letter', ['@letter' => $letter]), $links[3]->getText());
+      $links[3]->setText(t('Letter @letter', ['@letter' => $letter]));
     }
 
     return $crumb;
   }
 
-  public function __construct(RequestContext $context, AccessManagerInterface $access_manager, RequestMatcherInterface $router, InboundPathProcessorInterface $path_processor, ConfigFactoryInterface $config_factory, TitleResolverInterface $title_resolver, AccountInterface $current_user, CurrentPathStack $current_path, RequestStack $request_stack) {
-     parent::__construct($context, $access_manager, $router, $path_processor, $config_factory, $title_resolver, $current_user, $current_path);
+  public function __construct(RequestContext $context, AccessManagerInterface $access_manager, RequestMatcherInterface $router, InboundPathProcessorInterface $path_processor, ConfigFactoryInterface $config_factory, TitleResolverInterface $title_resolver, AccountInterface $current_user, CurrentPathStack $current_path, ?PathMatcherInterface $path_matcher = NULL, RequestStack $request_stack) {
+    parent::__construct($context, $access_manager, $router, $path_processor, $config_factory, $title_resolver, $current_user, $current_path, $path_matcher);
+    $this->requestStack = $request_stack;
+  }
 
-     $this->requestStack = $request_stack;
-   }
-
-  public function applies(RouteMatchInterface $route_match) {
+  public function applies(RouteMatchInterface $route_match, ?CacheableMetadata $cacheable_metadata = NULL) {
     if (in_array($route_match->getRouteName(), $this->allowedRoutes)) {
       if ($route_match->getRouteName() == 'entity.taxonomy_term.canonical') {
-        $vid = $route_match->getParameter('taxonomy_term')->getVocabularyId();
+        $vid = $route_match->getParameter('taxonomy_term')->bundle();
         return in_array($vid, $this->allowedVocabularies);
       }
       return TRUE;

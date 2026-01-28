@@ -54,7 +54,7 @@ class SimilarQuestions extends BlockBase implements ContainerFactoryPluginInterf
         'link' => [
           '#type' => 'link',
           '#title' => $question->label(),
-          '#url' => $question->urlInfo(),
+          '#url' => $question->toUrl(),
         ]
       ];
     }

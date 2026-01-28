@@ -92,8 +92,9 @@ class QuestionForm extends ContentEntityForm {
 
   public function processTheme(array $form, FormStateInterface $form_state) {
     if ($tid = $form_state->getValue('theme')) {
-      $term_storage = $this->entityManager->getStorage('taxonomy_term');
+      $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
       $query = $term_storage->getQuery()
+        ->accessCheck(FALSE)
         ->condition('vid', 'asklib_libraries')
         ->condition('field_asklib_theme', $tid);
 
@@ -116,7 +117,7 @@ class QuestionForm extends ContentEntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->setNotificationFlags(-1);
 
-    drupal_set_message(t('Thank you for your question! We will answer you within three days. If you do not hear from us, please contact us at @email.', [
+    $this->messenger()->addStatus(t('Thank you for your question! We will answer you within three days. If you do not hear from us, please contact us at @email.', [
       '@email' => 'toimitus@kirjastot.fi'
     ]));
 
@@ -130,6 +131,7 @@ class QuestionForm extends ContentEntityForm {
       ->select('taxonomy_term_field_data', 't')
       ->fields('t', ['tid', 'name'])
       ->condition('t.vid', 'asklib_themes')
+      ->condition('t.status', 1)
       ->condition('t.langcode', $langcode)
       ->orderBy('t.name')
       ;

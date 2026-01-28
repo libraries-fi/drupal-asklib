@@ -21,13 +21,13 @@ use Drupal\asklib\AnswerInterface;
 use Drupal\asklib\QuestionInterface;
 use Drupal\search\Plugin\SearchIndexingInterface;
 use Drupal\search\Plugin\SearchPluginBase;
-use Elasticsearch\Common\Exceptions\BadRequest400Exception;
-use Elasticsearch\Common\Exceptions\NoNodesAvailableException;
 use Html2Text\Html2Text;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use Drupal\kifisearch\Plugin\Search\ContentSearch;
+use Ehann\RediSearch\Index;
 use Drupal\asklib\QuestionIndexer;
+use Drupal\kifisearch\Plugin\Search\CustomSearchBase;
+use Drupal\kifisearch\Query\KifiBuilderInterface;
 
 /**
  * Search and indexing for asklib_question and asklib_answer entities.
@@ -37,26 +37,51 @@ use Drupal\asklib\QuestionIndexer;
  *   title = @Translation("Ask a Librarian")
  * )
  */
-class QuestionSearch extends ContentSearch {
-  const SEARCH_ID = 'asklib_search';
+class QuestionSearch extends CustomSearchBase implements SearchIndexingInterface {
+
+
+  public const SEARCH_ID = 'asklib_search';
+
+  protected $database;
+  protected $searchSettings;
+
+  static public function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('entity_type.manager'),
+      $container->get('language_manager'),
+      $container->get('kifisearch.client'),
+      $container->get('database'),
+      $container->get('config.factory')->get('search.settings')
+    );
+  }
+
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_manager, LanguageManagerInterface $languages, Index $kifi_index, Connection $database, Config $search_settings) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager, $languages, $kifi_index);
+
+    $this->database = $database;
+    $this->searchSettings = $search_settings;
+  }
 
   /**
-   * @param $result Elasticsearch response.
+   * @param $result Redisearch response.
    */
   protected function prepareResults(array $result) {
-    $total = $result['hits']['total'];
-    $time = $result['took'];
-    $rows = $result['hits']['hits'];
+
+    $total = $result['total'];
+    $rows = $result['hits'];
 
     $prepared = [];
 
     $cache = $this->loadMatchedEntities($result);
 
-    pager_default_initialize($total, 10);
+    \Drupal::service('pager.manager')->createPager($total, 10);
 
-    foreach ($result['hits']['hits'] as $hit) {
-      $entity_type = $hit['_source']['entity_type'];
-      $entity_id = $hit['_source']['id'];
+    foreach ($result['hits'] as $hit) {
+      $entity_type = $hit['entity_type'];
+      $entity_id = $hit['entity_id'];
 
       if (!isset($cache[$entity_type][$entity_id])) {
         user_error(sprintf('Stale search entry: %s #%d does not exist', $entity_type, $entity_id));
@@ -66,11 +91,11 @@ class QuestionSearch extends ContentSearch {
       $question = $cache[$entity_type][$entity_id];
 
       $build = [
-        'link' => $question->url('canonical', ['absolute' => TRUE, 'language' => $question->language()]),
+        'link' => $question->toUrl('canonical', ['absolute' => TRUE, 'language' => $question->language()])->toString(),
         'asklib_question' => $question,
         'title' => $question->label(),
-        'score' => $hit['_score'],
-        'date' => strtotime($hit['_source']['created']),
+        'score' => $hit['asklib_score'],
+        'date' => $hit['created'],
         'langcode' => $question->language()->getId(),
         'snippet' => $this->processSnippet($hit),
       ];
@@ -91,100 +116,35 @@ class QuestionSearch extends ContentSearch {
   public function updateIndex() {
     $storage = $this->entityManager->getStorage('asklib_question');
     $batch_size = $this->searchSettings->get('index.cron_limit');
-    $indexer = new QuestionIndexer($this->database, $storage, $this->client, [], $batch_size);
+    $indexer = new QuestionIndexer($this->database, $storage, $this->kifi_index, [], $batch_size);
     $indexer->updateIndex();
   }
 
   public function indexStatus() {
     $storage = $this->entityManager->getStorage('asklib_question');
     $batch_size = $this->searchSettings->get('index.cron_limit');
-    $indexer = new QuestionIndexer($this->database, $storage, $this->client, [], $batch_size);
+    $indexer = new QuestionIndexer($this->database, $storage, $this->kifi_index, [], $batch_size);
     return $indexer->indexStatus();
   }
 
-  protected function compileSearchQuery($query_string) {
-    /*
-     * Elasticsearch will throw an exception when the syntax is invalid, so we
-     * do a simple sanity check here.
-     */
-    // $query_string = preg_replace('/^(AND|OR|NOT)/', '', trim($query_string));
-    // $query_string = preg_replace('/(AND|OR|NOT)$/', '', trim($query_string));
+  protected function compileSearchQuery(KifiBuilderInterface &$search_query, $keywords) {
 
-    if (empty($this->searchParameters['all_languages'])) {
-      $langcode = $this->languageManager->getCurrentLanguage()->getId();
-    } else {
-      $langcode = NULL;
+    parent::compileSearchQuery($search_query, $keywords);
+
+    // Only search only from asklib questions.
+    $search_query->tagFilter('entity_type', ['asklib_question']);
+
+    // Apply ordering
+    if ($this->getParameter('order') == 'newest')
+    {
+      $search_query->sortBy('created', 'DESC');
     }
 
-    $query = [
-      'bool' => [
-        // 'must' => [],
-        // 'should' => [],
-      ]
-    ];
-
-    $query['bool']['must'][] = [
-      'term' => [
-        'entity_type' => 'asklib_question'
-      ]
-    ];
-
-    $query['bool']['must'][] = [
-      'multi_match' => [
-        'query' => $query_string,
-        'fields' => ['body', 'title', 'tags'],
-      ]
-    ];
-
-    if ($langcode) {
-      $query['bool']['must'][] = [
-        'term' => ['langcode' => [
-          'value' => $langcode,
-        ]],
-      ];
-    }
-
+    // Apply channel/feeds filtering
     if (!empty($this->searchParameters['feeds'])) {
-      foreach (Tags::explode($this->searchParameters['feeds']) as $fid) {
-        $query['bool']['must'][] = [
-          // Use the singular 'term' query to require every single term in the result.
-          'term' => [
-            'terms' => (int)$fid
-          ]
-        ];
-      }
+      $search_query->tagFilter('terms', Tags::explode($this->searchParameters['feeds']));
     }
 
-    if (!empty($this->searchParameters['tags'])) {
-      foreach (Tags::explode($this->searchParameters['tags']) as $tid) {
-        $query['bool']['must'][] = [
-          // Use the singular 'term' query to require every single term in the result.
-          'term' => [
-            'terms' => (int)$tid
-          ]
-        ];
-      }
-    }
-
-    if (!empty($this->searchParameters['order'])) {
-      switch ($this->searchParameters['order']) {
-        case 'newest':
-          $sort = ['created' => 'desc'];
-          break;
-      }
-    } else {
-      $sort = ['_score' => 'desc'];
-    }
-
-    return [
-      'query' => $query,
-      'sort' => $sort,
-      'highlight' => [
-        'fields' => ['body' => (object)[]],
-        'pre_tags' => ['<strong>'],
-        'post_tags' => ['</strong>'],
-      ]
-    ];
   }
 
   public function searchFormAlter(array &$form, FormStateInterface $form_state) {
@@ -214,10 +174,10 @@ class QuestionSearch extends ContentSearch {
       '#type' => 'details',
       '#title' => $this->t('Advanced search'),
       '#open' => count(array_diff(array_keys($parameters), ['page', 'keys'])) > 1,
-      'all_languages' => [
+      'anylang' => [
         '#type' => 'checkbox',
         '#title' => $this->t('Search all languages'),
-        '#default_value' => !empty($parameters['all_languages'])
+        '#default_value' => !empty($parameters['anylang'])
       ],
       'tags_container' => [
         /*
@@ -267,7 +227,7 @@ class QuestionSearch extends ContentSearch {
     ];
 
     if ($langcode != 'fi') {
-      $form['all_languages'] = $form['advanced']['all_languages'];
+      $form['anylang'] = $form['advanced']['anylang'];
       unset($form['advanced']);
     }
   }
@@ -285,6 +245,11 @@ class QuestionSearch extends ContentSearch {
         continue;
       }
 
+      // Skip unblished channels
+      if (!$term->isPublished()) {
+        continue;
+      }
+
       $options[$term->id()] = (string)$term->label();
     }
 
@@ -295,12 +260,12 @@ class QuestionSearch extends ContentSearch {
   public function buildSearchUrlQuery(FormStateInterface $form_state) {
     $query = parent::buildSearchUrlQuery($form_state);
 
-    if ($form_state->getValue('all_languages')) {
-      $query['all_languages'] = '1';
+    if ($form_state->getValue('anylang')) {
+      $query['anylang'] = '1';
     }
 
     if ($tags = $form_state->getValue('tags')) {
-      $query['tags'] = Tags::implode(array_map(function($t) { return $t['target_id']; }, $tags));
+      $query['tags'] = Tags::implode(array_map(fn($t) => $t['target_id'], $tags));
     }
 
     if ($feeds = array_filter($form_state->getValue('feeds', []))) {
@@ -313,5 +278,13 @@ class QuestionSearch extends ContentSearch {
     }
 
     return $query;
+  }
+
+  public function markForReindex() {
+    $this->database->query('UPDATE {kifisearch_index} SET reindex = 1');
+  }
+
+  public function indexClear() {
+    $this->database->query('DELETE FROM {kifisearch_index}');
   }
 }

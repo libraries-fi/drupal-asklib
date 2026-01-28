@@ -81,7 +81,7 @@ asklib.admin_email_groups:
     _controller: 'Drupal\asklib\Controller\MailGroupController::groups'
   requirements:
     _permission: 'administer asklib'
-asklib.admin_email_groups:
+asklib.admin_email_single_group:
   path: '/admin/config/asklib/emails/groups/{taxonomy_term}'
   defaults:
     _title: 'Email groups'

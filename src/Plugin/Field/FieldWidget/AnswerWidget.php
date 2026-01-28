@@ -2,6 +2,7 @@
 
 namespace Drupal\asklib\Plugin\Field\FieldWidget;
 
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\Display\EntityFormDisplayInterface;
@@ -37,7 +38,7 @@ class AnswerWidget extends WidgetBase {
           ];
         }
 
-        $display = \Drupal\Core\Entity\Entity\EntityFormDisplay::collectRenderDisplay($answer, 'default');
+        $display = EntityFormDisplay::collectRenderDisplay($answer, 'default');
 
         $element['body'] = $display->getRenderer('body')->form($answer->get('body'), $form, $form_state);
 
@@ -51,7 +52,7 @@ class AnswerWidget extends WidgetBase {
 
         $element['rating'] = $display->getRenderer('rating')->form($answer->get('rating'), $form, $form_state);
 
-        $fids = array_map(function($o) { return $o->id(); }, $answer->getAttachments());
+        $fids = array_map(fn($o) => $o->id(), $answer->getAttachments());
 
         $element['attachments'] = [
           '#type' => 'managed_file',

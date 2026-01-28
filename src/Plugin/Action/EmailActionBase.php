@@ -42,9 +42,6 @@ abstract class EmailActionBase extends ActionBase implements ContainerFactoryPlu
   }
 
   protected function mail($mail_id, $recipients, $langcode, $mail, $reply_to = null) {
-    if (is_array($recipients)) {
-      $recipients = implode(', ', $recipients);
-    }
 
     if (is_null($reply_to)) {
       $reply_to = $this->getGenericSenderAddress();
@@ -53,16 +50,30 @@ abstract class EmailActionBase extends ActionBase implements ContainerFactoryPlu
     $mail = $this->mailer->mail('asklib', $mail_id, $recipients, $langcode, $mail, $reply_to);
 
     if ($mail['result']) {
-      $storage = \Drupal::entityTypeManager()->getStorage('kifimail_log');
-      $storage->create([
-        'module' => $mail['module'],
-        'message_id' => $mail['key'],
-        'email' => $mail['to'],
-        'langcode' => $mail['langcode'],
-        'subject' => $mail['subject'],
-        'body' => $mail['body'],
-        'user' => \Drupal::currentUser()->id(),
-      ])->save();
+    
+      $log_message = <<<EOT
+Mail sent from asklib with following data:
+module: @module,
+message_id: @message_id,
+email: @email,
+langcode: @langcode,
+subject: @subject,
+body: @body,
+user: @user
+EOT;
+    
+      \Drupal::logger('asklib')
+        ->notice($log_message, [
+          '@module' => $mail['module'],
+          '@message_id' => $mail['key'],
+          '@email' => $mail['to'],
+          '@langcode' => $mail['langcode'],
+          '@subject' => $mail['subject'],
+          '@body' => $mail['body'],
+          '@user' => \Drupal::currentUser()->id(),
+        ]);
+
+      
     }
   }
 
@@ -71,6 +82,6 @@ abstract class EmailActionBase extends ActionBase implements ContainerFactoryPlu
     $site_config = $this->config->get('system.site');
     $name = $config->get('reply.name');
     $email = $config->get('reply.address') ?: $site_config->get('mail');
-    return $name ? sprintf('%s <%s>', $name, $email) : $email;
+    return ['name' => $name, 'email' => $email];
   }
 }

@@ -11,7 +11,7 @@ class QuestionStorage extends SqlContentEntityStorage {
       return [];
     }
 
-    $tags = array_map(function($t) { return $t->id(); }, $tags);
+    $tags = array_map(fn($t) => $t->id(), $tags);
 
     $query = $this->database->select('asklib_questions', 'q')
       ->fields('q', ['id'])

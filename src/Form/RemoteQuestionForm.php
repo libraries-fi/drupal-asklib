@@ -28,6 +28,14 @@ class RemoteQuestionForm extends ContentEntityForm {
       }
     }
 
+    // Check if form was submitted by looking for the URL query parameter.
+    $submitted = \Drupal::request()->query->get('submitted');
+
+    if ($submitted) {
+      $message = \Drupal::config('asklib.settings')->get('confirmation');
+      $this->messenger()->addStatus($message);
+    }
+
     // Need to set language manually because Question is not marked as 'translatable'.
     $form['langcode'] = [
       '#type' => 'value',
@@ -62,8 +70,8 @@ class RemoteQuestionForm extends ContentEntityForm {
 
   public function save(array $form, FormStateInterface $form_state) {
     $this->entity->setNotificationFlags(-1);
-    $message = \Drupal::config('asklib.settings')->get('confirmation');
-    drupal_set_message($message);
+    $current_path = \Drupal::service('path.current')->getPath();
+    $form_state->setRedirectUrl(\Drupal\Core\Url::fromUserInput($current_path, ['query' => ['submitted' => 1]]));
 
     return parent::save($form, $form_state);
   }
@@ -71,7 +79,7 @@ class RemoteQuestionForm extends ContentEntityForm {
   private function channelFromRoute() {
     $term = \Drupal::routeMatch()->getParameter('channel');
 
-    if ($term->getVocabularyId() != 'asklib_channels') {
+    if ($term->bundle() != 'asklib_channels') {
       throw new NotFoundHttpException;
     }
 

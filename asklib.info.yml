@@ -4,12 +4,13 @@ core: 8.x
 package: Kirjastot.fi
 description: "Kysy kirjastonhoitajalta"
 configure: asklib.admin
+core_version_requirement: ">=8"
 dependencies:
   - autoslug
   - finto_taxonomy
   - forum
   - kifiform
-  - kifimail
+  - symfony_mailer
   - kifisearch
   - kifistats
   - language

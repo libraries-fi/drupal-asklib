@@ -27,6 +27,7 @@ class UserMailGroupHelper {
     $storage = $this->entityManager->getStorage('taxonomy_term');
 
     $query = $storage->getQuery()
+      ->accessCheck(false)
       ->condition('field_asklib_subscribers', $uids)
       ->sort('vid', 'DESC');
 
@@ -42,7 +43,7 @@ class UserMailGroupHelper {
       FROM {taxonomy_term__field_asklib_subscribers}
       WHERE field_asklib_subscribers_target_id IN (%s)
     ', $phs);
-    $smt = $this->database->prepareQuery($query);
+    $smt = $this->database->prepareStatement($query, []);
     $smt->execute(array_values($uids));
 
     $tids = [];
@@ -60,13 +61,12 @@ class UserMailGroupHelper {
     $storage = $this->entityManager->getStorage('taxonomy_term');
     $tids = $storage->getQuery()
       ->condition('field_asklib_subscribers', $uid)
+      ->accessCheck(FALSE)
       ->execute();
 
     // Filter user from terms that the user is not subscribed to anymore.
     foreach ($storage->loadMultiple($tids) as $term) {
-      $term->get('field_asklib_subscribers')->filter(function($field) use ($term, $uid, $gids) {
-        return $field->target_id != $uid || in_array($term->id(), $gids);
-      });
+      $term->get('field_asklib_subscribers')->filter(fn($field) => $field->target_id != $uid || in_array($term->id(), $gids));
       $term->save();
     }
 
@@ -88,7 +88,7 @@ class UserMailGroupHelper {
     $groups = $this->getGroupsForUser($user_id, TRUE);
 
     foreach ($groups as $i => $term) {
-      if ($term->getVocabularyId() == 'asklib_municipalities') {
+      if ($term->bundle() == 'asklib_municipalities') {
         return $term;
       }
     }

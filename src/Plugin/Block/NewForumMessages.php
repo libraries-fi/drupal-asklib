@@ -61,8 +61,8 @@ class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterf
     $basedir = \Drupal::moduleHandler()->getModule('asklib')->getPath();
 
     foreach ($this->content() as $delta => $item) {
-      $user_url = $this->userStorage->create(['uid' => $item->user->id])->urlInfo();
-      $post_url = $this->nodeStorage->create(['nid' => $item->nid, 'type' => 'forum'])->urlInfo();
+      $user_url = $this->userStorage->create(['uid' => $item->user->id])->toUrl();
+      $post_url = $this->nodeStorage->create(['nid' => $item->nid, 'type' => 'forum'])->toUrl();
 
       if ($item->type == 'comment') {
         $icon = 'icon-comment.svg';
@@ -160,7 +160,7 @@ class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterf
   }
 
   protected function newTopics() {
-    $query = db_select('forum_index', 'f')
+    $query = \Drupal::database()->select('forum_index', 'f')
       ->fields('f')
       ->fields('b', ['body_value', 'body_format'])
       ->fields('n', ['langcode'])
@@ -201,7 +201,7 @@ class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterf
   }
 
   protected function newComments() {
-    $query = db_select('comment_field_data', 'c')
+    $query = \Drupal::database()->select('comment_field_data', 'c')
       ->fields('c')
       ->fields('b', ['comment_body_value', 'comment_body_format'])
       ->fields('f', ['title'])
@@ -248,9 +248,7 @@ class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterf
   protected function mergeItems(array $topics, array $comments) {
     $items = array_merge($topics, $comments);
 
-    usort($items, function($a, $b) {
-      return $b->created - $a->created;
-    });
+    usort($items, fn($a, $b) => $b->created - $a->created);
 
     return array_slice($items, 0, $this->configuration['block_count']);
   }

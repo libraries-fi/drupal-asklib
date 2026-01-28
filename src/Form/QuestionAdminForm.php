@@ -8,7 +8,7 @@ use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Path\AliasStorageInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
 use Drupal\asklib\ProvideQuestionFormHeader;
@@ -18,8 +18,11 @@ use Drupal\autoslug\Slugger;
 use Drupal\autoslug\SluggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Component\Datetime\TimeInterface;
 
 use Drupal\Core\Config\Config;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 class QuestionAdminForm extends ContentEntityForm {
   use ProvideEntityFormActionGetter;
@@ -32,17 +35,23 @@ class QuestionAdminForm extends ContentEntityForm {
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager'),
+      $container->get('entity.repository'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('datetime.time'),
       $container->get('date.formatter'),
-      $container->get('path.alias_storage'),
+      $container->get('entity_type.manager')->getStorage('path_alias'),
       $container->get('autoslug.slugger.default'),
       $container->get('config.factory')->get('asklib.settings'),
       $container->get('asklib.user_mail_group_helper')
     );
   }
 
-  public function __construct(EntityManagerInterface $em, DateFormatterInterface $dates, AliasStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups) {
-    parent::__construct($em);
+  public function __construct(
+    EntityRepositoryInterface $entity_repository, EntityTypeBundleInfoInterface $entity_type_bundle_info, TimeInterface $time,
+    DateFormatterInterface $dates, EntityStorageInterface $aliases, SluggerInterface $alias_generator, Config $config, UserMailGroupHelper $mail_groups
+  ) {
+    
+    parent::__construct($entity_repository, $entity_type_bundle_info, $time);
     $this->dates = $dates;
     $this->aliases = $aliases;
     $this->aliasGenerator = $alias_generator;
@@ -55,7 +64,7 @@ class QuestionAdminForm extends ContentEntityForm {
     $answer = $question->getAnswer();
 
     if (!$answer && $question->isReservedTo($this->currentUser())) {
-      $answer = $this->entityManager->getStorage('asklib_answer')->create();
+      $answer = $this->entityTypeManager->getStorage('asklib_answer')->create();
       $question->setAnswer($answer);
     }
 
@@ -151,7 +160,7 @@ class QuestionAdminForm extends ContentEntityForm {
         '#type' => 'link',
         '#weight' => 100,
         '#title' => $this->t('Redirect to another group'),
-        '#url' => $question->urlInfo('redirect-form'),
+        '#url' => $question->toUrl('redirect-form'),
         '#access' => $question->isAvailableTo($this->currentUser()) && !$question->isAnswered(),
       ]
     ];
@@ -238,7 +247,17 @@ class QuestionAdminForm extends ContentEntityForm {
     $form['tags']['#group'] = 'tags_group';
     $form['tags']['#attached']['library'][] = 'finto_taxonomy/kifiform-tags-plugin';
 
-    $form['tags']['widget']['target_id']['#description'] = $this->t('Select keywords from the drop-down list or press Enter to add a new one.');
+    // Add this block to restrict new term creation in 'asklib_tags' when language is Swedish or English
+    $content_langcode = $this->entity->language()->getId();
+    if (in_array($content_langcode, ['sv', 'en'])) {
+      // Allow auto creation only in 'finto' vocabulary.
+      $form['tags']['widget']['#selection_settings']['auto_create_bundles'] = ['finto'];
+      $form['#attached']['drupalSettings']['kifiform'] = [
+        'disableEnter' => TRUE,
+      ];
+    }
+
+    $form['tags']['widget']['target_id']['#description'] = $this->t('Select keywords from the drop-down list.');
 
     $form['tags']['tags_legend'] = [
       'finto_legend' => [
@@ -394,6 +413,7 @@ class QuestionAdminForm extends ContentEntityForm {
 
     // Add header after possibly disabling inputs.
     $form['header'] = $this->getQuestionFormHeader($question);
+    // dump($form['tags']);
 
     return $form;
   }
@@ -416,20 +436,6 @@ class QuestionAdminForm extends ContentEntityForm {
         '#limit_validation_errors' => [],
       ];
     } else if ($question->access('release')) {
-      $actions['release'] = [
-        '#type' => 'submit',
-        // '#value' => $this->t('Release question'),
-        '#value' => $question->isAnswered() ? $this->t('Release question') : $this->t('Release to waiting queue'),
-        '#submit' => ['::release'],
-        '#validate' => ['::validateRelease'],
-        '#limit_validation_errors' => [],
-
-        // This button is placed in the reserved status notification and we want to hide it
-        // from the bottom of the form.
-        '#attributes' => [
-          'style' => 'display: none'
-        ]
-      ];
 
       $actions['submit']['#submit'] = [
         '::submitForm',
@@ -472,7 +478,7 @@ class QuestionAdminForm extends ContentEntityForm {
     } else {
       $answer_data['email_sent'] = NULL;
 
-      $answer = $this->entityManager->getStorage('asklib_answer')->create($answer_data);
+      $answer = $this->entityTypeManager->getStorage('asklib_answer')->create($answer_data);
       $answer->setUser($this->currentUser()->id());
       $this->entity->setAnswer($answer);
     }
@@ -486,9 +492,9 @@ class QuestionAdminForm extends ContentEntityForm {
         $old_langcode = $term->language()->getId();
         $new_langcode = $this->entity->language()->getId();
 
-        $new_term = $this->entityManager->getStorage('taxonomy_term')->create([
+        $new_term = $this->entityTypeManager->getStorage('taxonomy_term')->create([
           'name' => $term->getName(),
-          'vid' => $term->getVocabularyId(),
+          'vid' => $term->bundle(),
           'langcode' => $new_langcode,
         ]);
 
@@ -504,7 +510,7 @@ class QuestionAdminForm extends ContentEntityForm {
       $answer->save();
     }
 
-    drupal_set_message(t('Changes have been saved.'));
+    $this->messenger()->addStatus(t('Changes have been saved.'));
     return $status;
   }
 
@@ -515,20 +521,20 @@ class QuestionAdminForm extends ContentEntityForm {
     if ($skip_email && !$question->isAnswered()) {
       $this->executeAction('asklib_mark_question_answered', $question);
 
-      drupal_set_message(t('Question was marked answered.'));
+      $this->messenger()->addStatus(t('Question was marked answered.'));
       $form_state->setRedirect('view.asklib_index.page_1');
     } else if (!$skip_email && !$question->getEmailSentTime() && $question->isAnswered()) {
       $question->getAnswer()->setAnsweredTime(NULL);
 
-      drupal_set_message(t('Question was marked unanswered.'));
+      $this->messenger()->addStatus(t('Question was marked unanswered.'));
     }
   }
 
   public function processSlug(array $form, FormStateInterface $form_state) {
     $langcode = $this->entity->language()->getId();
-    $source = '/' . $this->entity->urlInfo()->getInternalPath();
-    $match = $this->aliases->load([
-      'source' => $source,
+    $source = '/' . $this->entity->toUrl()->getInternalPath();
+    $path_alias = $this->aliases->loadByProperties([
+      'path' => $source,
       'langcode' => $langcode,
     ]);
 
@@ -538,8 +544,18 @@ class QuestionAdminForm extends ContentEntityForm {
       $alias = substr_replace($alias, $slug, strrpos($alias, '/') + 1);
     }
 
-    $pid = empty($match) ? NULL : $match['pid'];
-    $this->aliases->save($source, $alias, $langcode, $pid);
+    if (empty($path_alias)) {
+      $path_alias = \Drupal::entityTypeManager()->getStorage('path_alias')->create([
+        'path' => $source,
+        'alias' => $alias,
+        'langcode' => $langcode
+      ]);
+    } else {
+      // First element is the only one we need.
+      $path_alias = reset($path_alias);
+      $path_alias->setAlias($alias);
+      $path_alias->save();
+    }
   }
 
   public function validateReserve(array $form, FormStateInterface $form_state) {
@@ -581,7 +597,7 @@ class QuestionAdminForm extends ContentEntityForm {
   }
 
   public function redirectToPreview(array $form, FormStateInterface $form_state) {
-    $form_state->setRedirectUrl($this->entity->urlInfo('email-form'));
+    $form_state->setRedirectUrl($this->entity->toUrl('email-form'));
   }
 
   public function reserve(array $form, FormStateInterface $form_state) {
@@ -599,7 +615,7 @@ class QuestionAdminForm extends ContentEntityForm {
 
     $question->release()->save();
     $form_state->setRedirect('view.asklib_index.page_1');
-    drupal_set_message(t('Question released successfully.'));
+    $this->messenger()->addStatus(t('Question released successfully.'));
   }
 
   protected function rowCountForQuestion($body, $fallback = 4) {
@@ -610,11 +626,11 @@ class QuestionAdminForm extends ContentEntityForm {
   }
 
   protected function slugForQuestion() {
-    $slug = substr(strrchr($this->entity->url(), '/'), 1);
+    $slug = substr(strrchr($this->entity->toUrl()->toString(), '/'), 1);
 
     if (!ctype_digit($slug)) {
       // Strip query variables potentially injected by other modules etc.
-      list($slug, $_) = explode('?', $slug . '?');
+      [$slug, $_] = explode('?', $slug . '?');
       return $slug;
     }
 
@@ -646,7 +662,7 @@ class QuestionAdminForm extends ContentEntityForm {
             'class' => ['messages', 'messages--error'],
           ],
           '#value' =>  $this->t('This question is reserved to user @user until @date. You can only view this question.', [
-            '@user' => $lock->getUser()->getUsername(),
+            '@user' => $lock->getUser()->getDisplayName(),
             '@date' => $this->dates->format($expires, 'month_and_day'),
           ]),
         ];
@@ -664,13 +680,19 @@ class QuestionAdminForm extends ContentEntityForm {
       }
 
       if ($question->access('release')) {
-        $header['release'] = [
-          '#type' => 'button',
-          '#value' => $question->isAnswered() ? $this->t('Release question') : $this->t('Release to waiting queue'),
-          '#attributes' => [
-            'formnovalidate' => true,
-          ],
-        ];
+          $header['release'] = [
+              '#type' => 'submit',
+              '#value' => $question->isAnswered()
+                ? $this->t('Release question')
+                : $this->t('Release to waiting queue'),
+              '#name' => 'question_release_header',
+              '#submit' => ['::release'],
+              '#validate' => ['::validateRelease'],
+              '#limit_validation_errors' => [],
+              '#attributes' => [
+                  'formnovalidate' => 'formnovalidate',
+              ],
+          ];
       }
     } else {
       $header['reserved_status'] = [
@@ -686,10 +708,11 @@ class QuestionAdminForm extends ContentEntityForm {
   }
 
   protected function buildQuestionLockHistory() {
-    $storage = $this->entityManager->getStorage('asklib_lock');
+    $storage = $this->entityTypeManager->getStorage('asklib_lock');
     $lids = $storage->getQuery()
       ->condition('question', $this->entity->id())
       ->sort('created', 'DESC')
+      ->accessCheck(false)
       ->execute();
 
     $locks = $storage->loadMultiple($lids);
@@ -702,12 +725,13 @@ class QuestionAdminForm extends ContentEntityForm {
     ];
 
     foreach ($locks as $lock) {
+
       $table['#rows'][] = [
         [
           'data' => [
             '#type' => 'link',
-            '#title' => $lock->getUser()->getUsername(),
-            '#url' => $lock->getUser()->urlInfo(),
+            '#title' => $lock->getUser()->getAccountName(),
+            '#url' => $lock->getUser()->toUrl(),
           ]
         ],
         [

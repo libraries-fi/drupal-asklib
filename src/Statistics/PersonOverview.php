@@ -2,6 +2,8 @@
 
 namespace Drupal\asklib\Statistics;
 
+use Drupal\Core\Database\Query\PagerSelectExtender;
+use Drupal\Core\Database\Query\TableSortExtender;
 use PDO;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -21,7 +23,7 @@ class PersonOverview extends StatisticsBase {
       'name' => [
         '#type' => 'textfield',
         '#title' => $this->t('User name'),
-        '#default_value' => isset($this->parameters['n']) ? $this->parameters['n'] : '',
+        '#default_value' => $this->parameters['n'] ?? '',
         '#size' => 30,
       ],
     ];
@@ -67,8 +69,8 @@ class PersonOverview extends StatisticsBase {
     ];
 
     $query = $this->getQuery()
-      ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
-      ->extend('Drupal\Core\Database\Query\TableSortExtender');
+      ->extend(PagerSelectExtender::class)
+      ->extend(TableSortExtender::class);
     $query->innerJoin('users_field_data', 'u', 'a.user = u.uid');
     $query->addExpression('COUNT(*)', 'total');
     $query->addExpression('MAX(a.answered)', 'last_answer');

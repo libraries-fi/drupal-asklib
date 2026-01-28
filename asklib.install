@@ -7,7 +7,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 function asklib_install() {
-  $em = Drupal::entityManager();
+  $em = \Drupal::service('entity_type.manager');
 
   $em->getStorage('field_storage_config')->create([
     'entity_type' => 'asklib_question',
@@ -58,7 +58,7 @@ function asklib_update_8002() {
   $entity = \Drupal::entityTypeManager()->getStorage('entity_form_mode')->load('asklib_question.edit');
   if(!$entity) {
     // If not load and write the configuration to Drupal config.
-    $config_path = drupal_get_path('module', 'asklib') . '/config/install';
+    $config_path = \Drupal::service('extension.list.module')->getPath('asklib') . '/config/install';
     $source = new FileStorage($config_path);
     $config_storage = \Drupal::service('config.storage');
     $config_storage->write('core.entity_form_mode.asklib_question.edit', $source->read('core.entity_form_mode.asklib_question.edit'));

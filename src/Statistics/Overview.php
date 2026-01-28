@@ -128,7 +128,7 @@ class Overview extends StatisticsBase {
     $result = $query->execute()->fetchAll(PDO::FETCH_ASSOC);
     $rows = [];
     $rest = ['delay' => $this->t('@days days', ['@days' => '4+']), 'total' => 0];
-    $total = array_reduce($result, function($total, $row) { return $total + $row['total']; }, 0);
+    $total = array_reduce($result, fn($total, $row) => $total + $row['total'], 0);
 
     foreach ($result as $row) {
       if ($row['delay'] <= 3) {
@@ -213,16 +213,12 @@ class Overview extends StatisticsBase {
 
     $result = $query->execute()->fetchAll(PDO::FETCH_UNIQUE);
 
-    $data = array_map(function($c) use ($result) {
-      return [
-        'name' => $c->label(),
-        'total' => isset($result[$c->id()]) ? $result[$c->id()]->total : 0,
-      ];
-    }, $channels);
+    $data = array_map(fn($c) => [
+      'name' => $c->label(),
+      'total' => isset($result[$c->id()]) ? $result[$c->id()]->total : 0,
+    ], $channels);
 
-    usort($data, function($a, $b) {
-      return strcasecmp($a['name'], $b['name']);
-    });
+    usort($data, fn($a, $b) => strcasecmp($a['name'], $b['name']));
 
     $table = [
       '#type' => 'table',

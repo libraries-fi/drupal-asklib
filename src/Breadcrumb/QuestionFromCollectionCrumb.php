@@ -15,6 +15,8 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Path\CurrentPathStack;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
+use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 
 class QuestionFromCollectionCrumb extends PathBasedBreadcrumbBuilder {
   protected $requestStack;
@@ -22,20 +24,20 @@ class QuestionFromCollectionCrumb extends PathBasedBreadcrumbBuilder {
 
   public static function collectionIdFromQuery($from) {
     // Variable value should be 'collection/{nid}'
-    list($foo, $nid) = explode('/', $from . '//');
+    [$foo, $nid] = explode('/', $from . '//');
     if ($foo == 'collection' && ctype_digit($nid)) {
       return $nid;
     }
   }
 
-   public function __construct(RequestContext $context, AccessManagerInterface $access_manager, RequestMatcherInterface $router, InboundPathProcessorInterface $path_processor, ConfigFactoryInterface $config_factory, TitleResolverInterface $title_resolver, AccountInterface $current_user, CurrentPathStack $current_path, RequestStack $request_stack, EntityTypeManagerInterface $entity_manager) {
-     parent::__construct($context, $access_manager, $router, $path_processor, $config_factory, $title_resolver, $current_user, $current_path);
 
-     $this->requestStack = $request_stack;
-     $this->nodeStorage = $entity_manager->getStorage('node');
-   }
+  public function __construct(RequestContext $context, AccessManagerInterface $access_manager, RequestMatcherInterface $router, InboundPathProcessorInterface $path_processor, ConfigFactoryInterface $config_factory, TitleResolverInterface $title_resolver, AccountInterface $current_user, CurrentPathStack $current_path, ?PathMatcherInterface $path_matcher = NULL, RequestStack $request_stack, EntityTypeManagerInterface $entity_manager) {
+    parent::__construct($context, $access_manager, $router, $path_processor, $config_factory, $title_resolver, $current_user, $current_path, $path_matcher);
+    $this->requestStack = $request_stack;
+    $this->nodeStorage = $entity_manager->getStorage('node');
+  }
 
-  public function applies(RouteMatchInterface $route_match) {
+  public function applies(RouteMatchInterface $route_match, ?CacheableMetadata $cacheable_metadata = NULL) {
     return ctype_digit(self::collectionIdFromQuery($this->from()));
   }
 
@@ -48,7 +50,7 @@ class QuestionFromCollectionCrumb extends PathBasedBreadcrumbBuilder {
 
     $node = reset($nodes);
 
-    $request = $this->getRequestForPath($node->url(), []);
+    $request = $this->getRequestForPath($node->toUrl()->toString(), []);
     $this->context->fromRequest($request);
 
     $crumb = parent::build($route_match);

@@ -2,6 +2,8 @@
 
 namespace Drupal\asklib\Statistics;
 
+use Drupal\Core\Database\Query\PagerSelectExtender;
+use Drupal\Core\Database\Query\TableSortExtender;
 use PDO;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -21,7 +23,7 @@ class MunicipalityOverview extends StatisticsBase {
       'name' => [
         '#type' => 'textfield',
         '#title' => $this->t('Name'),
-        '#default_value' => isset($this->parameters['n']) ? $this->parameters['n'] : '',
+        '#default_value' => $this->parameters['n'] ?? '',
         '#size' => 30,
       ],
     ];
@@ -69,8 +71,8 @@ class MunicipalityOverview extends StatisticsBase {
     ];
 
     $query = $this->getQuery()
-      ->extend('Drupal\Core\Database\Query\PagerSelectExtender')
-      ->extend('Drupal\Core\Database\Query\TableSortExtender');
+      ->extend(PagerSelectExtender::class)
+      ->extend(TableSortExtender::class);
     $query->innerJoin('taxonomy_term_field_data', 't', 'q.municipality = t.tid');
     $query->addExpression('COUNT(*)', 'total');
     $query->addExpression('MAX(a.answered)', 'last_answer');

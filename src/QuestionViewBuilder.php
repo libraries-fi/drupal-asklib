@@ -18,7 +18,7 @@ class QuestionViewBuilder extends EntityViewBuilder {
 
             '#theme' => 'asklib_ref_question',
             '#weight' => -100,
-            '#url' => $question->urlInfo('add-form', ['query' => [
+            '#url' => $question->toUrl('add-form', ['query' => [
               'ref' => $question->id(),
             ]]),
           ];
@@ -31,6 +31,12 @@ class QuestionViewBuilder extends EntityViewBuilder {
         $build[$delta]['comments']['#access'] = FALSE;
       }
     }
+
+    // See the NOTE in asklib_preprocess_asklib_question about display managment.
+    foreach ($build as $delta => $current_build) {
+      $build[$delta]['title']['#label_display'] = 'hidden';
+    }
+
   }
 
   /**
@@ -40,9 +46,7 @@ class QuestionViewBuilder extends EntityViewBuilder {
     $keys = Element::children($tags, TRUE);
     $items = [];
 
-    usort($keys, function($a, $b) use ($tags) {
-      return strcasecmp($tags[$a]['#title'], $tags[$b]['#title']);
-    });
+    usort($keys, fn($a, $b) => strcasecmp($tags[$a]['#title'], $tags[$b]['#title']));
 
     foreach ($keys as $i => $key) {
       $items[$i] = $tags[$key];

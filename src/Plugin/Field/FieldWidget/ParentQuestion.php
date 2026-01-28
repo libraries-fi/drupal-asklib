@@ -36,7 +36,7 @@ class ParentQuestion extends WidgetBase {
           'link' => [
             '#type' => 'link',
             '#title' => $parent->label(),
-            '#url' => $parent->urlInfo('edit-form'),
+            '#url' => $parent->toUrl('edit-form'),
           ],
           'value' => [
             '#type' => 'value',
