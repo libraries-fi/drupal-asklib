@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Render\RendererInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -24,6 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterface {
   protected $configFactory;
   protected $moduleHandler;
+  protected $renderer;
   protected $nodeStorage;
   protected $userStorage;
   protected $termStorage;
@@ -35,13 +37,15 @@ class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterf
       $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('module_handler'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('renderer')
     );
   }
 
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, ConfigFactoryInterface $config_factory, RendererInterface $renderer) {
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
+    $this->renderer = $renderer;
 
     $this->termStorage = $entity_manager->getStorage('taxonomy_term');
     $this->nodeStorage = $entity_manager->getStorage('node');
@@ -73,8 +77,13 @@ class NewForumMessages extends BlockBase implements ContainerFactoryPluginInterf
       $icon_src = Url::fromUserInput(sprintf('/%s/public/images/%s', $basedir, $icon))->toString();
       $body = $item->body->value;
       $format = $item->body->format;
-      $summary = text_summary(check_markup($body, $format, $item->langcode), $format, 120);
-
+      $body_build = [
+        '#type' => 'processed_text',
+        '#text' => $body,
+        '#format' => $format,
+        '#langcode' => $item->langcode,
+      ];
+      $summary = text_summary($this->renderer->renderInIsolation($body_build), $format, 120);
       $items[$delta] = [
         '#type' => 'container',
         '#attributes' => [

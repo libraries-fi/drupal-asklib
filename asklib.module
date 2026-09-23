@@ -580,6 +580,24 @@ function asklib_theme_suggestions_page_alter(array &$suggestions, array $variabl
   }
 }
 
+/**
+ * Renders text through a processed_text element in isolation.
+ *
+ * Drop-in replacement for the deprecated Drupal check_markup function.
+ *
+ * @return \Drupal\Component\Render\MarkupInterface
+ *   The filtered markup, ready for token replacements.
+ */
+function _asklib_render_processed_text($text, $format, $langcode = NULL) {
+  $build = [
+    '#type' => 'processed_text',
+    '#text' => $text,
+    '#format' => $format,
+    '#langcode' => $langcode,
+  ];
+  return \Drupal::service('renderer')->renderInIsolation($build);
+}
+
 function asklib_tokens($type, array $tokens, array $data, array $options, BubbleableMetadata $metadata) {
   $replacements = [];
 
@@ -589,7 +607,7 @@ function asklib_tokens($type, array $tokens, array $data, array $options, Bubble
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'body':
-          $replacements[$original] = check_markup($question->getBody(), $question->getBodyFormat(), $question->language()->getId());
+          $replacements[$original] = _asklib_render_processed_text($question->getBody(), $question->getBodyFormat(), $question->language()->getId());
           break;
         case 'details':
           $replacements[$original] = $question->getDetails();
@@ -620,7 +638,7 @@ function asklib_tokens($type, array $tokens, array $data, array $options, Bubble
             $replacements[$original] = $answer->getUser()->get('field_asklib_signature')->value;
             break;
           case 'body':
-            $replacements[$original] = check_markup($answer->getBody(), $answer->getBodyFormat(), $answer->language()->getId());
+            $replacements[$original] = _asklib_render_processed_text($answer->getBody(), $answer->getBodyFormat(), $answer->language()->getId());
             break;
           case 'details':
             $replacements[$original] = $answer->getDetails();
