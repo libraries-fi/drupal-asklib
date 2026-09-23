@@ -8,7 +8,7 @@ use Drupal\views\Plugin\views\field\FieldPluginBase;
 
 class Question extends FieldPluginBase
 {
-    public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = null)
+    public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL)
     {
         parent::init($view, $display, $options);
     }

@@ -14,8 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Drupal\asklib\QuestionInterface;
 
 class QuestionViewController extends EntityViewController {
-  public function view(EntityInterface $asklib_question, $view_mode = 'full', $langcode = null) {
-    $view = parent::view($asklib_question, $view_mode, $langcode);
+  public function view(EntityInterface $asklib_question, $view_mode = 'full') {
+    $view = parent::view($asklib_question, $view_mode);
     $view['#attached']['library'][] = 'asklib/view-counter';
     return $view;
   }

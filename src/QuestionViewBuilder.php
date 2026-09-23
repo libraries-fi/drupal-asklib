@@ -6,8 +6,8 @@ use Drupal\Core\Entity\EntityViewBuilder;
 use Drupal\Core\Render\Element;
 
 class QuestionViewBuilder extends EntityViewBuilder {
-  public function buildComponents(array &$build, array $entities, array $displays, $view_mode, $langcode = null) {
-    parent::buildComponents($build, $entities, $displays, $view_mode, $langcode);
+  public function buildComponents(array &$build, array $entities, array $displays, $view_mode) {
+    parent::buildComponents($build, $entities, $displays, $view_mode);
 
     foreach ($entities as $delta => $question) {
       if ($question->isPublished()) {

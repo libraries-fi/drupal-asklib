@@ -16,7 +16,7 @@ class MailGroupTermForm extends TermForm
         //     ->condition('roles', ['asklib_admin'], 'IN')
         //     ->execute();
 
-        $users = $this->entityManager->getStorage('user')->loadByProperties(['roles' => ['asklib_admin']]);
+        $users = $this->entityTypeManager->getStorage('user')->loadByProperties(['roles' => ['asklib_admin']]);
 
         $sids = [];
 
