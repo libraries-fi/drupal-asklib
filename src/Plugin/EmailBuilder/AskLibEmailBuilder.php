@@ -30,9 +30,9 @@ class AskLibEmailBuilder extends EmailBuilderBase {
 
   use TokenProcessorTrait;
 
-  public function createParams(EmailInterface $email, $langcode = "fi", Question $question = NULL, 
-  array|string $recipients = NULL, AccountInterface|array|string $reply_to = NULL, string $from = NULL,
-  array $attachments = [], $do_not_send = false) 
+  public function createParams(EmailInterface $email, $langcode = "fi", ?Question $question = NULL,
+  array|string|null $recipients = NULL, AccountInterface|array|string|null $reply_to = NULL, ?string $from = NULL,
+  array $attachments = [], $do_not_send = false)
   {
     assert($question != NULL);
     $email->setParam('langcode', $langcode);

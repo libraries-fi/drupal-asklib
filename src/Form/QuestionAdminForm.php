@@ -11,7 +11,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Url;
-use Drupal\asklib\ProvideQuestionFormHeader;
 use Drupal\asklib\QuestionInterface;
 use Drupal\asklib\UserMailGroupHelper;
 use Drupal\autoslug\Slugger;

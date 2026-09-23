@@ -62,7 +62,7 @@ class AnswerWidget extends WidgetBase {
           '#multiple' => TRUE,
           '#upload_location' => 'public://asklib/answers',
           '#upload_validators' => [
-            'file_validate_extensions' => ['png jpg jpeg doc docx ppt pptx pdf'],
+            'FileExtension' => ['extensions' => 'png jpg jpeg doc docx ppt pptx pdf'],
           ],
           '#entity_type' => 'asklib_answer',
           '#field_name' => 'attachments',

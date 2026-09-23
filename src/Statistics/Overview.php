@@ -2,7 +2,6 @@
 
 namespace Drupal\asklib\Statistics;
 
-use PDO;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\asklib\QuestionInterface;
 
@@ -71,7 +70,7 @@ class Overview extends StatisticsBase {
     $query->addExpression('COUNT(DISTINCT a.user)', 'users');
     $query->addExpression('COUNT(DISTINCT library)', 'libraries');
     $query->addExpression('COUNT(*)', 'total');
-    $result = $query->execute()->fetch(PDO::FETCH_ASSOC);
+    $result = $query->execute()->fetchAssoc();
 
     $table = [
       '#type' => 'table',
@@ -99,7 +98,11 @@ class Overview extends StatisticsBase {
     $query->groupBy('q.langcode');
     $query->orderBy('total', 'DESC');
     $query->orderBy('q.langcode');
-    $result = $query->execute()->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $query->execute();
+    $result = [];
+    while ($row = $stmt->fetchAssoc()) {
+      $result[] = $row;
+    }
 
     foreach ($result as $i => &$row) {
       $row['langcode'] = $this->languages->getLanguage($row['langcode'])->getName();
@@ -125,7 +128,11 @@ class Overview extends StatisticsBase {
     $query->groupBy('delay');
     $query->orderBy('delay');
 
-    $result = $query->execute()->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $query->execute();
+    $result = [];
+    while ($row = $stmt->fetchAssoc()) {
+      $result[] = $row;
+    }
     $rows = [];
     $rest = ['delay' => $this->t('@days days', ['@days' => '4+']), 'total' => 0];
     $total = array_reduce($result, fn($total, $row) => $total + $row['total'], 0);
@@ -163,7 +170,11 @@ class Overview extends StatisticsBase {
     $query->groupBy('q.langcode');
     $query->orderBy('total', 'DESC');
     $query->orderBy('q.langcode');
-    $result = $query->execute()->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $query->execute();
+    $result = [];
+    while ($row = $stmt->fetchAssoc()) {
+      $result[] = $row;
+    }
 
     foreach ($result as &$row) {
       $row['langcode'] = $this->languages->getLanguage($row['langcode'])->getName();
@@ -187,7 +198,11 @@ class Overview extends StatisticsBase {
     $query->groupBy('q.published');
     $query->orderBy('total', 'DESC');
     $query->orderBy('q.published', 'DESC');
-    $result = $query->execute()->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $query->execute();
+    $result = [];
+    while ($row = $stmt->fetchAssoc()) {
+      $result[] = $row;
+    }
 
     foreach ($result as $i => $row) {
       $result[$i]['published'] = $row['published'] ? $this->t('Public') : $this->t('Closed');
@@ -211,11 +226,11 @@ class Overview extends StatisticsBase {
 
     $channels = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['vid' => 'asklib_channels']);
 
-    $result = $query->execute()->fetchAll(PDO::FETCH_UNIQUE);
+    $result = $query->execute()->fetchAllKeyed(0, 1);
 
     $data = array_map(fn($c) => [
       'name' => $c->label(),
-      'total' => isset($result[$c->id()]) ? $result[$c->id()]->total : 0,
+      'total' => $result[$c->id()] ?? 0,
     ], $channels);
 
     usort($data, fn($a, $b) => strcasecmp($a['name'], $b['name']));

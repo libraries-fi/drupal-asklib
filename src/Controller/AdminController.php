@@ -37,8 +37,7 @@ class AdminController extends ControllerBase {
       $query->join('asklib_question__tags', 't', 'a.id = t.entity_id');
       $query->leftJoin('asklib_question_index', 'i', 'a.id = i.qid');
 
-      $result = $query->execute();
-      $qids = $result->fetchAll(\PDO::FETCH_COLUMN);
+      $qids = $query->execute()->fetchCol();
 
       if ($qids) {
         $entities = \Drupal::entityTypeManager()->getStorage('asklib_question')->loadMultiple($qids);

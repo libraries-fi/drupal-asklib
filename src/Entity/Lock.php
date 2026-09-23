@@ -34,7 +34,7 @@ class Lock extends ContentEntityBase implements LockInterface {
     return $this->user->target_id;
   }
 
-  public function setQuestion(QuestionInterface $question = null) {
+  public function setQuestion(?QuestionInterface $question = NULL) {
     $this->question = $question;
   }
 

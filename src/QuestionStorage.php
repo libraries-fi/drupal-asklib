@@ -2,7 +2,6 @@
 
 namespace Drupal\asklib;
 
-use PDO;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 
 class QuestionStorage extends SqlContentEntityStorage {
@@ -26,7 +25,7 @@ class QuestionStorage extends SqlContentEntityStorage {
 
     $query->innerJoin('asklib_question__tags', 't', 't.entity_id = q.id');
     $query->addExpression('COUNT(*)', 'matches');
-    $result = $query->execute()->fetchAll(PDO::FETCH_COLUMN);
+    $result = $query->execute()->fetchCol();
 
     return $this->loadMultiple($result);
   }

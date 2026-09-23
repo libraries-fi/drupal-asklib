@@ -4,7 +4,6 @@ namespace Drupal\asklib\Statistics;
 
 use Drupal\Core\Database\Query\PagerSelectExtender;
 use Drupal\Core\Database\Query\TableSortExtender;
-use PDO;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\asklib\QuestionInterface;
@@ -87,7 +86,11 @@ class MunicipalityOverview extends StatisticsBase {
       $query->condition('t.name', '%' . $this->parameters['n'] . '%', 'LIKE');
     }
 
-    $result = $query->execute()->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = $query->execute();
+    $result = [];
+    while ($row = $stmt->fetchAssoc()) {
+      $result[] = $row;
+    }
 
     foreach ($result as $row) {
       $last_answer = $row['last_answer'] ? $this->dateFormatter->format($row['last_answer'], 'date_only') : NULL;
