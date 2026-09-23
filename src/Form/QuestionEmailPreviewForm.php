@@ -191,12 +191,12 @@ class QuestionEmailPreviewForm extends ContentEntityForm {
   }
 
   public function validateForm(array &$form, FormStateInterface $form_state) {
-     if (!$this->entity->getEmail()) {
-       form_set_error($this->t('Cannot send email without user email address.'));
-     }
+    if (!$this->entity->getEmail()) {
+      $form_state->setErrorByName('email', $this->t('Cannot send email without user email address.'));
+    }
 
     if (!$this->entity->getAnswer() || !$this->entity->getAnswer()->getBody()) {
-      form_set_error($this->t('There is no answer text for the question.'));
+      $form_state->setErrorByName('answer', $this->t('There is no answer text for the question.'));
     }
 
     return parent::validateForm($form, $form_state);
